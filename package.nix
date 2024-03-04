@@ -146,6 +146,8 @@ let
                 or (throw "${name}: cannot derive url from recipe ${p.recipe or "<missing>"}"));
             # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
             # fetchGit allows fetching a specific git commit without a hash.
+            # TODO: port to fetchTree once (mostly) stable
+            # (in particular the github fetcher may be noticably more efficient)
             src = builtins.fetchGit (
               {
                 inherit url;
