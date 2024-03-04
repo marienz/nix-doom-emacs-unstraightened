@@ -17,6 +17,7 @@
   linkFarm,
   runCommand,
   runtimeShell,
+  writeText,
 }:
 let
   inherit (lib) optional optionalAttrs optionalString;
@@ -110,18 +111,31 @@ let
                 # building our own package.
                 assert lib.assertMsg (!(p ? recipe.pre-build)) "${name}: pre-build not supported";
                 assert lib.assertMsg (!(p ? recipe.build)) "${name}: build not supported";
-                # epkgs.trivialBuild takes an attrset, it does not support
+                # epkgs.*Build helpers take an attrset, they do not support
                 # mkDerivation's fixed-point evaluation (`finalAttrs`).
-                # If it did, the buildInputs calculation should use it.
-                esuper.trivialBuild ({
+                # If they did, the buildInputs stuff should use finalAttrs.src.
+
+                # This uses melpaBuild instead of trivialBuild to end up with
+                # something package.el understands as satisfying dependencies.
+                # This is necessary if we're replacing a pinned ELPA dependency
+                # of an unpinned ELPA package.
+                esuper.melpaBuild ({
                   pname = name;
-                  # src gets added below.
-                  # version is required, but some other packages in nixpkgs just set 1.
-                  version = "1";
+                  # Nix requires that we set version. Inherit it from the
+                  # original if available: package.el currently does not check
+                  # versions of dependencies but there's a fixme for that in the
+                  # code...
+                  version = origEPkg.version or "1";
+                  # melpa2nix requires we set this.
+                  commit = p.pin;
                   meta = {
                     description = "trivial build for doom-emacs";
                   };
-                  buildInputs = map (name: eself.${name}) reqlist;
+                  # Just enough to make melpa2nix work.
+                  # TODO: pass "files" through, drop postUnpack hack below?
+                  recipe = writeText "generated-recipe"
+                    "(${name} :fetcher github :repo \"marienz/made-up\")";
+                  buildInputs = (map (name: eself.${name}) reqlist);
                 } // optionalAttrs (p ? recipe.files && p.recipe.files != { defaults = "*"; }) {
                   # HACK: files can contain :defaults, which splices in defaults.
                   # If files starts with :defaults, the entire thing gets
