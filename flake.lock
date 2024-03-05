@@ -3,11 +3,11 @@
     "doomemacs": {
       "flake": false,
       "locked": {
-        "lastModified": 1709171466,
-        "narHash": "sha256-Th+aCtv3XX2vnvsPgY9lcASZzQpvClsDu1U+z1WGpno=",
+        "lastModified": 1709619669,
+        "narHash": "sha256-XbohD+bCpB9xNIqmmPvauqEA7gPBs/7mDhJ7kKdUFsM=",
         "owner": "doomemacs",
         "repo": "doomemacs",
-        "rev": "35dc13632b3177b9efedad212f2180f69e756853",
+        "rev": "bea81278fd2ecb65db6a63dbcd6db2f52921ee41",
         "type": "github"
       },
       "original": {
@@ -23,11 +23,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1709516695,
-        "narHash": "sha256-oymuRjQUhUx71xb4N1P9QFx+OmpnSF3pJKU1tsZBlE8=",
+        "lastModified": 1709629551,
+        "narHash": "sha256-G+nZqqGVtMdDNhbaFeT9u2FhjUt7/lh28pB5Grd1WFg=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "dcb6c5cc11efa3ab804960537242217cf335b230",
+        "rev": "5a24cf5100cd2584313119d0f4d413417fec949c",
         "type": "github"
       },
       "original": {
@@ -72,11 +72,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1709237383,
-        "narHash": "sha256-cy6ArO4k5qTx+l5o+0mL9f5fa86tYUX3ozE1S+Txlds=",
+        "lastModified": 1709479366,
+        "narHash": "sha256-n6F0n8UV6lnTZbYPl1A9q1BS0p4hduAv1mGAP17CVd0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1536926ef5621b09bba54035ae2bb6d806d72ac8",
+        "rev": "b8697e57f10292a6165a20f03d2f42920dfaf973",
         "type": "github"
       },
       "original": {
@@ -122,10 +122,10 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1709309926,
-        "narHash": "sha256-VZFBtXGVD9LWTecGi6eXrE0hJ/mVB3zGUlHImUs2Qak=",
-        "path": "/nix/store/3i3rncs75fid9hwai5p2nvwc4ngdnia7-source",
-        "rev": "79baff8812a0d68e24a836df0a364c678089e2c7",
+        "lastModified": 1709569716,
+        "narHash": "sha256-iOR44RU4jQ+YPGrn+uQeYAp7Xo7Z/+gT+wXJoGxxLTY=",
+        "path": "/nix/store/h947mznq84fnw1igj3jgyisswqfma0hi-source",
+        "rev": "617579a787259b9a6419492eaac670a5f7663917",
         "type": "path"
       },
       "original": {

@@ -68,17 +68,30 @@ let
     nose = "https://github.com/emacsattic/nose.git";
     # In nixpkgs, but uses codeberg, for which nixpkgs uses fetchzip.
     # TODO: consider parsing origEPkg.src.url instead.
-    spell-fu = "https://codeberg.org/ideasman42/emacs-spell-fu.git";
     tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
     undo-fu = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
     undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
-    visual-fill-column = "https://codeberg.org/joostkremers/visual-fill-column.git";
   };
 
   doomEmacsPackages = (emacsPackagesFor emacs).overrideScope (
     eself: esuper:
       let
         customPackages = callPackages ./elisp-packages.nix { inherit emacs esuper eself; };
+        # Current problem:
+        #
+        # Unable to activate package ‘with-editor’.
+        # Required package ‘compat-29.1.4.1’ is unavailable
+        # Unable to activate package ‘vertico’.
+        # Required package ‘compat-29.1.4.4’ is unavailable
+        #
+        # and so forth. Nixpkgs may be installing ELPA packages in a way that
+        # requires their ELPA dependencies to be installed with metadata my
+        # hacks do not provide.
+        #
+        # except vertico is pinned...
+        #
+        # emacs-exunit> Unable to activate package `transient'.
+        # emacs-exunit> Required package `compat-29.1.4.4' is unavailable
 
         makePackage = name: p:
           assert lib.asserts.assertEachOneOf
