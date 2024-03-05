@@ -119,7 +119,7 @@ let
                 # something package.el understands as satisfying dependencies.
                 # This is necessary if we're replacing a pinned ELPA dependency
                 # of an unpinned ELPA package.
-                esuper.melpaBuild ({
+                esuper.melpaBuild {
                   pname = name;
                   # Nix requires that we set version. Inherit it from the
                   # original if available: package.el currently does not check
@@ -132,25 +132,11 @@ let
                     description = "trivial build for doom-emacs";
                   };
                   # Just enough to make melpa2nix work.
-                  # TODO: pass "files" through, drop postUnpack hack below?
-                  recipe = writeText "generated-recipe"
-                    "(${name} :fetcher github :repo \"marienz/made-up\")";
+                  recipe = writeText "generated-recipe" ''
+                    (${name} :fetcher github :repo "marienz/made-up"
+                     ${optionalString (p ? recipe.files) ":files ${lib.debug.traceValSeq p.recipe.files}"})'';
                   buildInputs = (map (name: eself.${name}) reqlist);
-                } // optionalAttrs (p ? recipe.files && p.recipe.files != { defaults = "*"; }) {
-                  # HACK: files can contain :defaults, which splices in defaults.
-                  # If files starts with :defaults, the entire thing gets
-                  # misinterpreted as a proplist when exported to json.
-                  # This currently only happens for `(:defaults "*")`, which we can
-                  # safely ignore (skipping a few excludes).
-                  postUnpack = ''
-                    filteredSrc=$PWD/filteredSrc
-                    mkdir $filteredSrc
-                    pushd $sourceRoot
-                    cp -r ${builtins.toString p.recipe.files} $filteredSrc
-                    popd
-                    sourceRoot=$filteredSrc
-                  '';
-              }));
+                });
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"

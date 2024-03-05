@@ -4,6 +4,7 @@
   esuper,
   git,
   makeWrapper,
+  writeText,
 }:
 {
   # Doom uses using emacs-straight/auctex, which still contains parts of
@@ -97,5 +98,36 @@
     meta = {
       description = "build cmake-mode from emacsmirror for Doom";
     };
+  };
+  # Doom uses a recipe with :files (:defaults "*"), which MELPA's package-build
+  # rejects because it includes dotfiles
+  # (https://github.com/melpa/package-build/pull/67).
+  # Use a melpaBuild here so the package ends up in its own directory:
+  # it uses that directory as a snippets directory, and using site-lisp/ as that
+  # might go wrong.
+  #
+  # XXX this results in all snippets directories being added to load-path...
+  # This makes a mess (`(load "default")` ends up loading a snippet...).
+  #
+  # Does not look doom-snippets-specific, I also have
+  #
+  # /nix/store/...-emacs-packages-deps/share/emacs/site-lisp/elpa/ansible-20240212.325/snippets/text-mode/ansible/f5
+  #
+  # and so forth.
+  doom-snippets = esuper.melpaBuild {
+    pname = "doom-snippets";
+    version = "1";
+    # melpa2nix requires that we set this. TODO: set correctly.
+    commit = "unset";
+    meta = {
+      description = "trivial build of doom-snippets";
+    };
+    # The directories we want to match must be mode names: assume those are
+    # sensibly named (they currently are).
+    recipe = writeText "doom-snippets-recipe" ''
+      (doom-snippets :fetcher github :repo "doomemacs/snippets"
+                     :files (:defaults "*-mode"))
+    '';
+    packageRequires = [ eself.yasnippet ];
   };
 }
