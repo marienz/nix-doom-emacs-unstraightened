@@ -105,15 +105,6 @@
   # Use a melpaBuild here so the package ends up in its own directory:
   # it uses that directory as a snippets directory, and using site-lisp/ as that
   # might go wrong.
-  #
-  # XXX this results in all snippets directories being added to load-path...
-  # This makes a mess (`(load "default")` ends up loading a snippet...).
-  #
-  # Does not look doom-snippets-specific, I also have
-  #
-  # /nix/store/...-emacs-packages-deps/share/emacs/site-lisp/elpa/ansible-20240212.325/snippets/text-mode/ansible/f5
-  #
-  # and so forth.
   doom-snippets = esuper.melpaBuild {
     pname = "doom-snippets";
     version = "1";
@@ -129,5 +120,25 @@
                      :files (:defaults "*-mode"))
     '';
     packageRequires = [ eself.yasnippet ];
+    # Stop all snippets from ending up on load-path via
+    # normal-top-level-add-subdirs-to-load-path.
+    # Avoids "default" in one of these from being mistaken for default.el.
+    preBuild = ''
+      for d in *-mode; do
+        touch $d/.nosearch
+      done
+    '';
   };
+  # TODO: clean up some more load-path clutter?
+  #
+  # The single biggest contributors are tree-sitter-langs (73) and ansible (36),
+  # leaving 48 others.
+  #
+  # It looks like upstream has the same issue for both of these.
+  # For tree-sitter-langs, we do use our own generated derivation (because elpa),
+  # but the problematic directory is package-specific (queries/).
+  # For ansible, we use upstream's derivation from melpaPackages.
+  #
+  # Since it looks like it's not breaking things and the number of entries added
+  # to load-path is relatively modest I'm leaving this alone for now.
 }
