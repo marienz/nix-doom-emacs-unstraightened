@@ -6,7 +6,12 @@
       url = "github:doomemacs/doomemacs";
       flake = false;
     };
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs = {
+        nixpkgs-stable.follows = "nixpkgs";
+      };
+    };
   };
 
   outputs = inputs@{ self, doomemacs, nixpkgs, emacs-overlay, ... }:
