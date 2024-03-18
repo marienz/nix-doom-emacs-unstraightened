@@ -11,7 +11,9 @@
          ;; For built-in packages, the :ignore property is the location of the
          ;; built-in library, which is a Nix store path. We do not want that
          ;; path to escape: avoid it by just filtering ignored packages here.
-         (packages (seq-remove (lambda (p) (plist-get (cdr p) :ignore)) packages))
+         (packages (seq-remove (lambda (p) (or (plist-get (cdr p) :ignore)
+                                               (plist-get (cdr p) :disable)))
+                               packages))
          ;; For recipes with :files, print it to a string before json-encode.
          ;; Otherwise it is serialized as a plist if it starts with :defaults.
          ;; We either ignore this or pass it to melpa2nix in a recipe.
