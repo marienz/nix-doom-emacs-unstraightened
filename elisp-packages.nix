@@ -152,6 +152,36 @@
       done
     '';
   };
+  # Make it byte-compile properly.
+  code-review = esuper.code-review.overrideAttrs (attrs: {
+    nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ git ];
+  });
+  # Make it byte-compile (see auctex)
+  company-auctex = esuper.company-auctex.overrideAttrs (attrs: {
+    preBuild = (attrs.preBuild or "") + ''
+      export HOME=$(mktemp -d)
+  '';
+  });
+  # Make it byte-compile.
+  #
+  # TODO ask upstream about missing evil dependency?
+  # https://github.com/PythonNut/evil-easymotion/commit/fb7182625fcb1b1f7d43f69df620d98aa0f42a86
+  # removed the dependency, I do not understand why.
+  evil-easymotion = esuper.evil-easymotion.overrideAttrs (attrs: {
+    buildInputs = attrs.buildInputs ++ [ eself.evil ];
+  });
+
+  # Other files that fail to byte-compile:
+  # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
+  # - stylus-mode, missing dependency on sws-mode(?)
+  #   See also https://github.com/doomemacs/doomemacs/commit/f9feaec5bd75f4d997e0b07bc5c8b9177be20781
+  # - xref-js2: upstream bug(?).
+  #   Error: `add-to-list' can't use lexical var `words'; use `push' or `cl-pushnew'
+  # - several others, looks like mostly missing (frequently optional) deps.
+  # TODO: add a way of checking for these.
+  # Currently I run:
+  # set edir (grep 'export emacsWithPackages_siteLisp=' result/bin/.emacs-wrapped | cut -f2 -d=); comm -3 (fd '\.el$' $edir | sort | psub) (fd '\.elc$' $edir | sed -e 's:c$::' | sort | psub ) | grep -E -v -- '-(autoloads|pkg|theme).el$' | xargs grep -L 'no-byte-compile: t'
+
   # TODO: clean up some more load-path clutter?
   #
   # The single biggest contributors are tree-sitter-langs (73) and ansible (36),
