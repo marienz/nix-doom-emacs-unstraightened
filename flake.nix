@@ -31,6 +31,10 @@
           };
           packages.doom-minimal = pkgs.callPackage ./package.nix common;
           packages.doom-full = pkgs.callPackage ./package.nix (common // { full = true; });
+          packages.doom-example = pkgs.callPackage ./package.nix (common // {
+            doomInitFile = ./example/init.el;
+            doomPrivateModule = ./example/packages.el;
+          });
         };
     };
 }
