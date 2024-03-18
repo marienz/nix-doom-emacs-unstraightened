@@ -7,24 +7,39 @@
   writeText,
 }:
 {
-  # Doom uses using emacs-straight/auctex, which still contains parts of
-  # upstream's build system but does not contain all .in files, resulting
-  # in a failed build if we attempt to use upstream's configure..
-  auctex = esuper.trivialBuild {
+  # Doom uses emacs-straight/auctex, which still contains parts of upstream's
+  # build system but does not contain all .in files, resulting in a failed build
+  # if we attempt to use upstream's configure.
+  #
+  # Use melpaBuild instead of trivialBuild because company-auctex installs as a
+  # package (with a specified dependency) while trivialBuild does not include
+  # the necessary package metadata to satisfy that dependency.
+  auctex = esuper.melpaBuild {
     pname = "auctex";
     version = "1";
     meta = {
       description = "build auctex from emacs-straight for Doom";
     };
+    # Most of auctex fails to byte-compile unless we do this.
     # TODO: figure out why this is necessary (there may be a better
     # solution).
     preBuild = ''
       export HOME=$(mktemp -d)
     '';
+    # TODO: set this properly (melpa2nix requires it).
+    commit = "unset";
+    recipe = writeText "auctex-recipe" ''
+      (auctex :fetcher github :repo "emacsmirror/auctex")
+    '';
   };
   # Doom lets Straight provide org-autoloads.el as an alternative for
   # org-loaddefs.el, and manually generates org-version.el.
   # I currently run Org's build system.
+  #
+  # This does not hit the same dependency problem auctex does because org is a
+  # built-in package, and the package.el machinery assumes that satisfies the
+  # dependency (it is not aware of our shadowing it).
+  #
   # TODO: pass in ORGVERSION / GITVERSION (or provide a .git dir).
   org = esuper.trivialBuild {
     pname = "org";
