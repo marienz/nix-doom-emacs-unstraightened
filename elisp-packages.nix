@@ -103,6 +103,14 @@
     meta = {
       description = "build straight with Git dependency added for Doom";
     };
+    # Do not install files that shadow builtins and/or have undesirable side
+    # effects if loaded.
+    postUnpack = ''
+      filteredSrc=$PWD/filteredSrc
+      mkdir $filteredSrc
+      cp $sourceRoot/straight*.el $filteredSrc
+      sourceRoot=$filteredSrc
+    '';
     nativeBuildInputs = [ git ];
   };
   # Nix uses a Melpa recipe that assumes the upstream CMake repo layout.
