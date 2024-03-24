@@ -123,6 +123,19 @@ let
                 # building our own package.
                 assert lib.assertMsg (!(p ? recipe.pre-build)) "${name}: pre-build not supported";
                 assert lib.assertMsg (!(p ? recipe.build)) "${name}: build not supported";
+                # TODO: lift "pin" requirement, if that turns out to be
+                # necessary or at least desirable. Requires figuring out why
+                # melpa2nix requires `commit`. Not a priority because if it's
+                # not in epkgs we'd need a recipe passed in, and it's uncommon
+                # for Doom to pass in a recipe without pinning.
+                #
+                # Doom does currently have unpinned packages with an explicit
+                # recipe, but they're in epkgs (popon and flymake-popon) so it
+                # should be ok. Users might do this to pull in a custom package
+                # they don't care about pinning, though: we may want to support
+                # that.
+                assert lib.assertMsg (p ? pin)
+                  "${name}: not in epkgs and not pinned. This is not yet supported.";
                 # epkgs.*Build helpers take an attrset, they do not support
                 # mkDerivation's fixed-point evaluation (`finalAttrs`).
                 # If they did, the buildInputs stuff should use finalAttrs.src.
