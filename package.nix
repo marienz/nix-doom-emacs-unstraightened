@@ -77,22 +77,6 @@ let
     eself: esuper:
       let
         customPackages = callPackages ./elisp-packages.nix { inherit emacs esuper eself; };
-        # Current problem:
-        #
-        # Unable to activate package ‘with-editor’.
-        # Required package ‘compat-29.1.4.1’ is unavailable
-        # Unable to activate package ‘vertico’.
-        # Required package ‘compat-29.1.4.4’ is unavailable
-        #
-        # and so forth. Nixpkgs may be installing ELPA packages in a way that
-        # requires their ELPA dependencies to be installed with metadata my
-        # hacks do not provide.
-        #
-        # except vertico is pinned...
-        #
-        # emacs-exunit> Unable to activate package `transient'.
-        # emacs-exunit> Required package `compat-29.1.4.4' is unavailable
-
         # We want to override `version` along with `src` to avoid spurious
         # rebuilds on version bumps in emacs-overlay of packages Doom has
         # pinned.
