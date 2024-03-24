@@ -114,9 +114,8 @@ let
             isElpa = origEPkg != null && (origEPkg == esuper.elpaPackages.${name} or null || origEPkg == esuper.nongnuPackages.${name} or null);
             epkg =
               customPackages.${name}
-                or (if origEPkg != null && !(p ? pin && isElpa)
-              then origEPkg
-              else
+                or (if origEPkg == null || (p ? pin && isElpa)
+              then
                 assert lib.assertMsg
                   (isElpa || (p ? recipe && p ? pin) || extraUrls ? ${name})
                   "${name}: not in epkgs, not elpa, no recipe or not pinned";
@@ -149,7 +148,8 @@ let
                     (${name} :fetcher github :repo "marienz/made-up"
                      ${optionalString (p ? recipe.files) ":files ${lib.debug.traceValSeq p.recipe.files}"})'';
                   buildInputs = (map (name: eself.${name}) reqlist);
-                });
+                }
+                else origEPkg);
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"
