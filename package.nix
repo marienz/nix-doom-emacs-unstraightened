@@ -93,6 +93,19 @@ let
         # emacs-exunit> Unable to activate package `transient'.
         # emacs-exunit> Required package `compat-29.1.4.4' is unavailable
 
+        # We want to override `version` along with `src` to avoid spurious
+        # rebuilds on version bumps in emacs-overlay of packages Doom has
+        # pinned.
+        #
+        # The elisp manual says we need a version `version-to-list` can parse,
+        # which means it must start with a number and cannot contain the actual
+        # commit ID. We start with a large integer in case package.el starts
+        # version-checking dependencies (it currently does not but a comment in
+        # the code says it should). Additionally, `(package-version-join
+        # (version-to-list v))` must roundtrip to avoid elpa2nix failing with
+        # "Package does not untar cleanly".
+        snapshotVersion = "9999snapshot";
+
         makePackage = name: p:
           assert lib.asserts.assertEachOneOf
             "keys for ${name}"
@@ -146,12 +159,10 @@ let
                 # of an unpinned ELPA package.
                 esuper.melpaBuild {
                   pname = name;
-                  # Nix requires that we set version. Inherit it from the
-                  # original if available: package.el currently does not check
-                  # versions of dependencies but there's a fixme for that in the
-                  # code...
-                  version = origEPkg.version or "1";
-                  # melpa2nix requires we set this.
+                  # melpaBuild requires we set `version` and `commit` here
+                  # (leaving `version` unset until overrideAttrs below does not
+                  # work).
+                  version = snapshotVersion;
                   commit = p.pin;
                   meta = {
                     description = "trivial build for doom-emacs";
@@ -204,7 +215,10 @@ let
             reqlist = if reqjson == null then [ ] else reqjson;
           in
           if p ? pin
-          then epkg.overrideAttrs { inherit src; }
+          then epkg.overrideAttrs {
+            inherit src;
+            version = snapshotVersion;
+          }
           else epkg;
       in
       lib.mapAttrs makePackage doomPackageSet
