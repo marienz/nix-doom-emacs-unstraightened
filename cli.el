@@ -1,7 +1,6 @@
 ;;; cli.el -*- lexical-binding: t; -*-
 
 (require 'json)
-(doom-require 'doom-cli 'packages)
 
 (defcli! dump-for-nix-build
     ((output-directory ("-o" dir) "Directory to dump into.")
