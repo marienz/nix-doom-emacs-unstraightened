@@ -38,13 +38,13 @@
 
 ;; Disabled packages:
 ")
-      (dolist (kp packages)
+      (dolist (kp all-packages)
         (when (plist-get (cdr kp) :disable)
           (insert "(package! " (symbol-name (car kp)) " :disable t)\n")))
       (insert "
 ;; Packages installed by nix-doom-emacs-unstraightened or ignored by you:
 ")
-      (dolist (kp packages)
+      (dolist (kp all-packages)
         (let ((p (cdr kp)))
           (when (not (plist-get p :disable))
             (insert "(package! " (symbol-name (car kp)) " :ignore t)\n"))))
