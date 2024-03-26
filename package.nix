@@ -12,6 +12,7 @@
   full ? false,
 
   callPackages,
+  git,
   emacsPackagesFor,
   lib,
   linkFarm,
@@ -31,8 +32,8 @@ let
   #
   # Uses Doom's CLI framework, which does not require anything else is installed
   # (not even straight).
-  initialDoomDir = linkFarm "minimal-doom-dir" (
-    [{ name = "cli.el"; path = ./cli.el; }]
+  stage1DoomDir = linkFarm "doom-dir-stage1" (
+    [{ name = "cli.el"; path = ./cli1.el; }]
     ++ optional (doomInitFile != null) { name = "init.el"; path = doomInitFile; }
     ++ optional (doomPrivateModule != null) { name = "packages.el"; path = doomPrivateModule; }
   );
@@ -47,7 +48,7 @@ let
     {
       env = {
         EMACS = lib.getExe emacs;
-        DOOMDIR = initialDoomDir;
+        DOOMDIR = stage1DoomDir;
       };
     } ''
     mkdir $out
@@ -73,6 +74,7 @@ let
     undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
   };
 
+  # Step 2: override Emacs packages to respect Doom's pins.
   doomEmacsPackages = (emacsPackagesFor emacs).overrideScope (
     eself: esuper:
       let
@@ -208,6 +210,41 @@ let
       lib.mapAttrs makePackage doomPackageSet
   );
 
+  # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
+  # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
+
+  # Step 4: build a Doom profile.
+  stage2DoomDir = linkFarm "doom-dir-stage2" (
+    [{ name = "cli.el"; path = ./cli2.el; }
+     { name = "packages.el"; path = "${doomIntermediates}/packages.el"; }]
+    ++ optional (doomInitFile != null) { name = "init.el"; path = doomInitFile; }
+  );
+
+  # XXX runCommandLocal? (See doomIntermediates.)
+  doomProfile = runCommand "doom-profile"
+    {
+      env = {
+        EMACS = lib.getExe emacsWithPackages;
+        DOOMDIR = stage2DoomDir;
+        # Enable this to troubleshoot failures at this step.
+        #DEBUG = "1";
+      };
+      # Required to avoid Doom erroring out at startup.
+      nativeBuildInputs = [ git ];
+    }
+    # Explicitly create `straight` to get an empty build cache written there
+    # instead of an error printed on Emacs shutdown.
+    ''
+    mkdir -p $out/straight
+    export DOOMLOCALDIR=$out
+    ${runtimeShell} ${doomSource}/bin/doom build-profile-for-nix-build
+    rm -rf $out/state/logs
+  '';
+
+  # TODO: this generates a blank 90-loaddefs-packages.auto.el, because
+  # `doom-profile--generate-package-autoloads` uses straight--build-cache to
+  # enumerate packages. Do we care, or are package.el autoloads sufficient?
+
 in
-emacsWithPackages
+doomProfile
