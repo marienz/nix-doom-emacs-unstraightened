@@ -242,9 +242,10 @@ let
     rm -rf $out/state/logs
   '';
 
-  # TODO: this generates a blank 90-loaddefs-packages.auto.el, because
-  # `doom-profile--generate-package-autoloads` uses straight--build-cache to
-  # enumerate packages. Do we care, or are package.el autoloads sufficient?
+  # TODO: write a package.el equiv of doom-profile--generate-package-autoloads.
+  # Doom already picks up load-path because in cli mode it inits packages.el
+  # But during normal startup it suppresses packages.el's auto-activation,
+  # which means elpa/*/*-autoloads.el don't load.
 
 in
 doomProfile
