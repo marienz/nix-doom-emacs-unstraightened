@@ -15,6 +15,10 @@ it. Just skip it entirely."
 (defcli! build-profile-for-nix-build ()
   "Write a Doom profile."
   ;; HACK: this initializes enough of straight (particularly
-  ;; straight--build-cache) to make Doom work (I hope...).
+  ;; straight--build-cache, which doom-profile--generate-package-autoloads hits)
+  ;; to make Doom work.
+  ;;
+  ;; TODO: remove doom-profile--generate-package-autoloads?
+  ;; Because there are no straight-built packages, it generates an empty file.
   (straight-prune-build-cache)
   (doom-profile-generate))
