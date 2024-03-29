@@ -10,6 +10,8 @@
   /* Whether to enable all default dependencies. Primarily useful for CI /
      testing. */
   full ? false,
+  /* Name of doom profile to use. */
+  profileName ? "nix",
 
   callPackages,
   git,
@@ -19,6 +21,7 @@
   runCommand,
   runtimeShell,
   writeText,
+  makeBinaryWrapper,
 }:
 let
   inherit (lib) optional optionalAttrs optionalString;
@@ -214,7 +217,13 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
-  # Step 4: build a Doom profile.
+  # Step 4: build a Doom profile and profile loader.
+  #
+  # Create both in the same derivation: we want the path to the generated
+  # profile in the loader (so building the loader depends on the profile), but
+  # I'm currently using the loader to set up Doom to write the profile to the
+  # right place (so building the profile depends on the loader).
+
   stage2DoomDir = linkFarm "doom-dir-stage2" (
     [{ name = "cli.el"; path = ./cli2.el; }
      { name = "packages.el"; path = "${doomIntermediates}/packages.el"; }]
@@ -232,20 +241,47 @@ let
       };
       # Required to avoid Doom erroring out at startup.
       nativeBuildInputs = [ git ];
-    }
-    # Explicitly create `straight` to get an empty build cache written there
-    # instead of an error printed on Emacs shutdown.
-    ''
-    mkdir -p $out/straight
-    export DOOMLOCALDIR=$out
+    } ''
+    mkdir $out
+
+    echo '
+    ((${profileName} (user-emacs-directory . "${doomSource}")
+        (doom-profile-data-dir . "'$out'/profiles")
+        ("DOOMDIR" . "${stage2DoomDir}")))
+    ' > profiles.el
+
+    export DOOMPROFILELOADFILE=$out/init.el
+    export DOOMPROFILELOADPATH=$PWD/profiles.el
+    export DOOMLOCALDIR=$(mktemp -d)
+    # Prevent error on Emacs shutdown writing empty build cache.
+    mkdir $DOOMLOCALDIR/straight
+
+    ${runtimeShell} ${doomSource}/bin/doom build-profile-loader-for-nix-build
+
+    # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
+    export HOME=$(mktemp -d)
+    export DOOMPROFILE='${profileName}';
     ${runtimeShell} ${doomSource}/bin/doom build-profile-for-nix-build
-    rm -rf $out/state/logs
   '';
+
+  # TODO: test HOME and DOOMPROFILE tmpdirs don't leak into profile init?
+  # Currently doesn't happen.
 
   # TODO: write a package.el equiv of doom-profile--generate-package-autoloads.
   # Doom already picks up load-path because in cli mode it inits packages.el
   # But during normal startup it suppresses packages.el's auto-activation,
   # which means elpa/*/*-autoloads.el don't load.
 
+  # TODO: don't set DOOMDIR in profiles.el.
+
+  pkg = runCommand "doom" {
+    nativeBuildInputs = [ makeBinaryWrapper ];
+  }
+  ''
+  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/emacs \
+    --set DOOMPROFILELOADFILE ${doomProfile}/init.el \
+    --add-flags "--init-directory=${doomSource} --profile ${profileName}"
+'';
+
 in
-doomProfile
+pkg

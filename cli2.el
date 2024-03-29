@@ -12,6 +12,11 @@ it. Just skip it entirely."
   :override #'doom-initialize-core-packages
   t)
 
+(defcli! build-profile-loader-for-nix-build ()
+  "Write Doom's profile loader."
+  (let ((new-profiles (doom-profiles-autodetect)))
+    (doom-profiles-save new-profiles)))
+
 (defcli! build-profile-for-nix-build ()
   "Write a Doom profile."
   ;; HACK: this initializes enough of straight (particularly
