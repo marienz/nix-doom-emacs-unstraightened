@@ -74,15 +74,7 @@
     meta = {
       description = "build org-contrib from emacsmirror for Doom";
     };
-    # Apply upstream fix for hard dependency on ess-custom.
-    # Straight just seems to ignore the byte-compilation failure(?).
-    patches = [ ./org-contrib-ob-stata-ess-optional.patch ];
-    # HACK around sources being in lisp/, which trivialBuild does not
-    # handle. Setting sourceDir would probably be more sane, but we
-    # need the original one for a patch to apply.
-    postPatch = ''
-      cd lisp
-    '';
+    sourceRoot = "source/lisp";
   };
   sln-mode = esuper.trivialBuild {
     pname = "sln-mode";
