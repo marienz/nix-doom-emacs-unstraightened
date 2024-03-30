@@ -74,6 +74,7 @@
     meta = {
       description = "build org-contrib from emacsmirror for Doom";
     };
+    packageRequires = [ eself.org ];
     sourceRoot = "source/lisp";
   };
   sln-mode = esuper.trivialBuild {
