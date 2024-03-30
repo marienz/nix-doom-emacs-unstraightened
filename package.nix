@@ -1,8 +1,6 @@
 {
-  /* Your init.el. */
-  doomInitFile ? null,
-  /* Your packages.el. */
-  doomPrivateModule ? null,
+  /* DOOMDIR / Doom private directory / module. */
+  doomDir ? "/var/empty",
   /* Doom source tree. */
   doomSource,
   /* Emacs package to build against. */
@@ -26,6 +24,9 @@
 let
   inherit (lib) optional optionalAttrs optionalString;
 
+  doomInitFile = "${doomDir}/init.el";
+  doomPrivateModule = "${doomDir}/packages.el";
+
   # Step 1: determine which Emacs packages to pull in.
   #
   # Inputs: unpatched Doom, a DOOMDIR with the provided init.el and packages.el.
@@ -37,8 +38,8 @@ let
   # (not even straight).
   stage1DoomDir = linkFarm "doom-dir-stage1" (
     [{ name = "cli.el"; path = ./cli1.el; }]
-    ++ optional (doomInitFile != null) { name = "init.el"; path = doomInitFile; }
-    ++ optional (doomPrivateModule != null) { name = "packages.el"; path = doomPrivateModule; }
+    ++ optional (lib.pathExists doomInitFile) { name = "init.el"; path = doomInitFile; }
+    ++ optional (lib.pathExists doomPrivateModule) { name = "packages.el"; path = doomPrivateModule; }
   );
   # Set DOOMLOCALDIR somewhere harmless to stop Doom from trying to create it
   # somewhere read-only.
@@ -217,25 +218,47 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
-  # Step 4: build a Doom profile and profile loader.
+  # Step 4: build a final DOOMDIR with packages.el from Step 1.
+  #
+  # This is used in three contexts:
+  # - To build the Doom profile. So we need our cli commands.
+  # - When loading that profile, as the path to the :user module.
+  #   This path is hardcoded into the profile.
+  # - As doom-user-dir at runtime.
+  #
+  # I would prefer to avoid that last one, but Doom uses doom-user-dir and the
+  # path to the :user module interchangeably in several places. Attempting to
+  # split them looks not just confusing for the user but error-prone.
+  #
+  # TODO: symlink farm instead of copy?
+  finalDoomDir = runCommand "doom-dir" {} ''
+    if [[ -e ${doomDir} ]]; then
+      cp -r ${doomDir} $out/
+      chmod +w $out
+    else
+      mkdir $out
+    fi
+    ln -sf ${doomIntermediates}/packages.el $out/
+    ln -sf ${./cli2.el} $out/cli.el
+  '';
+
+  # TODO: maybe do something about custom-file (which Doom sets relative to
+  # doom-user-dir, so with that in the store it becomes readonly).
+
+  # Step 5: build a Doom profile and profile loader using Emacs from step 3 and
+  # DOOMDIR from step 4.
   #
   # Create both in the same derivation: we want the path to the generated
   # profile in the loader (so building the loader depends on the profile), but
   # I'm currently using the loader to set up Doom to write the profile to the
   # right place (so building the profile depends on the loader).
 
-  stage2DoomDir = linkFarm "doom-dir-stage2" (
-    [{ name = "cli.el"; path = ./cli2.el; }
-     { name = "packages.el"; path = "${doomIntermediates}/packages.el"; }]
-    ++ optional (doomInitFile != null) { name = "init.el"; path = doomInitFile; }
-  );
-
   # XXX runCommandLocal? (See doomIntermediates.)
   doomProfile = runCommand "doom-profile"
     {
       env = {
         EMACS = lib.getExe emacsWithPackages;
-        DOOMDIR = stage2DoomDir;
+        DOOMDIR = finalDoomDir;
         # Enable this to troubleshoot failures at this step.
         #DEBUG = "1";
       };
@@ -247,7 +270,7 @@ let
     echo '
     ((${profileName} (user-emacs-directory . "${doomSource}")
         (doom-profile-data-dir . "'$out'/profiles")
-        ("DOOMDIR" . "${stage2DoomDir}")))
+        ("DOOMDIR" . "${finalDoomDir}")))
     ' > profiles.el
 
     export DOOMPROFILELOADFILE=$out/init.el
@@ -272,7 +295,6 @@ let
   # But during normal startup it suppresses packages.el's auto-activation,
   # which means elpa/*/*-autoloads.el don't load.
 
-  # TODO: don't set DOOMDIR in profiles.el.
 
   pkg = runCommand "doom" {
     nativeBuildInputs = [ makeBinaryWrapper ];
