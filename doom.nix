@@ -10,6 +10,8 @@
   full ? false,
   /* Name of doom profile to use. */
   profileName ? "nix",
+  /* Name to give to the main binary (to facilitate parallel installs with Emacs). */
+  binaryName ? "emacs",
 
   callPackages,
   git,
@@ -291,7 +293,7 @@ let
     nativeBuildInputs = [ makeBinaryWrapper ];
   }
   ''
-  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/emacs \
+  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/${binaryName} \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --add-flags "--init-directory=${doomSource} --profile ${profileName}"
 '';
