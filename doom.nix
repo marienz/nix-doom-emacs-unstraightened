@@ -274,11 +274,6 @@ let
     fi
   '';
 
-  # TODO: write a package.el equiv of doom-profile--generate-package-autoloads.
-  # Doom already picks up load-path because in cli mode it inits packages.el
-  # But during normal startup it suppresses packages.el's auto-activation,
-  # which means elpa/*/*-autoloads.el don't load.
-
   # Step 6: write wrappers to start the whole thing.
   pkg = runCommand "doom" {
     nativeBuildInputs = [ makeBinaryWrapper ];
