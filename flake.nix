@@ -29,9 +29,9 @@
             inherit system;
             overlays = [ emacs-overlay.overlays.package ];
           };
-          packages.doom-minimal = pkgs.callPackage ./package.nix common;
-          packages.doom-full = pkgs.callPackage ./package.nix (common // { full = true; });
-          packages.doom-example = pkgs.callPackage ./package.nix (common // { doomDir = ./example; });
+          packages.doom-minimal = pkgs.callPackage ./doom.nix common;
+          packages.doom-full = pkgs.callPackage ./doom.nix (common // { full = true; });
+          packages.doom-example = pkgs.callPackage ./doom.nix (common // { doomDir = ./example; });
         };
     };
 }
