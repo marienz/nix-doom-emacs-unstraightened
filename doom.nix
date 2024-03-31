@@ -221,14 +221,10 @@ let
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
   # Step 4: build a final DOOMDIR with packages.el from step 1.
-  #
-  # TODO: symlink farm instead of copy?
   finalDoomDir = runCommand "doom-dir" {} ''
+    mkdir $out
     if [[ -e ${doomDir} ]]; then
-      cp -r ${doomDir} $out/
-      chmod +w $out
-    else
-      mkdir $out
+      ln -s ${doomDir}/* $out/
     fi
     ln -sf ${doomIntermediates}/packages.el $out/
     ln -sf ${./cli2.el} $out/cli.el
