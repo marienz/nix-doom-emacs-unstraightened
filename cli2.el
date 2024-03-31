@@ -12,9 +12,15 @@ it. Just skip it entirely."
   :override #'doom-initialize-core-packages
   t)
 
-(defcli! build-profile-loader-for-nix-build ()
+(defcli! build-profile-loader-for-nix-build
+  ((profile-name ("-n" form) "Profile name.")
+   (profile-directory ("-p" dir) "Profile data directory.")
+   (profile-doom-dir ("-d" dir) "DOOMDIR"))
   "Write Doom's profile loader."
-  (let ((new-profiles (doom-profiles-autodetect)))
+  (let ((new-profiles `((,profile-name
+                         (user-emacs-directory . ,doom-emacs-dir)
+                         (doom-profile-data-dir . ,profile-directory)
+                         ("DOOMDIR" . ,profile-doom-dir)))))
     (doom-profiles-save new-profiles)))
 
 (defcli! build-profile-for-nix-build ()
