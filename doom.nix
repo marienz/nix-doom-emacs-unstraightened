@@ -270,10 +270,13 @@ let
     export HOME=$(mktemp -d)
     export DOOMPROFILE='${profileName}';
     ${runtimeShell} ${doomSource}/bin/doom build-profile-for-nix-build
-  '';
 
-  # TODO: test HOME and DOOMPROFILE tmpdirs don't leak into profile init?
-  # Currently doesn't happen.
+    # Similar to audit-tmpdir.sh in nixpkgs.
+    if grep -q -F "$TMPDIR/" -r $out; then
+      echo "Doom profile contains a forbidden reference to $TMPDIR/"
+      exit 1
+    fi
+  '';
 
   # TODO: write a package.el equiv of doom-profile--generate-package-autoloads.
   # Doom already picks up load-path because in cli mode it inits packages.el
