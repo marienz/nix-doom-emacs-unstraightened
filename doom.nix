@@ -230,9 +230,6 @@ let
     ln -sf ${./cli2.el} $out/cli.el
   '';
 
-  # TODO: maybe do something about custom-file (which Doom sets relative to
-  # doom-user-dir, so with that in the store it becomes readonly).
-
   # Step 5: build a Doom profile and profile loader using Emacs from step 3 and
   # DOOMDIR from step 4.
   #
