@@ -41,10 +41,6 @@ let
     ++ optional (lib.pathExists doomInitFile) { name = "init.el"; path = doomInitFile; }
     ++ optional (lib.pathExists doomPrivateModule) { name = "packages.el"; path = doomPrivateModule; }
   );
-  # Set DOOMLOCALDIR somewhere harmless to stop Doom from trying to create it
-  # somewhere read-only.
-
-  # (If this step breaks, add DEBUG=1 to make Doom more verbose.)
 
   # XXX this may need to be runCommandLocal just in case conditionals an init.el
   # / packages.el evaluate differently on build systems.
@@ -53,7 +49,11 @@ let
       env = {
         EMACS = lib.getExe emacs;
         DOOMDIR = stage1DoomDir;
+        # Enable this to troubleshoot failures at this step.
+        #DEBUG = "1";
       };
+      # We set DOOMLOCALDIR somewhere harmless below to stop Doom from trying to
+      # create it somewhere read-only.
     } ''
     mkdir $out
     export DOOMLOCALDIR=$(mktemp -d)
@@ -218,17 +218,7 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
-  # Step 4: build a final DOOMDIR with packages.el from Step 1.
-  #
-  # This is used in three contexts:
-  # - To build the Doom profile. So we need our cli commands.
-  # - When loading that profile, as the path to the :user module.
-  #   This path is hardcoded into the profile.
-  # - As doom-user-dir at runtime.
-  #
-  # I would prefer to avoid that last one, but Doom uses doom-user-dir and the
-  # path to the :user module interchangeably in several places. Attempting to
-  # split them looks not just confusing for the user but error-prone.
+  # Step 4: build a final DOOMDIR with packages.el from step 1.
   #
   # TODO: symlink farm instead of copy?
   finalDoomDir = runCommand "doom-dir" {} ''
@@ -296,7 +286,7 @@ let
   # But during normal startup it suppresses packages.el's auto-activation,
   # which means elpa/*/*-autoloads.el don't load.
 
-
+  # Step 6: write wrappers to start the whole thing.
   pkg = runCommand "doom" {
     nativeBuildInputs = [ makeBinaryWrapper ];
   }
