@@ -269,11 +269,12 @@ let
 
     echo '
     ((${profileName} (user-emacs-directory . "${doomSource}")
-        (doom-profile-data-dir . "'$out'/profiles")
+        (doom-profile-data-dir . "'$out'/profile")
         ("DOOMDIR" . "${finalDoomDir}")))
     ' > profiles.el
 
-    export DOOMPROFILELOADFILE=$out/init.el
+    mkdir $out/loader
+    export DOOMPROFILELOADFILE=$out/loader/init.el
     export DOOMPROFILELOADPATH=$PWD/profiles.el
     export DOOMLOCALDIR=$(mktemp -d)
     # Prevent error on Emacs shutdown writing empty build cache.
@@ -301,7 +302,7 @@ let
   }
   ''
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/emacs \
-    --set DOOMPROFILELOADFILE ${doomProfile}/init.el \
+    --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --add-flags "--init-directory=${doomSource} --profile ${profileName}"
 '';
 
