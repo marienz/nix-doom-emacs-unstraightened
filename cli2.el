@@ -3,7 +3,7 @@
 ;; We skip Doom's normal install and initialization.
 (require 'straight)
 
-(defadvice! nix-doom-skip-core-packages (orig-fn &rest args)
+(defadvice! nix-doom-skip-core-packages (&rest _)
   "HACK: don't install straight and core packages.
 
 `doom-initialize-core-packages' would no-op out if
