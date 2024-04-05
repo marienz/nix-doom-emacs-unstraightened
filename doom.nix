@@ -80,6 +80,12 @@ let
     undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
   };
 
+  # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
+  extraPins = {
+    # Looks stable enough we can get away with pinning it.
+    "sly-stepper" = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
+  };
+
   # Step 2: override Emacs packages to respect Doom's pins.
   doomEmacsPackages = (emacsPackagesFor emacs).overrideScope (
     eself: esuper:
@@ -109,6 +115,7 @@ let
             [ "core" ];
           let
             origEPkg = esuper.${name} or null;
+            pin = p.pin or extraPins.${name} or null;
             # We have to specialcase ELPA packages pinned by Doom: Straight mirrors /
             # repackages them. Doom's pins assume that mirror is used (so we have to
             # use it), and replacing the source in nixpkgs's derivation will not work
@@ -122,7 +129,7 @@ let
                 or (if origEPkg == null || (p ? pin && isElpa)
               then
                 assert lib.assertMsg
-                  (isElpa || (p ? recipe && p ? pin) || extraUrls ? ${name})
+                  (isElpa || (p ? recipe && pin != null) || extraUrls ? ${name})
                   "${name}: not in epkgs, not elpa, no recipe or not pinned";
                 # Assume we can safely ignore (pre-)build unless we're actually
                 # building our own package.
@@ -139,7 +146,7 @@ let
                 # should be ok. Users might do this to pull in a custom package
                 # they don't care about pinning, though: we may want to support
                 # that.
-                assert lib.assertMsg (p ? pin)
+                assert lib.assertMsg (pin != null)
                   "${name}: not in epkgs and not pinned. This is not yet supported.";
                 # epkgs.*Build helpers take an attrset, they do not support
                 # mkDerivation's fixed-point evaluation (`finalAttrs`).
@@ -155,7 +162,7 @@ let
                   # (leaving `version` unset until overrideAttrs below does not
                   # work).
                   version = snapshotVersion;
-                  commit = p.pin;
+                  commit = pin;
                   meta = {
                     description = "trivial build for doom-emacs";
                   };
@@ -180,7 +187,7 @@ let
             src = builtins.fetchGit (
               {
                 inherit url;
-                rev = p.pin;
+                rev = pin;
                 submodules = !(p.recipe.nonrecursive or false);
                 # TODO: might need to pull ref from derivation.src if we're not pulling it from p.recipe?
                 # Note Doom does have packages with pin + branch (or nonrecursive) set,
@@ -206,7 +213,7 @@ let
             # json-encode encodes the empty list as null (nil), not [].
             reqlist = if reqjson == null then [ ] else reqjson;
           in
-          if p ? pin
+          if pin != null
           then epkg.overrideAttrs {
             inherit src;
             version = snapshotVersion;
