@@ -32,6 +32,7 @@
           packages.doom-minimal = pkgs.callPackage ./doom.nix common;
           packages.doom-full = pkgs.callPackage ./doom.nix (common // { full = true; });
           packages.doom-example = pkgs.callPackage ./doom.nix (common // { doomDir = ./example; });
+          packages.doomEmacs = args: pkgs.callPackage ./doom.nix args;
         };
     };
 }
