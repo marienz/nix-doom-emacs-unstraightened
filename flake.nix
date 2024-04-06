@@ -28,7 +28,7 @@
           doom-minimal = pkgsWithEmacsOverlay.callPackage ./doom.nix common;
           doom-full = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { full = true; });
           doom-example = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { doomDir = ./example; });
-          doomEmacs = args: pkgsWithEmacsOverlay.callPackage ./doom.nix args;
+          doomEmacs = args: pkgsWithEmacsOverlay.callPackage ./doom.nix (common // args);
         });
     };
 }
