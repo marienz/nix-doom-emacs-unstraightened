@@ -78,6 +78,8 @@ let
     tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
     undo-fu = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
     undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
+    # nixpkgs uses a release from nongnu ELPA.
+    corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
@@ -177,9 +179,9 @@ let
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"
               else epkg.src.gitRepoUrl
+                or extraUrls.${name}
                 or (if isElpa then "https://github.com/emacs-straight/${name}"
-              else extraUrls.${name}
-                or (throw "${name}: cannot derive url from recipe ${p.recipe or "<missing>"}"));
+                  else (throw "${name}: cannot derive url from recipe ${p.recipe or "<missing>"}"));
             # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
             # fetchGit allows fetching a specific git commit without a hash.
             # TODO: port to fetchTree once (mostly) stable
