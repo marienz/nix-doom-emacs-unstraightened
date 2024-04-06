@@ -169,7 +169,7 @@ let
                   # Just enough to make melpa2nix work.
                   recipe = writeText "generated-recipe" ''
                     (${name} :fetcher github :repo "marienz/made-up"
-                     ${optionalString (p ? recipe.files) ":files ${lib.debug.traceValSeq p.recipe.files}"})'';
+                     ${optionalString (p ? recipe.files) ":files ${p.recipe.files}"})'';
                   buildInputs = (map (name: eself.${name}) reqlist);
                 }
                 else origEPkg);
