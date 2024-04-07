@@ -25,8 +25,8 @@
           # Current Doom + NixOS 23.11 requires emacs-overlay: Doom pins
           # emacs-fish-completion, which moved from gitlab to github recently
           # enough stable nixpkgs pulls it from the wrong source.
-          doom-minimal = pkgsWithEmacsOverlay.callPackage ./doom.nix common;
-          doom-full = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { full = true; });
+          doom-minimal = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { doomDir = pkgs.emptyDirectory; });
+          doom-full = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { full = true; doomDir = pkgs.emptyDirectory; });
           doom-example = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { doomDir = ./example; });
           doomEmacs = args: pkgsWithEmacsOverlay.callPackage ./doom.nix (common // args);
         });

@@ -1,6 +1,6 @@
 {
   /* DOOMDIR / Doom private directory / module. */
-  doomDir ? "/var/empty",
+  doomDir,
   /* Doom source tree. */
   doomSource,
   /* Emacs package to build against. */
@@ -232,7 +232,7 @@ let
   # Step 4: build a final DOOMDIR with packages.el from step 1.
   finalDoomDir = runCommand "doom-dir" {} ''
     mkdir $out
-    if [[ -e ${doomDir} ]]; then
+    if [[ -n "$(ls -A1 ${doomDir})" ]]; then
       ln -s ${doomDir}/* $out/
     fi
     ln -sf ${doomIntermediates}/packages.el $out/
