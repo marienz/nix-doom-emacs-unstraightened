@@ -39,9 +39,17 @@ it. Just skip it entirely."
    (mapcar (lambda (s)
              (format "%s.el"
                      (package--autoloads-file-name (package-get-descriptor s))))
-           (seq-difference package-activated-list
-                           (mapcar #'intern-soft
-                                   doom-autoloads-excluded-packages)))
+           ;; Packages are (currently...) pushed onto package-activated-list as
+           ;; they are activated. Reverse the list here so packages activated
+           ;; first get their autoloads loaded first.
+           ;;
+           ;; An example package that requires this is geiser-guile: it calls
+           ;; geiser-activate-implementation from autoloads, requiring geiser's
+           ;; autoloads are loaded first.
+           (nreverse
+            (seq-difference package-activated-list
+                            (mapcar #'intern-soft
+                                    doom-autoloads-excluded-packages))))
    doom-autoloads-excluded-files
    'literal))
 
