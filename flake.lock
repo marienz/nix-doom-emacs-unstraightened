@@ -3,11 +3,11 @@
     "doomemacs": {
       "flake": false,
       "locked": {
-        "lastModified": 1712377319,
-        "narHash": "sha256-N2pwgbWI5cbTJETt0umoM+a+Exh6REcjWIEE3YOEogI=",
+        "lastModified": 1712422753,
+        "narHash": "sha256-b2pkWafiYHQqE9lNwJYKjQBTtP2rtAfPSYgn48rpaHs=",
         "owner": "doomemacs",
         "repo": "doomemacs",
-        "rev": "813c96151143f147ad6b71ee7e916918bdfb0a42",
+        "rev": "ead2ad19dcac2d9696d735dfc9180260b1f203e0",
         "type": "github"
       },
       "original": {
@@ -25,11 +25,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1712394300,
-        "narHash": "sha256-fXRfo7BSdKBtA5ome5BLOk7+rRNWUcPfPWBFE2GuXyk=",
+        "lastModified": 1712454648,
+        "narHash": "sha256-GZCEJ3i6XLGqo2NH83DJX5pSwamoU/BTPSanCiRUxsw=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "149186b1156c0da8d9624bde981d2e5c02aa1376",
+        "rev": "de404693eaa05689a237f3fd5d4fce4f15ef9a07",
         "type": "github"
       },
       "original": {
