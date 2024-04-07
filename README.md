@@ -94,23 +94,7 @@ I am open to suggestions for how this should work:
 - If we try to use home-manager, I would expect to hit the same problems
   and/or collisions on activation, but I have not experimented with this.
 
-### `php` module without `+lsp` breaks the build
-
-Enabling the `php` module without enabling the `+lsp` flag currently breaks the
-build with:
-
-```
-     > Doom profile contains a forbidden reference to /build/
-```
-
-This is triggered by
-[emacs-php](https://github.com/emacs-php/phpactor.el/blob/8733fef84b458457c1bfd188cfb861fc3150ee1c/phpactor.el#L71-L72)
-determining the location of the user's Emacs directory at byte-compile time. I
-do not know why it does this yet (it seems undesirable).
-
-Upstream recommends migrating to LSP.
-
-### Other flag-controlled packages may be broken
+### Flag-controlled packages may be broken
 
 Doom supports listing all packages (including ones pulled in by modules that are
 not currently enabled). Unstraightened uses this to build-test them. However,

@@ -145,6 +145,12 @@
       done
     '';
   };
+  # Fix /build/ leaking into byte-compiled files (patch accepted upstream).
+  phpactor = esuper.phpactor.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/0001-Do-not-call-locate-user-emacs-file-when-compiling.patch
+    ];
+  });
   # Make it byte-compile properly.
   code-review = esuper.code-review.overrideAttrs (attrs: {
     nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ git ];
