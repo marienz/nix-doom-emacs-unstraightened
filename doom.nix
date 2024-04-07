@@ -235,6 +235,10 @@ let
     if [[ -n "$(ls -A1 ${doomDir})" ]]; then
       ln -s ${doomDir}/* $out/
     fi
+    # yasnippet logs an error at startup if snippets/ does not exist.
+    if ! [[ -e $out/snippets ]]; then
+      mkdir $out/snippets
+    fi
     ln -sf ${doomIntermediates}/packages.el $out/
     ln -sf ${./cli2.el} $out/cli.el
   '';
