@@ -31,7 +31,7 @@ it. Just skip it entirely."
 ;; - Load autoloads. Duplicated by generate-unstraightened-autoloads.
 ;; - Add to load-path. Doom already stores load-path.
 ;; - Add Info node. TODO.
-;; - Add name to package-activated-list. Maybe serialize that?
+;; - Add name to package-activated-list. Stored below.
 
 (defun generate-unstraightened-autoloads ()
   "Like doom-profile--generate-package-autoloads but for package.el."
@@ -48,6 +48,8 @@ it. Just skip it entirely."
 (add-to-list
  'doom-profile-generators
  '("90-loaddefs-unstraightened.auto.el" . generate-unstraightened-autoloads))
+
+(add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
 (defcli! build-profile-for-nix-build ()
   "Write a Doom profile."
