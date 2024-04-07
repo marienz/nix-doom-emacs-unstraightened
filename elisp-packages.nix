@@ -39,8 +39,6 @@
   # This does not hit the same dependency problem auctex does because org is a
   # built-in package, and the package.el machinery assumes that satisfies the
   # dependency (it is not aware of our shadowing it).
-  #
-  # TODO: pass in ORGVERSION / GITVERSION (or provide a .git dir).
   org = esuper.trivialBuild {
     pname = "org";
     version = "1";
@@ -52,9 +50,13 @@
     # XXX this sticks stuff in $out/emacs/etc/org (datadir in default.mk)
     # that probably needs to go somewhere else.
     # Possibly same for $out/share/info/.
+
+    # Finding ORGVERSION is a hack (based on the one in Doom).
+    # TODO: set GITVERSION?
     configurePhase = ''
       echo "prefix = $out" > local.mk
       echo "lispdir = $out/share/emacs/site-lisp/org" >> local.mk
+      echo "ORGVERSION = $(sed -ne 's/^;; Version: \([^\n-]\+\).*/\1/p' lisp/org.el)" >> local.mk
       make config
     '';
     buildPhase = ''
