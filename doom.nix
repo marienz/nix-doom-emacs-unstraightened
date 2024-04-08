@@ -1,6 +1,19 @@
 {
   /* DOOMDIR / Doom private directory / module. */
   doomDir,
+  /* Default DOOMLOCALDIR.
+   *
+   * Required, because the default is relative to Doom's source tree,
+   * which is read-only.
+   *
+   * Expanded using expand-file-name (an initial ~ is supported,
+   * shell variable expansion is not).
+   *
+   * DOOMLOCALDIR in the environment Emacs is started with overrides this.
+   *
+   * Suggested value: ~/.local/share/doom
+   */
+  doomLocalDir,
   /* Doom source tree. */
   doomSource,
   /* Emacs package to build against. */
@@ -295,6 +308,7 @@ let
   ''
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/${binaryName} \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
+    --set-default DOOMLOCALDIR "${doomLocalDir}" \
     --add-flags "--init-directory=${doomSource} --profile ${profileName}"
 '';
 
