@@ -173,7 +173,7 @@ let
                   recipe = writeText "${name}-generated-recipe" ''
                     (${name} :fetcher github :repo "marienz/made-up"
                      ${optionalString (p ? recipe.files) ":files ${p.recipe.files}"})'';
-                  buildInputs = (map (name: eself.${name}) reqlist);
+                  packageRequires = (map (name: eself.${name}) reqlist);
                 }
                 else origEPkg);
             url =
