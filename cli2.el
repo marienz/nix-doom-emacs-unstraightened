@@ -3,15 +3,6 @@
 ;; We skip Doom's normal install and initialization.
 (require 'straight)
 
-(defadvice! nix-doom-skip-core-packages (&rest _)
-  "HACK: don't install straight and core packages.
-
-`doom-initialize-core-packages' would no-op out if
-`straight-recipe-repositories' is set, but we do not want to set
-it. Just skip it entirely."
-  :override #'doom-initialize-core-packages
-  t)
-
 (defcli! build-profile-loader-for-nix-build
   ((profile-name ("-n" form) "Profile name.")
    (profile-directory ("-p" dir) "Profile data directory.")

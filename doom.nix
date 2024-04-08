@@ -20,6 +20,7 @@
   linkFarm,
   runCommand,
   runtimeShell,
+  concatText,
   writeText,
   makeBinaryWrapper,
 }:
@@ -230,6 +231,8 @@ let
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
   # Step 4: build a final DOOMDIR with packages.el from step 1.
+
+  finalInitFile = concatText "doom-init" [ ./pre-init.el doomInitFile ];
   finalDoomDir = runCommand "doom-dir" {} ''
     mkdir $out
     if [[ -n "$(ls -A1 ${doomDir})" ]]; then
@@ -239,6 +242,7 @@ let
     if ! [[ -e $out/snippets ]]; then
       mkdir $out/snippets
     fi
+    ln -sf ${finalInitFile} $out/init.el
     ln -sf ${doomIntermediates}/packages.el $out/
     ln -sf ${./cli2.el} $out/cli.el
   '';
