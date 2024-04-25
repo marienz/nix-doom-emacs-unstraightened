@@ -38,25 +38,19 @@
   makeBinaryWrapper,
 }:
 let
-  inherit (lib) optional optionalAttrs optionalString;
+  inherit (lib) optionalAttrs optionalString;
 
   doomInitFile = "${doomDir}/init.el";
-  doomPrivateModule = "${doomDir}/packages.el";
 
   # Step 1: determine which Emacs packages to pull in.
   #
-  # Inputs: unpatched Doom, a DOOMDIR with the provided init.el and packages.el.
+  # Inputs: Doom, original DOOMDIR (only init.el and packages.el are used).
   # Outputs:
   # - Packages Doom normally loads using Straight (as json)
   # - modified packages.el that claims all packages are system-installed
   #
   # Uses Doom's CLI framework, which does not require anything else is installed
   # (not even straight).
-  stage1DoomDir = linkFarm "doom-dir-stage1" (
-    [{ name = "cli.el"; path = ./cli1.el; }]
-    ++ optional (lib.pathExists doomInitFile) { name = "init.el"; path = doomInitFile; }
-    ++ optional (lib.pathExists doomPrivateModule) { name = "packages.el"; path = doomPrivateModule; }
-  );
 
   # XXX this may need to be runCommandLocal just in case conditionals an init.el
   # / packages.el evaluate differently on build systems.
@@ -64,7 +58,7 @@ let
     {
       env = {
         EMACS = lib.getExe emacs;
-        DOOMDIR = stage1DoomDir;
+        DOOMDIR = "${doomDir}";
         # Enable this to troubleshoot failures at this step.
         #DEBUG = "1";
       };
@@ -73,7 +67,7 @@ let
     } ''
     mkdir $out
     export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doom dump-for-nix-build \
+    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/dump} \
       ${optionalString full "--full"} -o $out
   '';
 

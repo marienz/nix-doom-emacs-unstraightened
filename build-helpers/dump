@@ -1,11 +1,14 @@
-;;; cli.el -*- lexical-binding: t; -*-
+#!/usr/bin/env doomscript
+;; -*- lexical-binding: t; -*-
 
 (require 'json)
 
-(defcli! dump-for-nix-build
+(defcli! dump
     ((output-directory ("-o" dir) "Directory to dump into.")
      (&flag full? ("--full")))
   "Dump intermediates for nix-doom-emacs-unstraightened."
+  ;; Load the user's init.el, or we'll dump only core packages.
+  (load! doom-module-init-file doom-user-dir t)
   (let* ((all-packages (doom-package-list full?))
          ;; For built-in packages, the :ignore property is the location of the
          ;; built-in library, which is a Nix store path. We do not want that
@@ -49,3 +52,5 @@
           (when (not (plist-get p :disable))
             (insert "(package! " (symbol-name (car kp)) " :ignore t)\n"))))
       (write-region nil nil (expand-file-name "packages.el" output-directory)))))
+
+(run! "dump" (cdr (member "--" argv)))
