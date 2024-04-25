@@ -2,14 +2,14 @@
 ;; -*- lexical-binding: t; -*-
 
 (defcli! build-profile-loader
-  ((profile-name ("-n" form) "profile name.")
-   (profile-directory ("-p" dir) "profile data directory.")
-   (profile-doom-dir ("-d" dir) "doomdir"))
-  "write doom's profile loader."
+  ((profile-name ("-n" form) "Profile name.")
+   (profile-directory ("-p" dir) "Profile data directory.")
+   (profile-doom-dir ("-d" dir) "DOOMDIR"))
+  "Write Doom's profile loader."
   (let ((new-profiles `((,profile-name
                          (user-emacs-directory . ,doom-emacs-dir)
                          (doom-profile-data-dir . ,profile-directory)
-                         ("doomdir" . ,profile-doom-dir)))))
+                         ("DOOMDIR" . ,profile-doom-dir)))))
     (doom-profiles-save new-profiles)))
 
 (run! "build-profile-loader" (cdr (member "--" argv)))

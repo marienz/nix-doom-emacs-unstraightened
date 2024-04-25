@@ -1,30 +1,30 @@
 #!/usr/bin/env doomscript
 ;; -*- lexical-binding: t; -*-
 
-;; we skip doom's normal install and initialization.
+;; We skip Doom's normal install and initialization.
 (require 'straight)
 
-;; doom runs this with package.el activated, but suppresses activation during
-;; normal startup. store the side effects of activation in the profile to avoid
+;; Doom runs this with package.el activated, but suppresses activation during
+;; normal startup. Store the side effects of activation in the profile to avoid
 ;; (slow) package activation during normal startup.
 ;;
 ;; package-activate-1 does:
-;; - load autoloads. duplicated by generate-unstraightened-autoloads.
-;; - add to load-path. doom already stores load-path.
-;; - add info node. todo.
-;; - add name to package-activated-list. stored below.
+;; - Load autoloads. Duplicated by generate-unstraightened-autoloads.
+;; - Add to load-path. Doom already stores load-path.
+;; - Add Info node. TODO.
+;; - Add name to package-activated-list. Stored below.
 
 (defun generate-unstraightened-autoloads ()
-  "like doom-profile--generate-package-autoloads but for package.el."
+  "Like doom-profile--generate-package-autoloads but for package.el."
   (doom-autoloads--scan
    (mapcar (lambda (s)
              (format "%s.el"
                      (package--autoloads-file-name (package-get-descriptor s))))
-           ;; packages are (currently...) pushed onto package-activated-list as
-           ;; they are activated. reverse the list here so packages activated
+           ;; Packages are (currently...) pushed onto package-activated-list as
+           ;; they are activated. Reverse the list here so packages activated
            ;; first get their autoloads loaded first.
            ;;
-           ;; an example package that requires this is geiser-guile: it calls
+           ;; An example package that requires this is geiser-guile: it calls
            ;; geiser-activate-implementation from autoloads, requiring geiser's
            ;; autoloads are loaded first.
            (nreverse
@@ -41,16 +41,16 @@
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
 (defcli! build-profile ()
-  "write a doom profile."
+  "Write a Doom profile."
   ;; Load our generated profile's init.el. Both to get the profile right and to
   ;; load the advice to make Doom not install straight.
   (load! doom-module-init-file doom-user-dir t)
-  ;; hack: this initializes enough of straight (particularly
+  ;; HACK: this initializes enough of straight (particularly
   ;; straight--build-cache, which doom-profile--generate-package-autoloads hits)
-  ;; to make doom work.
+  ;; to make Doom work.
   ;;
-  ;; todo: remove doom-profile--generate-package-autoloads?
-  ;; because there are no straight-built packages, it generates an empty file.
+  ;; TODO: remove doom-profile--generate-package-autoloads?
+  ;; Because there are no straight-built packages, it generates an empty file.
   (straight-prune-build-cache)
   (doom-profile-generate))
 
