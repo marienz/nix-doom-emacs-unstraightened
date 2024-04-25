@@ -308,6 +308,29 @@ let
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
     --add-flags "--init-directory=${doomSource}"
 '';
-
+  # TODO: revisit wrapping `doom` if/when profile use is optional.
+  #
+  # I would like to support `doom doctor` and user commands (from their
+  # `cli.el)`.
+  #
+  # This mostly works:
+  #
+  # makeWrapper ${doomSource}/bin/doom $out/bin/doom \
+  #   --set EMACS ${emacsWithPackages}/bin/emacs \
+  #   --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
+  #   --set DOOMPROFILE ${profileName} \
+  #   --set-default DOOMLOCALDIR "${doomLocalDir}"
+  #
+  # But with doomProfile set, `doom doctor` currently fails with
+  #
+  # Profile init file hasn’t been generated. Did you forgot to run ’doom sync’?
+  #
+  # It looks like this breaks because doom-start wants to load the profile via
+  # (doom-profile-init-file), which (when called with no arguments) loads the
+  # default profile.
+  #
+  # It is probably possible to hack around that, but let's see if we can make
+  # the default profile work first: `doom doctor` may have additional problems too
+  # hard to solve.
 in
 pkg
