@@ -1,0 +1,57 @@
+#!/usr/bin/env doomscript
+;; -*- lexical-binding: t; -*-
+
+;; we skip doom's normal install and initialization.
+(require 'straight)
+
+;; doom runs this with package.el activated, but suppresses activation during
+;; normal startup. store the side effects of activation in the profile to avoid
+;; (slow) package activation during normal startup.
+;;
+;; package-activate-1 does:
+;; - load autoloads. duplicated by generate-unstraightened-autoloads.
+;; - add to load-path. doom already stores load-path.
+;; - add info node. todo.
+;; - add name to package-activated-list. stored below.
+
+(defun generate-unstraightened-autoloads ()
+  "like doom-profile--generate-package-autoloads but for package.el."
+  (doom-autoloads--scan
+   (mapcar (lambda (s)
+             (format "%s.el"
+                     (package--autoloads-file-name (package-get-descriptor s))))
+           ;; packages are (currently...) pushed onto package-activated-list as
+           ;; they are activated. reverse the list here so packages activated
+           ;; first get their autoloads loaded first.
+           ;;
+           ;; an example package that requires this is geiser-guile: it calls
+           ;; geiser-activate-implementation from autoloads, requiring geiser's
+           ;; autoloads are loaded first.
+           (nreverse
+            (seq-difference package-activated-list
+                            (mapcar #'intern-soft
+                                    doom-autoloads-excluded-packages))))
+   doom-autoloads-excluded-files
+   'literal))
+
+(add-to-list
+ 'doom-profile-generators
+ '("90-loaddefs-unstraightened.auto.el" . generate-unstraightened-autoloads))
+
+(add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
+
+(defcli! build-profile ()
+  "write a doom profile."
+  ;; Load our generated profile's init.el. Both to get the profile right and to
+  ;; load the advice to make Doom not install straight.
+  (load! doom-module-init-file doom-user-dir t)
+  ;; hack: this initializes enough of straight (particularly
+  ;; straight--build-cache, which doom-profile--generate-package-autoloads hits)
+  ;; to make doom work.
+  ;;
+  ;; todo: remove doom-profile--generate-package-autoloads?
+  ;; because there are no straight-built packages, it generates an empty file.
+  (straight-prune-build-cache)
+  (doom-profile-generate))
+
+(run! "build-profile" (cdr (member "--" argv)))

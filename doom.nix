@@ -251,7 +251,6 @@ let
     fi
     ln -sf ${finalInitFile} $out/init.el
     ln -sf ${doomIntermediates}/packages.el $out/
-    ln -sf ${./cli2.el} $out/cli.el
   '';
 
   # Step 5: build a Doom profile and profile loader using Emacs from step 3 and
@@ -280,13 +279,13 @@ let
     # Prevent error on Emacs shutdown writing empty build cache.
     mkdir $DOOMLOCALDIR/straight
 
-    ${runtimeShell} ${doomSource}/bin/doom build-profile-loader-for-nix-build \
+    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
       -n "${profileName}" -p "$out/profile" -d "${finalDoomDir}"
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
     export HOME=$(mktemp -d)
     export DOOMPROFILE='${profileName}';
-    ${runtimeShell} ${doomSource}/bin/doom build-profile-for-nix-build
+    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile}
 
     # Similar to audit-tmpdir.sh in nixpkgs.
     if grep -q -F "$TMPDIR/" -r $out; then
