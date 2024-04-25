@@ -63,7 +63,12 @@ TODO
   Emacs >=29. It probably still has some problems already solved by
   `nix-doom-emacs`, and it is too soon to tell how robust it is.
 
-## Known problems
+## Bugs
+
+*Do not report bugs upstream*. If you think it's a bug in Doom, reproduce it
+without Unstraightened first, or report it here first.
+
+There are a few known current bugs and likely future bugs in Unstraightened:
 
 ### Pins can break
 
@@ -80,6 +85,11 @@ upstream repository. To fix this, try building against a revision of the
 fundamental limitation: Doom assumes its pins are applied to `straight.el` build
 recipes, while we use nixpkgs / emacs-overlay. If these diverge, our build
 breaks.
+
+Another possible problem is a package failing to build or run because one of its
+dependencies is missing. Unstraightened currently uses dependencies from the
+original (emacs-overlay) package. This is largely a performance optimization,
+that can be revisited if it breaks too frequently.
 
 ### Saving Custom changes fails
 
