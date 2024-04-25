@@ -38,9 +38,7 @@
   makeBinaryWrapper,
 }:
 let
-  inherit (lib) optionalAttrs optionalString;
-
-  doomInitFile = "${doomDir}/init.el";
+  inherit (lib) optionalAttrs optionalString pathExists;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -239,7 +237,13 @@ let
 
   # Step 4: build a final DOOMDIR with packages.el from step 1.
 
-  finalInitFile = concatText "doom-init" [ ./pre-init.el doomInitFile ];
+  finalInitFile = let
+    doomInitFile = "${doomDir}/init.el";
+  in
+    if pathExists doomInitFile
+    then concatText "doom-init" [ ./pre-init.el doomInitFile ]
+    else ./pre-init.el;
+
   finalDoomDir = runCommand "doom-dir" {} ''
     mkdir $out
     if [[ -n "$(ls -A1 ${doomDir})" ]]; then
