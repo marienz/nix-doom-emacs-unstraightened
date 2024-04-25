@@ -19,17 +19,27 @@
     in {
       packages = perSystemPackages (pkgs:
         let
-          common = { doomSource = doomemacs; emacs = pkgs.emacs29-pgtk; };
-          commonDemos = common // { doomLocalDir = "~/.local/share/nix-doom-unstraightened"; };
+          common = {
+            doomSource = doomemacs;
+            emacs = pkgs.emacs29-pgtk;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+          };
           pkgsWithEmacsOverlay = pkgs.extend emacs-overlay.overlays.package;
         in {
           # Current Doom + NixOS 23.11 requires emacs-overlay: Doom pins
           # emacs-fish-completion, which moved from gitlab to github recently
           # enough stable nixpkgs pulls it from the wrong source.
-          doom-minimal = pkgsWithEmacsOverlay.callPackage ./doom.nix (commonDemos // { doomDir = pkgs.emptyDirectory; });
-          doom-full = pkgsWithEmacsOverlay.callPackage ./doom.nix (commonDemos // { full = true; doomDir = pkgs.emptyDirectory; });
-          doom-example = pkgsWithEmacsOverlay.callPackage ./doom.nix (commonDemos // { doomDir = ./example; });
-          doomEmacs = args: pkgsWithEmacsOverlay.callPackage ./doom.nix (common // args);
+          doom-minimal = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { doomDir = pkgs.emptyDirectory; });
+          doom-full = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { full = true; doomDir = pkgs.emptyDirectory; });
+          doom-example = pkgsWithEmacsOverlay.callPackage ./doom.nix (common // { doomDir = ./example; });
         });
+      overlays.default = final: prev:
+        let
+          pkgs = final.extend emacs-overlay.overlays.package;
+        in {
+          doomEmacs = args: pkgs.callPackage ./doom.nix ({
+            doomSource = doomemacs;
+          } // args);
+        };
     };
 }
