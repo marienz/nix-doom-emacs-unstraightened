@@ -30,7 +30,6 @@
   git,
   emacsPackagesFor,
   lib,
-  linkFarm,
   runCommand,
   runtimeShell,
   concatText,
