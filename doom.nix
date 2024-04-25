@@ -305,8 +305,9 @@ let
   ''
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/${binaryName} \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
+    --set DOOMPROFILE ${profileName} \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
-    --add-flags "--init-directory=${doomSource} --profile ${profileName}"
+    --add-flags "--init-directory=${doomSource}"
 '';
 
 in
