@@ -112,14 +112,14 @@ source.
   Nix packages, removing the need to run `doom sync` and similar Doom-specific
   commands.
 
-- Doom pins most of its direct dependencies, but still pulls the live version of
-  many packages from MELPA or other repositories. Its pins are also applied to
-  build recipes whose source is not pinned. This makes Doom installs
-  non-reproducible and can cause intermittent breakage.
+- Doom pins its direct dependencies, but still pulls the live version of some
+  packages from MELPA or other repositories. Its pins are also applied to build
+  recipes whose source is not pinned. This makes Doom installs not fully
+  reproducible and can cause intermittent breakage.
 
   Unstraightened pulls these dependencies from nixpkgs or
-  [emacs-overlay](https://github.com/nix-community/emacs-overlay), which can be
-  pinned.
+  [emacs-overlay](https://github.com/nix-community/emacs-overlay). Pinning
+  emacs-overlay pins all build recipes and packages not already pinned by Doom.
 
 - Unstraightened stores your Doom configuration
   (`~/.doom.d`/`~/.config/doom`/`$DOOMDIR`) in the Nix store. This has
