@@ -3,13 +3,15 @@
 
 (defcli! build-profile-loader
   ((profile-name ("-n" form) "Profile name.")
-   (profile-directory ("-p" dir) "Profile data directory.")
+   (base-directory ("-b" dir) "Base directory (for profile and straight).")
    (profile-doom-dir ("-d" dir) "DOOMDIR"))
   "Write Doom's profile loader."
-  (let ((new-profiles `((,profile-name
-                         (user-emacs-directory . ,doom-emacs-dir)
-                         (doom-profile-data-dir . ,profile-directory)
-                         ("DOOMDIR" . ,profile-doom-dir)))))
+  (let* ((profile-directory (expand-file-name "profile/" base-directory))
+         (new-profiles `((,profile-name
+                          (user-emacs-directory . ,doom-emacs-dir)
+                          (doom-profile-data-dir . ,profile-directory)
+                          (unstraightened--straight-base-dir . ,base-directory)
+                          ("DOOMDIR" . ,profile-doom-dir)))))
     (doom-profiles-save new-profiles)))
 
 (run! "build-profile-loader" (cdr (member "--" argv)))

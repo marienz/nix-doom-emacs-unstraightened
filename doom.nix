@@ -276,14 +276,14 @@ let
       # Required to avoid Doom erroring out at startup.
       nativeBuildInputs = [ git ];
     } ''
-    mkdir $out $out/loader $out/profile
+    mkdir $out $out/loader $out/profile $out/straight
     export DOOMPROFILELOADFILE=$out/loader/init.el
     export DOOMLOCALDIR=$(mktemp -d)
     # Prevent error on Emacs shutdown writing empty build cache.
     mkdir $DOOMLOCALDIR/straight
 
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-      -n "${profileName}" -p "$out/profile" -d "${finalDoomDir}"
+      -n "${profileName}" -b "$out" -d "${finalDoomDir}"
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
     export HOME=$(mktemp -d)
