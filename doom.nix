@@ -255,27 +255,20 @@ let
   # Step 6: write wrappers to start the whole thing.
   doomEmacs = runCommand "doom-emacs" {
     nativeBuildInputs = [ makeBinaryWrapper ];
-  }
-  ''
+  } ''
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/doom-emacs \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --set DOOMPROFILE ${profileName} \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
     --add-flags "--init-directory=${doomSource}"
-'';
+  '';
   # TODO: revisit wrapping `doom` if/when profile use is optional.
   #
   # I would like to support `doom doctor` and user commands (from their
   # `cli.el)`.
   #
-  # This mostly works:
-  #
-  # makeWrapper ${doomSource}/bin/doom $out/bin/doom \
-  #   --set EMACS ${emacsWithPackages}/bin/emacs \
-  #   --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
-  #   --set DOOMPROFILE ${profileName} \
-  #   --set-default DOOMLOCALDIR "${doomLocalDir}"
-  #
+  # Wrapping it the same way I wrap emacs, passing EMACS in addition to
+  # DOOMPROFILELOADFILE, DOOMPROFILE and DOOMLOCALDIR, almost works.
   # But with doomProfile set, `doom doctor` currently fails with
   #
   # Profile init file hasn’t been generated. Did you forgot to run ’doom sync’?
@@ -285,8 +278,8 @@ let
   # default profile.
   #
   # It is probably possible to hack around that, but let's see if we can make
-  # the default profile work first: `doom doctor` may have additional problems too
-  # hard to solve.
+  # the default profile work first: `doom doctor` may have additional problems
+  # too hard to solve.
 
   emacsWithDoom = runCommand (lib.appendToName "with-doom" emacs).name {
     inherit (emacs) meta;
