@@ -202,19 +202,9 @@ let
               } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
               // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
             );
-            # Ignore dependency extraction errors because it fails for repos not
-            # containing a "proper" package (no -pkg.el, no file with the right magic
-            # header). These seem common enough to be not worth allowlisting.
             reqfile = runCommand "${name}-deps" { } ''
-              ${lib.getExe emacs} -Q --batch --eval \
-                "(progn
-                   (require 'package)
-                   (with-temp-buffer
-                     (setq default-directory \"${src}\")
-                     (dired-mode)
-                     (let ((reqs (with-demoted-errors \"Extracting dependencies: %s\" (package-desc-reqs (package-dir-info)))))
-                       (princ (json-encode (mapcar #'car (seq-remove (lambda (p) (apply #'package-built-in-p p)) reqs)))))))" \
-                > $out
+              ${lib.getExe emacs} -Q --batch --script \
+                ${./build-helpers/print-deps.el} ${src} > $out
             '';
             reqjson = lib.importJSON reqfile;
             # json-encode encodes the empty list as null (nil), not [].
