@@ -179,9 +179,8 @@
   # - xref-js2: upstream bug(?).
   #   Error: `add-to-list' can't use lexical var `words'; use `push' or `cl-pushnew'
   # - several others, looks like mostly missing (frequently optional) deps.
-  # TODO: add a way of checking for these.
-  # Currently I run:
-  # set edir (grep 'export emacsWithPackages_siteLisp=' result/bin/.emacs-wrapped | cut -f2 -d=); comm -3 (fd '\.el$' $edir | sort | psub) (fd '\.elc$' $edir | sed -e 's:c$::' | sort | psub ) | grep -E -v -- '-(autoloads|pkg|theme).el$' | xargs grep -L 'no-byte-compile: t'
+  #
+  # To check for these: `doom-emacs --script build-helpers/byte-compile-check.el`
 
   # TODO: clean up some more load-path clutter?
   #
