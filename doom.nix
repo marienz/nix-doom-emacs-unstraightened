@@ -268,10 +268,8 @@ let
     } ''
     mkdir $out $out/loader $out/profile $out/straight
     export DOOMPROFILELOADFILE=$out/loader/init.el
+    # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
-    # Prevent error on Emacs shutdown writing empty build cache.
-    mkdir $DOOMLOCALDIR/straight
-
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
       -n "${profileName}" -b "$out" -d "${finalDoomDir}"
 
