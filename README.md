@@ -6,9 +6,105 @@ specified by it. It is very similar to
 [nix-doom-emacs](https://github.com/nix-community/nix-doom-emacs), but is
 implemented differently.
 
+## Status
+
+Experimental, but sufficiently complete bug reports are welcome.
+
 ## How to use
 
-TODO
+### Test run
+
+Check out this repository, copy your Doom configuration into `doomdirs/examples`
+(overwriting what's there), then run `nix run .#doom-example`.
+
+If this does not work, the "with flakes" setup below is unlikely to work either.
+Please file an issue.
+
+### With flakes
+
+Add this flake as an input:
+
+``` nix
+nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
+nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "nixpkgs";
+```
+
+If your Doom configuration lives in a different repository, add that as input
+too:
+
+``` nix
+doom-config.url = "...";
+doom-config.flake = false;
+```
+
+Add Unstraightened's overlay. Typically that means adding:
+
+``` nix
+nixpkgs.overlays = [ inputs.nix-doom-emacs-unstraightened.overlays.default ];
+```
+
+to a home-manager or NixOS module.
+
+Next, you have two options:
+
+- To install Unstraightened in parallel with a normal Emacs, add:
+
+  ``` nix
+  (pkgs.doomEmacs {
+    doomDir = inputs.doom-config;
+    # If you stored your Doom configuration in the same flake, use
+    #   doomDir = ./path/to/doom/config;
+    # instead.
+    doomLocalDir = "~/.local/share/nix-doom";
+  })
+  ```
+
+  to your installed packages (see below for what `doomLocalDir` is for). This
+  installs a binary named `doom-emacs`.
+
+- To install Unstraightened as your default Emacs, use `pkgs.emacsWithDoom`
+  instead of `pkgs.doomEmacs`. This installs a binary named `emacs` as well as
+  `emacsclient` and other helpers (similar to [`emacsWithPackages` in
+  nixpkgs](https://nixos.org/manual/nixos/stable/#module-services-emacs-adding-packages)).
+
+  If you use home-manager, setting `programs.emacs.package = pkgs.emacsWithDoom
+  { ... };` should work (and `services.emacs` should be able to use this
+  package).
+
+### Without flakes
+
+This is currently not explicitly supported, but should be possible (use
+`pkgs.callPackages doom.nix`). PRs extending this part of the documentation are
+welcome, as are (within reason) changes necessary to support use without flakes.
+
+### Options
+
+`doomEmacs` and `emacsWithDoom` support the following options:
+
+- `doomDir`: your configuration directory (also known as DOOMDIR, Doom private
+  directory / module). Required.
+
+- `doomLocalDir`: value Doom should use as `DOOMLOCALDIR`. Required, because by
+  default Doom would use its source directory, which is read-only.
+
+> [!NOTE]
+> This supports `~` expansion but does **not** support shell variable expansion.
+> Using `$XDG_DATA_HOME` will not work.
+
+> [!NOTE]
+> Because Unstraightened uses Doom's profile system, using the same value you
+> used with vanilla Doom will not result in Unstraightened finding your files.
+> See below.
+
+- `emacs`: Emacs package to use. Defaults to `pkgs.emacs`. Must be at least
+  Emacs 29. Use this to select different Emacs variants like
+  `pkgs.emacs29-pgtk`.
+
+- `doomSource`: Doom source tree. Defaults to a flake input: overriding that
+  input is probably easier than passing this.
+
+There are a few other settings but they are not typically useful. See the
+source.
 
 ## Comparison to "normal" Doom Emacs
 
