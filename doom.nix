@@ -23,8 +23,6 @@
   full ? false,
   /* Name of doom profile to use. */
   profileName ? "nix",
-  /* Name to give to the main binary (to facilitate parallel installs with Emacs). */
-  binaryName ? "emacs",
 
   callPackages,
   git,
@@ -277,11 +275,11 @@ let
   '';
 
   # Step 6: write wrappers to start the whole thing.
-  pkg = runCommand "doom" {
+  doomEmacs = runCommand "doom-emacs" {
     nativeBuildInputs = [ makeBinaryWrapper ];
   }
   ''
-  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/${binaryName} \
+  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/doom-emacs \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --set DOOMPROFILE ${profileName} \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
@@ -311,5 +309,23 @@ let
   # It is probably possible to hack around that, but let's see if we can make
   # the default profile work first: `doom doctor` may have additional problems too
   # hard to solve.
+
+  emacsWithDoom = runCommand (lib.appendToName "with-doom" emacs).name {
+    inherit (emacs) meta;
+  } ''
+    mkdir -p $out/bin
+    ln -s ${emacs}/bin/* $out/bin/
+    rm $out/bin/emacs-*
+    ln -sf ${doomEmacs}/bin/doom-emacs $out/bin/emacs
+
+    mkdir -p $out/share
+    # Don't link everything: the systemd units would still refer to normal Emacs.
+    # This links the same stuff emacsWithPackages does.
+    for dir in applications icons info man; do
+      ln -s ${emacs}/share/$dir $out/share/$dir
+    done
+  '';
 in
-pkg
+{
+  inherit doomEmacs emacsWithDoom;
+}
