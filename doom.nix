@@ -37,7 +37,7 @@
   makeBinaryWrapper,
 }:
 let
-  inherit (lib) optionalAttrs optionalString pathExists;
+  inherit (lib) optionalAttrs optionalString;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -225,19 +225,10 @@ let
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
   # Step 4: build a final DOOMDIR with packages.el from step 1.
-
-  finalInitFile = let
-    doomInitFile = "${doomDir}/init.el";
-  in
-    if pathExists doomInitFile
-    then concatText "doom-init" [ ./pre-init.el doomInitFile ]
-    else ./pre-init.el;
-
+  finalInitFile = concatText "doom-init" [ ./pre-init.el "${doomDir}/init.el" ];
   finalDoomDir = runCommand "doom-dir" {} ''
     mkdir $out
-    if [[ -n "$(ls -A1 ${doomDir})" ]]; then
-      ln -s ${doomDir}/* $out/
-    fi
+    ln -s ${doomDir}/* $out/
     # yasnippet logs an error at startup if snippets/ does not exist.
     if ! [[ -e $out/snippets ]]; then
       mkdir $out/snippets
