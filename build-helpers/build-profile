@@ -45,12 +45,8 @@
   ;; Load our generated profile's init.el. Both to get the profile right and to
   ;; load the advice to make Doom not install straight.
   (load! doom-module-init-file doom-user-dir t)
-  ;; HACK: this initializes enough of straight (particularly
-  ;; straight--build-cache, which doom-profile--generate-package-autoloads hits)
-  ;; to make Doom work.
-  ;;
-  ;; TODO: remove doom-profile--generate-package-autoloads?
-  ;; Because there are no straight-built packages, it generates an empty file.
+  ;; Trigger a write of straight's build cache (which we write into the profile
+  ;; and load again later).
   (straight-prune-build-cache)
   (doom-profile-generate))
 
