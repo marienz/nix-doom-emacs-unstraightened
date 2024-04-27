@@ -11,7 +11,7 @@
 ;; package-activate-1 does:
 ;; - Load autoloads. Duplicated by generate-unstraightened-autoloads.
 ;; - Add to load-path. Doom already stores load-path.
-;; - Add Info node. TODO.
+;; - Add Info node. Doom already stores Info-directory-list.
 ;; - Add name to package-activated-list. Stored below.
 
 (defun generate-unstraightened-autoloads ()
