@@ -18,5 +18,18 @@ it. Just skip it entirely."
 (after! doom-packages
   (setq straight-base-dir unstraightened--straight-base-dir))
 
+;; TODO: remove if Doom accepts https://github.com/doomemacs/doomemacs/pull/7849
+(defadvice! nix-doom-configs-without-git (package)
+  "Override to use ripgrep instead of git."
+  :override #'doom--help-package-configs
+  (let ((default-directory doom-emacs-dir))
+    (split-string
+     (cdr (doom-call-process
+           "rg" "--no-heading" "--line-number" "--iglob" "!*.org"
+           (format "%s %s($| )"
+                   "(^;;;###package|\\(after!|\\(use-package!)"
+                   package)))
+     "\n" t)))
+
 ;; nix-doom-emacs-unstraightened additions end here.
 ;; Original init.el follows.
