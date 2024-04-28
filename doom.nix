@@ -249,6 +249,7 @@ let
     fi
     substitute ${./init.el} $out/doomdir/init.el \
       --subst-var-by maybe-set-profile-dir "$setProfile" \
+      --subst-var-by profile-name "${profileName}" \
       --subst-var-by user-init "${doomDir}/init.el" \
       --subst-var-by straight-base-dir $out
     ln -sf ${doomIntermediates}/packages.el $out/doomdir/

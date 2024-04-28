@@ -36,6 +36,28 @@ it. Just skip it entirely."
 (after! doom-packages
   (setq straight-base-dir "@straight-base-dir@"))
 
+(defadvice! unstraightened-profile-init-file (&optional profile-id version)
+  "Return unstraightened's profile init file.
+
+`doom-profile-init-file' locates the profile relative to `doom-data-dir', but
+nix-doom-emacs-unstraightened keeps its profile in a different location.
+Override `doom-profile-init-file' to confirm it is called to get the default
+or unstraightened profile (erroring out otherwise), then return the custom path.
+
+Returning the unstraightened profile if the default profile is
+requested makes `doom doctor' work."
+  :override #'doom-profile-init-file
+  (let ((my-profile "@profile-name@"))
+    (unless (or (null profile-id)
+                (and (not (string-empty-p my-profile))
+                     (string-equal profile-id my-profile)))
+      (error "Accessing other profiles from Unstraightened is unsupported."))
+  (unless (null version)
+    (error
+     "Accessing other profile versions from Unstraightened is unsupported."))
+  (file-name-concat
+   doom-profile-dir (format "init.%d.elc" emacs-major-version))))
+
 ;; TODO: remove if Doom accepts https://github.com/doomemacs/doomemacs/pull/7849
 (defadvice! nix-doom-configs-without-git (package)
   "Override to use ripgrep instead of git."
