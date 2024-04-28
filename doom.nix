@@ -294,26 +294,13 @@ let
     --add-flags "--init-directory=${doomSource}"
   makeWrapper ${doomSource}/bin/doomscript $out/bin/doomscript \
     --set EMACS ${emacsWithPackages}/bin/emacs \
-    --set-default DOOMLOCALDIR "${doomLocalDir}" \
+    --set-default DOOMLOCALDIR "${doomLocalDir}"
+  makeWrapper ${doomSource}/bin/doom $out/bin/doom \
+    --set EMACS ${emacsWithPackages}/bin/emacs \
+    "''${profileArgs[@]}" \
+    --set DOOMDIR ${doomProfile}/doomdir \
+    --set-default DOOMLOCALDIR "${doomLocalDir}"
   '';
-  # TODO: revisit wrapping `doom` if/when profile use is optional.
-  #
-  # I would like to support `doom doctor` and user commands (from their
-  # `cli.el)`.
-  #
-  # Wrapping it the same way I wrap emacs, passing EMACS in addition to
-  # DOOMPROFILELOADFILE, DOOMPROFILE and DOOMLOCALDIR, almost works.
-  # But with doomProfile set, `doom doctor` currently fails with
-  #
-  # Profile init file hasn’t been generated. Did you forgot to run ’doom sync’?
-  #
-  # It looks like this breaks because doom-start wants to load the profile via
-  # (doom-profile-init-file), which (when called with no arguments) loads the
-  # default profile.
-  #
-  # It is probably possible to hack around that, but let's see if we can make
-  # the default profile work first: `doom doctor` may have additional problems
-  # too hard to solve.
 
   emacsWithDoom = runCommand (lib.appendToName "with-doom" emacs).name {
     inherit (emacs) meta;
@@ -322,7 +309,7 @@ let
     ln -s ${emacs}/bin/* $out/bin/
     rm $out/bin/emacs-*
     ln -sf ${doomEmacs}/bin/doom-emacs $out/bin/emacs
-    ln -sf ${doomEmacs}/bin/doomscript $out/bin/
+    ln -sf ${doomEmacs}/bin/{doom,doomscript} $out/bin/
 
     mkdir -p $out/share
     # Don't link everything: the systemd units would still refer to normal Emacs.
