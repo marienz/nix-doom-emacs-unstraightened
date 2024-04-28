@@ -243,8 +243,8 @@ let
     fi
     rm $out/doomdir/init.el
     substitute ${./init.el} $out/doomdir/init.el \
-      --replace @user-init@ "${doomDir}/init.el" \
-      --replace @straight-base-dir@ $out
+      --subst-var-by user-init "${doomDir}/init.el" \
+      --subst-var-by straight-base-dir $out
     ln -sf ${doomIntermediates}/packages.el $out/doomdir/
     export DOOMDIR=$out/doomdir
 
