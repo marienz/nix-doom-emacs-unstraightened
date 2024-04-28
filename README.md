@@ -56,6 +56,8 @@ Next, you have two options:
     #   doomDir = ./path/to/doom/config;
     # instead.
     doomLocalDir = "~/.local/share/nix-doom";
+    # Emacs package to build on (any Emacs >= 29 should work).
+    emacs = pkgs.emacs29;
   })
   ```
 
@@ -98,7 +100,8 @@ welcome, as are (within reason) changes necessary to support use without flakes.
 
 - `emacs`: Emacs package to use. Defaults to `pkgs.emacs`. Must be at least
   Emacs 29. Use this to select different Emacs variants like
-  `pkgs.emacs29-pgtk`.
+  `pkgs.emacs29-pgtk`. Required in Nixpkgs < 24.05, where `pkgs.emacs` is Emacs
+  28.
 
 - `doomSource`: Doom source tree. Defaults to a flake input: overriding that
   input is probably easier than passing this.

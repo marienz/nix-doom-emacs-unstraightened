@@ -35,7 +35,8 @@
         let
           common = {
             doomSource = doomemacs;
-            emacs = pkgs.emacs29-pgtk;
+            # TODO: drop after NixOS 24.05 release.
+            emacs = pkgs.emacs29;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           };
           pkgsWithEmacsOverlay = pkgs.extend emacs-overlay.overlays.package;
