@@ -312,6 +312,7 @@ let
     ln -s ${emacs}/bin/* $out/bin/
     rm $out/bin/emacs-*
     ln -sf ${doomEmacs}/bin/doom-emacs $out/bin/emacs
+    ln -sf ${doomEmacs}/bin/doomscript $out/bin/
 
     mkdir -p $out/share
     # Don't link everything: the systemd units would still refer to normal Emacs.
