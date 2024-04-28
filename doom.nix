@@ -278,9 +278,6 @@ let
     --add-flags "--init-directory=${doomSource}"
   makeWrapper ${doomSource}/bin/doomscript $out/bin/doomscript \
     --set EMACS ${emacsWithPackages}/bin/emacs \
-    --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
-    --set DOOMPROFILE ${profileName} \
-    --set DOOMDIR ${doomProfile}/doomdir \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
   '';
   # TODO: revisit wrapping `doom` if/when profile use is optional.
