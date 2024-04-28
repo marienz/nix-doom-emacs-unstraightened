@@ -1,3 +1,5 @@
+;;; init.el -*- lexical-binding: t; -*-
+
 ;; Copyright 2024 Google LLC
 ;;
 ;; Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +14,8 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;;; pre-init.el -*- lexical-binding: t; -*-
-
-;; Added to init.el by nix-doom-emacs-unstraightened
+;; Extra initialization code for nix-doom-emacs-unstraightened, run before the
+;; normal `init.el'.
 
 (defadvice! nix-doom-skip-core-packages (&rest _)
   "HACK: don't install straight and core packages.
@@ -45,5 +46,5 @@ it. Just skip it entirely."
                    package)))
      "\n" t)))
 
-;; nix-doom-emacs-unstraightened additions end here.
-;; Original init.el follows.
+;; Load the user's init.el.
+(load "@user-init@" nil 'nomessage)

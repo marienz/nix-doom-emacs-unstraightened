@@ -44,7 +44,7 @@
   lib,
   runCommand,
   runtimeShell,
-  concatText,
+  substitute,
   writeText,
   makeBinaryWrapper,
 }:
@@ -215,7 +215,10 @@ let
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
   # Step 4: build a final DOOMDIR with packages.el from step 1.
-  finalInitFile = concatText "doom-init" [ ./pre-init.el "${doomDir}/init.el" ];
+  finalInitFile = substitute {
+    src = ./init.el;
+    replacements = ["--replace" "@user-init@" "${doomDir}/init.el" ];
+  };
   finalDoomDir = runCommand "doom-dir" {} ''
     mkdir $out
     ln -s ${doomDir}/* $out/
