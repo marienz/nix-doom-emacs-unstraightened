@@ -143,6 +143,10 @@ source.
 
   When migrating from "normal" Doom, you may need to move some files around.
 
+  If this bothers you, you can try setting `noProfileHack = true`. This makes
+  Unstraightened use the usual paths (relative to `doomLocalDir`), but is
+  experimental.
+
 ## Comparison to `nix-doom-emacs`
 
 - Unstraightened does not attempt to use straight.el at all. Instead, it uses

@@ -17,6 +17,10 @@ its const-ness is not enforced but I'd prefer not to take advantage of that. I
 also have not checked if writing the profile would work out of the box with this
 approach.
 
+`noProfileHack` unsets `DOOMPROFILE` from the profile loader. This feels like a
+hack, but it does get us the usual `DOOMLOCALDIR`-relative `doom-cache-dir` and
+friends back.
+
 ## Why put `doom-user-dir`/`DOOMDIR` in the Nix store?
 
 Doom forces my hand. I would prefer for just `packages.el` and possibly

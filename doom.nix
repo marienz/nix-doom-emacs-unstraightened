@@ -37,6 +37,8 @@
   full ? false,
   /* Name of doom profile to use. */
   profileName ? "nix",
+  /* Disable profile early in startup, so "normal" cache/state dirs are used. */
+  noProfileHack ? false,
 
   callPackages,
   git,
@@ -255,7 +257,7 @@ let
     # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-      -n "${profileName}" -b "$out" -d "${finalDoomDir}"
+      -n "${profileName}" -b "$out" -d "${finalDoomDir}" ${optionalString noProfileHack "-u"}
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
     export HOME=$(mktemp -d)
