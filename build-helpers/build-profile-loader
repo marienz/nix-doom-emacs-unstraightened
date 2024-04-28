@@ -18,14 +18,12 @@
 (defcli! build-profile-loader
   ((profile-name ("-n" form) "Profile name.")
    (base-directory ("-b" dir) "Base directory (for profile and straight).")
-   (profile-doom-dir ("-d" dir) "DOOMDIR")
    (unset-profile ("-u") "Unset DOOMPROFILE at startup."))
   "Write Doom's profile loader."
   (let* ((profile-directory (expand-file-name "profile/" base-directory))
          (new-profiles `((,profile-name
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-profile-data-dir . ,profile-directory)
-                          ("DOOMDIR" . ,profile-doom-dir)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-save new-profiles)))
 

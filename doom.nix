@@ -252,7 +252,7 @@ let
     # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-      -n "${profileName}" -b "$out" -d "$out/doomdir" ${optionalString noProfileHack "-u"}
+      -n "${profileName}" -b "$out" ${optionalString noProfileHack "-u"}
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
     export HOME=$(mktemp -d)
@@ -273,12 +273,14 @@ let
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/doom-emacs \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --set DOOMPROFILE ${profileName} \
+    --set DOOMDIR ${doomProfile}/doomdir \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
     --add-flags "--init-directory=${doomSource}"
   makeWrapper ${doomSource}/bin/doomscript $out/bin/doomscript \
     --set EMACS ${emacsWithPackages}/bin/emacs \
     --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
     --set DOOMPROFILE ${profileName} \
+    --set DOOMDIR ${doomProfile}/doomdir \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
   '';
   # TODO: revisit wrapping `doom` if/when profile use is optional.
