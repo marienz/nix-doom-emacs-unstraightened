@@ -30,6 +30,7 @@ it. Just skip it entirely."
   ;; doom-initialize-core-packages normally registers recipes, which loads the
   ;; build cache by side effect, which leaves straight--build-cache available
   ;; afterwards. Doom assumes this cache is available, so force a load here.
+  (require 'straight)  ;; straight-load-build-cache is not autoloaded.
   (straight--load-build-cache))
 
 (after! doom-packages
