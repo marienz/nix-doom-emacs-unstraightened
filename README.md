@@ -296,3 +296,8 @@ There are a few issues:
     not much else. So it should be possible to build a Doom configuration with
     just a few modules enabled using commonly-used versions of Emacs from CI and
     push the results to a binary cache like https://cachix.org/.
+
+### Required disclaimer
+
+This is not an officially supported Google product. It is a personal [side
+project](https://opensource.google/documentation/reference/releasing).
