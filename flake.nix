@@ -47,6 +47,10 @@
           doom-minimal = (pkgsWithEmacsOverlay.callPackages ./doom.nix (common // { doomDir = ./doomdirs/minimal; })).doomEmacs;
           doom-full = (pkgsWithEmacsOverlay.callPackages ./doom.nix (common // { full = true; doomDir = ./doomdirs/minimal; })).doomEmacs;
           doom-example = (pkgsWithEmacsOverlay.callPackages ./doom.nix (common // { doomDir = ./doomdirs/example; })).doomEmacs;
+          doom-example-without-loader = (pkgsWithEmacsOverlay.callPackages ./doom.nix (common // {
+            doomDir = ./doomdirs/example;
+            profileName = "";
+          })).doomEmacs;
         });
       overlays.default = final: prev:
         let

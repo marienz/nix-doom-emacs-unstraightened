@@ -242,21 +242,29 @@ let
       mkdir $out/doomdir/snippets
     fi
     rm $out/doomdir/init.el
+    if [[ -z "${profileName}" ]]; then
+      setProfile="(setq doom-profile-dir \"$out/profile\")"
+    else
+      setProfile=""
+    fi
     substitute ${./init.el} $out/doomdir/init.el \
+      --subst-var-by maybe-set-profile-dir "$setProfile" \
       --subst-var-by user-init "${doomDir}/init.el" \
       --subst-var-by straight-base-dir $out
     ln -sf ${doomIntermediates}/packages.el $out/doomdir/
     export DOOMDIR=$out/doomdir
 
-    export DOOMPROFILELOADFILE=$out/loader/init.el
     # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-      -n "${profileName}" -b "$out" ${optionalString noProfileHack "-u"}
+    if [[ -n "${profileName}" ]]; then
+      export DOOMPROFILELOADFILE=$out/loader/init.el
+      ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
+        -n "${profileName}" -b "$out" ${optionalString noProfileHack "-u"}
 
-    # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
-    export HOME=$(mktemp -d)
-    export DOOMPROFILE='${profileName}';
+      # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
+      export HOME=$(mktemp -d)
+      export DOOMPROFILE='${profileName}';
+    fi
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile}
 
     # Similar to audit-tmpdir.sh in nixpkgs.
@@ -270,9 +278,16 @@ let
   doomEmacs = runCommand "doom-emacs" {
     nativeBuildInputs = [ makeBinaryWrapper ];
   } ''
+  if [[ -z "${profileName}" ]]; then
+    profileArgs=()
+  else
+    profileArgs=(
+      --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el
+      --set DOOMPROFILE ${profileName}
+    )
+  fi
   makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/doom-emacs \
-    --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el \
-    --set DOOMPROFILE ${profileName} \
+    "''${profileArgs[@]}" \
     --set DOOMDIR ${doomProfile}/doomdir \
     --set-default DOOMLOCALDIR "${doomLocalDir}" \
     --add-flags "--init-directory=${doomSource}"
