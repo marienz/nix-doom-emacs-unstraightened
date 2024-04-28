@@ -46,7 +46,6 @@
   lib,
   runCommand,
   runtimeShell,
-  substitute,
   writeText,
   makeBinaryWrapper,
 }:
@@ -216,48 +215,44 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
-  # Step 4: build a final DOOMDIR with packages.el from step 1.
-  finalInitFile = substitute {
-    src = ./init.el;
-    replacements = ["--replace" "@user-init@" "${doomDir}/init.el" ];
-  };
-  finalDoomDir = runCommand "doom-dir" {} ''
-    mkdir $out
-    ln -s ${doomDir}/* $out/
-    # yasnippet logs an error at startup if snippets/ does not exist.
-    if ! [[ -e $out/snippets ]]; then
-      mkdir $out/snippets
-    fi
-    ln -sf ${finalInitFile} $out/init.el
-    ln -sf ${doomIntermediates}/packages.el $out/
-  '';
-
-  # Step 5: build a Doom profile and profile loader using Emacs from step 3 and
-  # DOOMDIR from step 4.
+  # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
+  # step 3 and packages.el from step 1.
   #
-  # Create both in the same derivation: we want the path to the generated
-  # profile in the loader (so building the loader depends on the profile), but
-  # I'm currently using the loader to set up Doom to write the profile to the
-  # right place (so building the profile depends on the loader).
+  # Do this all in one derivation because these refer back to each other:
+  # - init.el in DOOMDIR refers to the straight.el build cache generated along
+  #   with the profile
+  # - The path to the generated profile is included in the loader
+  # - Generating the profile depends on the loader
 
   # XXX runCommandLocal? (See doomIntermediates.)
   doomProfile = runCommand "doom-profile"
     {
       env = {
         EMACS = lib.getExe emacsWithPackages;
-        DOOMDIR = finalDoomDir;
         # Enable this to troubleshoot failures at this step.
         #DEBUG = "1";
       };
       # Required to avoid Doom erroring out at startup.
       nativeBuildInputs = [ git ];
     } ''
-    mkdir $out $out/loader $out/profile $out/straight
+    mkdir $out $out/loader $out/doomdir $out/profile $out/straight
+    ln -s ${doomDir}/* $out/doomdir/
+    # yasnippet logs an error at startup if snippets/ does not exist.
+    if ! [[ -e $out/doomdir/snippets ]]; then
+      mkdir $out/doomdir/snippets
+    fi
+    rm $out/doomdir/init.el
+    substitute ${./init.el} $out/doomdir/init.el \
+      --replace @user-init@ "${doomDir}/init.el" \
+      --replace @straight-base-dir@ $out
+    ln -sf ${doomIntermediates}/packages.el $out/doomdir/
+    export DOOMDIR=$out/doomdir
+
     export DOOMPROFILELOADFILE=$out/loader/init.el
     # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-      -n "${profileName}" -b "$out" -d "${finalDoomDir}" ${optionalString noProfileHack "-u"}
+      -n "${profileName}" -b "$out" -d "$out/doomdir" ${optionalString noProfileHack "-u"}
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
     export HOME=$(mktemp -d)

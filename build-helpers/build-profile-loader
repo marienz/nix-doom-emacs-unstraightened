@@ -25,7 +25,6 @@
          (new-profiles `((,profile-name
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-profile-data-dir . ,profile-directory)
-                          (unstraightened--straight-base-dir . ,base-directory)
                           ("DOOMDIR" . ,profile-doom-dir)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-save new-profiles)))

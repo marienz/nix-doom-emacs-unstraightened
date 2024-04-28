@@ -31,7 +31,7 @@ it. Just skip it entirely."
   (straight--load-build-cache))
 
 (after! doom-packages
-  (setq straight-base-dir unstraightened--straight-base-dir))
+  (setq straight-base-dir "@straight-base-dir@"))
 
 ;; TODO: remove if Doom accepts https://github.com/doomemacs/doomemacs/pull/7849
 (defadvice! nix-doom-configs-without-git (package)
