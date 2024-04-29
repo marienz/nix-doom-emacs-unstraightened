@@ -233,6 +233,32 @@ independently).
 
 I think I will be able to fix this but I haven't implemented it yet.
 
+### `doom doctor` fails with / complains about...
+
+#### "Checking for stale elc files... File is missing"
+
+```
+> Checking for stale elc files...
+x There was an unexpected runtime error
+  Message: File is missing
+  Details: ("Opening directory" "No such file or directory" "/home/marienz/.local/share/nix-doom-unstraightened/straight/build-29.3")
+
+```
+
+For now, just create the directory.
+
+I would like to fix this but have not thought of the least messy way yet.
+
+#### "Doom is installed in a non-standard location"
+
+Ignore it.
+
+Unstraightened uses `--init-directory`, as the doctor recommends.
+
+#### "Found another Emacs config:"
+
+Safe to ignore, for the same reason as the previous warning.
+
 ## Frequently Anticipated Questions
 
 ### What's wrong with `straight.el`?
