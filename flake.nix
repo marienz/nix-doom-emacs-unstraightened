@@ -62,5 +62,9 @@
           doomEmacs = args: (callPackages args).doomEmacs;
           emacsWithDoom = args: (callPackages args).emacsWithDoom;
         };
+      hmModule = import ./home-manager.nix {
+        doomSource = doomemacs;
+        emacsOverlay = emacs-overlay.overlays.package;
+      };
     };
 }

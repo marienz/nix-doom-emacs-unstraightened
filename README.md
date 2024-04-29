@@ -37,6 +37,40 @@ doom-config.url = "...";
 doom-config.flake = false;
 ```
 
+Next, you have two options:
+
+#### Home Manager
+
+Add Unstraightened's home-manager module:
+
+``` nix
+imports = [ inputs.nix-doom-emacs-unstraightened.hmModule ];
+```
+
+Configure it:
+
+``` nix
+  programs.doom-emacs = {
+    enable = true;
+    doomDir = inputs.doom-config;
+    # Any Emacs >= 29 should work. Defaults to pkgs.emacs.
+    emacs = pkgs.emacs29-pgtk;
+  };
+```
+
+There are a few other options, see below.
+
+If you set `services.emacs.enable = true`, that will run Unstraightened as well
+(Unstraightened sets itself as `services.emacs.package`). Set
+`programs.doom-emacs.provideEmacs = false` or override `services.emacs.package`
+if you want a vanilla Emacs daemon instead.
+
+> [!WARNING]
+> Using the overlay described below with `programs.emacs.package` will not work
+> correctly (see HACKING.md for details).
+
+#### Overlay
+
 Add Unstraightened's overlay. Typically that means adding:
 
 ``` nix
@@ -45,7 +79,7 @@ nixpkgs.overlays = [ inputs.nix-doom-emacs-unstraightened.overlays.default ];
 
 to a home-manager or NixOS module.
 
-Next, you have two options:
+The overlay adds two packages:
 
 - To install Unstraightened in parallel with a normal Emacs, add:
 
@@ -68,10 +102,6 @@ Next, you have two options:
   instead of `pkgs.doomEmacs`. This installs a binary named `emacs` as well as
   `emacsclient` and other helpers (similar to [`emacsWithPackages` in
   nixpkgs](https://nixos.org/manual/nixos/stable/#module-services-emacs-adding-packages)).
-
-  If you use home-manager, setting `programs.emacs.package = pkgs.emacsWithDoom
-  { ... };` should work (and `services.emacs` should be able to use this
-  package).
 
 ### Without flakes
 
@@ -108,6 +138,12 @@ welcome, as are (within reason) changes necessary to support use without flakes.
 
 There are a few other settings but they are not typically useful. See the
 source.
+
+The home-manager module supports the same options, as well as:
+
+- `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
+  `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
+  this if you want to install vanilla Emacs in parallel.
 
 ## Comparison to "normal" Doom Emacs
 
@@ -260,6 +296,22 @@ Unstraightened uses `--init-directory`, as the doctor recommends.
 Safe to ignore, for the same reason as the previous warning.
 
 ## Frequently Anticipated Questions
+
+### How do I add more packages?
+
+Add `(package! foo)` to `packages.el`.
+
+Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
+not work.
+
+If this is not sufficient, file an issue. I can add a hook to add more packages
+from Nix: I just don't want to add that hook unless someone has a use for it.
+
+### How do I add packages not in Emacs overlay?
+
+Add `(package! foo :recipe ...)` to `packages.el`.
+
+If this is not sufficient, file an issue explaining what you're trying to do.
 
 ### What's wrong with `straight.el`?
 
