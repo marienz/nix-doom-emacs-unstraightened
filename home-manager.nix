@@ -99,8 +99,10 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     (let
-      doomPackages = (pkgs.extend emacsOverlay).callPackages ./doom.nix {
-        inherit doomSource;
+      # Hack to avoid pkgs.extend (see flake.nix).
+      emacsPackagesFor = (emacsOverlay {} pkgs).emacsPackagesFor;
+      doomPackages = pkgs.callPackages ./doom.nix {
+        inherit doomSource emacsPackagesFor;
         inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack;
       };
     in
