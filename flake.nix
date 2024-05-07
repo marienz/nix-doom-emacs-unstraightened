@@ -52,24 +52,21 @@
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
             emacsPackagesFor = emacsPackagesForFromOverlay pkgs;
           };
+          mkDoom = args: (pkgs.callPackages self (common // args)).doomEmacs;
         in {
           # Current Doom + NixOS 23.11 requires emacs-overlay: Doom pins
           # emacs-fish-completion, which moved from gitlab to github recently
           # enough stable nixpkgs pulls it from the wrong source.
-          doom-minimal = (pkgs.callPackages self (common // {
-            doomDir = ./doomdirs/minimal;
-          })).doomEmacs;
-          doom-full = (pkgs.callPackages self (common // {
+          doom-minimal = mkDoom { doomDir = ./doomdirs/minimal; };
+          doom-full = mkDoom {
             full = true;
             doomDir = ./doomdirs/minimal;
-          })).doomEmacs;
-          doom-example = (pkgs.callPackages self (common // {
-            doomDir = ./doomdirs/example;
-          })).doomEmacs;
-          doom-example-without-loader = (pkgs.callPackages self (common // {
+          };
+          doom-example = mkDoom { doomDir = ./doomdirs/example; };
+          doom-example-without-loader = mkDoom {
             doomDir = ./doomdirs/example;
             profileName = "";
-          })).doomEmacs;
+          };
         });
       overlays.default = final: prev:
         let
