@@ -106,8 +106,9 @@ The overlay adds two packages:
 ### Without flakes
 
 This is currently not explicitly supported, but should be possible (use
-`pkgs.callPackages doom.nix`). PRs extending this part of the documentation are
-welcome, as are (within reason) changes necessary to support use without flakes.
+`pkgs.callPackages ./nix-doom-emacs-unstraightened`). PRs extending this part of
+the documentation are welcome, as are (within reason) changes necessary to
+support use without flakes.
 
 ### Options
 

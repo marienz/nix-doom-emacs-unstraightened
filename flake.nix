@@ -30,7 +30,7 @@
     };
   };
 
-  outputs = { systems, doomemacs, nixpkgs, emacs-overlay, ... }: let
+  outputs = { self, systems, doomemacs, nixpkgs, emacs-overlay, ... }: let
     perSystemPackages = let
       eachSystem = nixpkgs.lib.genAttrs (import systems);
     in
@@ -56,17 +56,17 @@
           # Current Doom + NixOS 23.11 requires emacs-overlay: Doom pins
           # emacs-fish-completion, which moved from gitlab to github recently
           # enough stable nixpkgs pulls it from the wrong source.
-          doom-minimal = (pkgs.callPackages ./doom.nix (common // { doomDir = ./doomdirs/minimal; })).doomEmacs;
-          doom-full = (pkgs.callPackages ./doom.nix (common // { full = true; doomDir = ./doomdirs/minimal; })).doomEmacs;
-          doom-example = (pkgs.callPackages ./doom.nix (common // { doomDir = ./doomdirs/example; })).doomEmacs;
-          doom-example-without-loader = (pkgs.callPackages ./doom.nix (common // {
+          doom-minimal = (pkgs.callPackages self (common // { doomDir = ./doomdirs/minimal; })).doomEmacs;
+          doom-full = (pkgs.callPackages self (common // { full = true; doomDir = ./doomdirs/minimal; })).doomEmacs;
+          doom-example = (pkgs.callPackages self (common // { doomDir = ./doomdirs/example; })).doomEmacs;
+          doom-example-without-loader = (pkgs.callPackages self (common // {
             doomDir = ./doomdirs/example;
             profileName = "";
           })).doomEmacs;
         });
       overlays.default = final: prev:
         let
-          callPackages = args: (final.callPackages ./doom.nix ({
+          callPackages = args: (final.callPackages self ({
             doomSource = doomemacs;
             emacsPackagesFor = emacsPackagesForFromOverlay final;
           } // args));

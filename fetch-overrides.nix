@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Data loaded by doom.nix.
+# Data loaded by default.nix.
 {
   extraUrls = {
     # Straight recipe from el-get

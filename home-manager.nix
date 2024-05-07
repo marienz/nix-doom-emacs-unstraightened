@@ -101,7 +101,7 @@ in {
     (let
       # Hack to avoid pkgs.extend (see flake.nix).
       inherit (emacsOverlay {} pkgs) emacsPackagesFor;
-      doomPackages = pkgs.callPackages ./doom.nix {
+      doomPackages = pkgs.callPackages ./. {
         inherit doomSource emacsPackagesFor;
         inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack;
       };
