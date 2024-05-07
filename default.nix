@@ -121,7 +121,9 @@ let
 
             # TODO: check notmuch works correctly without notmuch-version.el
 
-            isElpa = origEPkg != null && (origEPkg == esuper.elpaPackages.${name} or null || origEPkg == esuper.nongnuPackages.${name} or null);
+            isElpa = origEPkg != null && (
+              origEPkg == esuper.elpaPackages.${name} or null
+              || origEPkg == esuper.nongnuPackages.${name} or null);
             epkg =
               customPackages.${name}
                 or (if origEPkg == null || (p ? pin && isElpa)
@@ -187,7 +189,7 @@ let
                 inherit url;
                 rev = pin;
                 submodules = !(p.recipe.nonrecursive or false);
-                # TODO: might need to pull ref from derivation.src if we're not pulling it from p.recipe?
+                # TODO: pull ref from derivation.src when not pulling it from p.recipe?
                 # Note Doom does have packages with pin + branch (or nonrecursive) set,
                 # expecting to inherit the rest of the recipe from Straight.
               } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
@@ -213,7 +215,8 @@ let
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
   # the set from step 2.
-  emacsWithPackages = doomEmacsPackages.emacsWithPackages (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
+  emacsWithPackages = doomEmacsPackages.emacsWithPackages
+    (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)));
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
   # step 3 and packages.el from step 1.
