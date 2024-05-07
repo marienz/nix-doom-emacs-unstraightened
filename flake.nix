@@ -15,6 +15,7 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
+    systems.url = "github:nix-systems/default";
     doomemacs = {
       url = "github:doomemacs/doomemacs";
       flake = false;
@@ -29,9 +30,11 @@
     };
   };
 
-  outputs = { doomemacs, nixpkgs, emacs-overlay, ... }: let
-    systems = [ "x86_64-linux" ];
-    perSystemPackages = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+  outputs = { systems, doomemacs, nixpkgs, emacs-overlay, ... }: let
+    perSystemPackages = let
+      eachSystem = nixpkgs.lib.genAttrs (import systems);
+    in
+      f: eachSystem (system: f nixpkgs.legacyPackages.${system});
     # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
     #
     # We need emacsPackagesFor from the overlay, but neither the overlay itself
