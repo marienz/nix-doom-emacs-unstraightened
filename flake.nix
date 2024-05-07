@@ -22,7 +22,9 @@
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
       inputs = {
-        nixpkgs-stable.follows = "nixpkgs";
+        # These should be unused, but let's unset them to make that explicit.
+        nixpkgs-stable.follows = "";
+        nixpkgs.follows = "";
       };
     };
   };
