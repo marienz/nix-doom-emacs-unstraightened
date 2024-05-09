@@ -71,5 +71,13 @@ requested makes `doom doctor' work."
                    package)))
      "\n" t)))
 
+;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
+;; Doom. Extend this to set our profile dir before it does so.
+(setq-hook! +emacs-lisp--flycheck-non-package-mode
+  flycheck-emacs-lisp-check-form
+  (prin1-to-string `(progn
+                      (setq doom-profile-data-dir ,doom-profile-data-dir)
+                      ,(read flycheck-emacs-lisp-check-form))))
+
 ;; Load the user's init.el.
 (load "@user-init@" nil 'nomessage)
