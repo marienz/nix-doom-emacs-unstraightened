@@ -75,7 +75,7 @@
     '';
     buildPhase = ''
       runHook preBuild
-      make
+      make -j$NIX_BUILD_CORES
       runHook postBuild
     '';
     installPhase = ''
