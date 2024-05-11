@@ -50,7 +50,7 @@
     in
       pkgs.callPackages self mergedArgs;
     in {
-      packages = perSystemPackages (pkgs:
+      checks = perSystemPackages (pkgs:
         let
           common = {
             # TODO: drop after NixOS 24.05 release.
@@ -59,17 +59,35 @@
           };
           mkDoom = args: (doomFromPackages pkgs (common // args)).doomEmacs;
         in {
-          doom-minimal = mkDoom { doomDir = ./doomdirs/minimal; };
-          doom-full = mkDoom {
+          minimal = mkDoom { doomDir = ./doomdirs/minimal; };
+          minimalEmacs = (doomFromPackages pkgs (common // {
+            doomDir = ./doomdirs/minimal;
+          })).emacsWithDoom;
+          full = mkDoom {
             full = true;
             doomDir = ./doomdirs/minimal;
           };
-          doom-example = mkDoom { doomDir = ./doomdirs/example; };
-          doom-example-without-loader = mkDoom {
+          example = mkDoom { doomDir = ./doomdirs/example; };
+          example-without-loader = mkDoom {
             doomDir = ./doomdirs/example;
             profileName = "";
           };
         });
+      packages = perSystemPackages (pkgs: {
+        doom-example = (doomFromPackages pkgs {
+          # TODO: drop after NixOS 24.05 release.
+          emacs = pkgs.emacs29;
+          doomDir = ./doomdirs/example;
+          doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+        }).doomEmacs;
+        doom-example-without-loader = (doomFromPackages pkgs {
+          # TODO: drop after NixOS 24.05 release.
+          emacs = pkgs.emacs29;
+          doomDir = ./doomdirs/example;
+          doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+          profileName = "";
+        }).doomEmacs;
+      });
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
         emacsWithDoom = args: (doomFromPackages final args).emacsWithDoom;
