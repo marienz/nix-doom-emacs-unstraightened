@@ -54,9 +54,6 @@
           };
           mkDoom = args: (pkgs.callPackages self (common // args)).doomEmacs;
         in {
-          # Current Doom + NixOS 23.11 requires emacs-overlay: Doom pins
-          # emacs-fish-completion, which moved from gitlab to github recently
-          # enough stable nixpkgs pulls it from the wrong source.
           doom-minimal = mkDoom { doomDir = ./doomdirs/minimal; };
           doom-full = mkDoom {
             full = true;
