@@ -45,6 +45,7 @@
   emacsPackagesFor,
   lib,
   runCommand,
+  runCommandLocal,
   runtimeShell,
   writeText,
   makeBinaryWrapper,
@@ -63,9 +64,8 @@ let
   # Uses Doom's CLI framework, which does not require anything else is installed
   # (not even straight).
 
-  # XXX this may need to be runCommandLocal just in case conditionals an init.el
-  # / packages.el evaluate differently on build systems.
-  doomIntermediates = runCommand "doom-intermediates"
+  # Force local build in case the user init.el does something weird and to avoid a roundtrip.
+  doomIntermediates = runCommandLocal "doom-intermediates"
     {
       env = {
         EMACS = lib.getExe emacs;
@@ -195,7 +195,8 @@ let
               } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
               // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
             );
-            reqfile = runCommand "${name}-deps" { } ''
+            # Run locally to avoid a network roundtrip.
+            reqfile = runCommandLocal "${name}-deps" { } ''
               ${lib.getExe emacs} -Q --batch --script \
                 ${./build-helpers/print-deps.el} ${src} > $out
             '';
@@ -227,8 +228,8 @@ let
   # - The path to the generated profile is included in the loader
   # - Generating the profile depends on the loader
 
-  # XXX runCommandLocal? (See doomIntermediates.)
-  doomProfile = runCommand "doom-profile"
+  # Force local build in case the user init.el does something weird.
+  doomProfile = runCommandLocal "doom-profile"
     {
       env = {
         EMACS = lib.getExe emacsWithPackages;
@@ -279,6 +280,8 @@ let
   '';
 
   # Step 6: write wrappers to start the whole thing.
+
+  # Use runCommand, not runCommandLocal, because makeBinaryWrapper pulls in a compiler.
   doomEmacs = runCommand "doom-emacs" {
     nativeBuildInputs = [ makeBinaryWrapper ];
   } ''
