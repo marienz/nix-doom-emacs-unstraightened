@@ -61,15 +61,15 @@
     };
     buildInputs = [ ];
     nativeBuildInputs = [ emacs makeWrapper ];
-    # XXX this sticks stuff in $out/emacs/etc/org (datadir in default.mk)
-    # that probably needs to go somewhere else.
-    # Possibly same for $out/share/info/.
-
     # Finding ORGVERSION is a hack (based on the one in Doom).
     # TODO: set GITVERSION?
+    # datadir makes oc-csl find etc/csl and ox-odt find etc/styles.
+    # org-odt-schema-dir stays nil because it looks for od-schema*.rnc which is not installed.
+    # (Not sure if OpenDocument-schema-v1.3.rnc is misnamed or this file is not distributed...)
     configurePhase = ''
       echo "prefix = $out" > local.mk
       echo "lispdir = $out/share/emacs/site-lisp/org" >> local.mk
+      echo "datadir = $out/share/emacs/site-lisp/org/etc" >> local.mk
       echo "ORGVERSION = $(sed -ne 's/^;; Version: \([^\n-]\+\).*/\1/p' lisp/org.el)" >> local.mk
       make config
     '';
