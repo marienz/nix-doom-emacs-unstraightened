@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{ doomSource, emacsOverlay }:
+{ doomFromPackages }:
 { config, options, lib, pkgs, ... }:
 
 let
@@ -99,10 +99,7 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     (let
-      # Hack to avoid pkgs.extend (see flake.nix).
-      inherit (emacsOverlay {} pkgs) emacsPackagesFor;
-      doomPackages = pkgs.callPackages ./. {
-        inherit doomSource emacsPackagesFor;
+      doomPackages = doomFromPackages pkgs {
         inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack;
       };
     in

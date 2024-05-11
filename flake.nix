@@ -35,24 +35,29 @@
       eachSystem = nixpkgs.lib.genAttrs (import systems);
     in
       f: eachSystem (system: f nixpkgs.legacyPackages.${system});
-    # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
-    #
-    # We need emacsPackagesFor from the overlay, but neither the overlay itself
-    # (it only uses "super", not "self") nor us actually needs anything overlaid
-    # on nixpkgs. So we can call the overlay and pass emacsPackagesFor through
-    # directly instead of having pkgs.callPackage do it.
-    emacsPackagesForFromOverlay = pkgs: (emacs-overlay.overlays.package {} pkgs).emacsPackagesFor;
+    doomFromPackages = pkgs: args: let
+      # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
+      #
+      # We need emacsPackagesFor from the overlay, but neither the overlay itself
+      # (it only uses "super", not "self") nor us actually needs anything overlaid
+      # on nixpkgs. So we can call the overlay and pass emacsPackagesFor through
+      # directly instead of having pkgs.callPackage do it.
+      inherit (emacs-overlay.overlays.package {} pkgs) emacsPackagesFor;
+      mergedArgs = args // {
+        inherit emacsPackagesFor;
+        doomSource = doomemacs;
+      };
+    in
+      pkgs.callPackages self mergedArgs;
     in {
       packages = perSystemPackages (pkgs:
         let
           common = {
-            doomSource = doomemacs;
             # TODO: drop after NixOS 24.05 release.
             emacs = pkgs.emacs29;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-            emacsPackagesFor = emacsPackagesForFromOverlay pkgs;
           };
-          mkDoom = args: (pkgs.callPackages self (common // args)).doomEmacs;
+          mkDoom = args: (doomFromPackages pkgs (common // args)).doomEmacs;
         in {
           doom-minimal = mkDoom { doomDir = ./doomdirs/minimal; };
           doom-full = mkDoom {
@@ -65,19 +70,12 @@
             profileName = "";
           };
         });
-      overlays.default = final: prev:
-        let
-          callPackages = args: (final.callPackages self ({
-            doomSource = doomemacs;
-            emacsPackagesFor = emacsPackagesForFromOverlay final;
-          } // args));
-        in {
-          doomEmacs = args: (callPackages args).doomEmacs;
-          emacsWithDoom = args: (callPackages args).emacsWithDoom;
-        };
+      overlays.default = final: prev: {
+        doomEmacs = args: (doomFromPackages final args).doomEmacs;
+        emacsWithDoom = args: (doomFromPackages final args).emacsWithDoom;
+      };
       hmModule = import ./home-manager.nix {
-        doomSource = doomemacs;
-        emacsOverlay = emacs-overlay.overlays.package;
+        inherit doomFromPackages;
       };
     };
 }
