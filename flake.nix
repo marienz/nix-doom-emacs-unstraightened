@@ -14,6 +14,7 @@
 
 {
   inputs = {
+    # Default to reusing the system's emacs package if it has nixpkgs in the system flake registry.
     nixpkgs.url = "nixpkgs";
     systems.url = "github:nix-systems/default";
     doomemacs = {
