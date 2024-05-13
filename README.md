@@ -1,8 +1,9 @@
 # nix-doom-emacs-unstraightened
 
 `nix-doom-emacs-unstraightened` (referred to as "Unstraightened" below) builds
-`doom-emacs`, bundling a user configuration directory and the dependencies
-specified by it. It is very similar to
+[Doom Emacs](https://github.com/doomemacs/doomemacs) using
+[Nix](https://nixos.org) bundling a user configuration directory and the
+dependencies specified by it. It is very similar to
 [nix-doom-emacs](https://github.com/nix-community/nix-doom-emacs), but is
 implemented differently.
 
@@ -10,12 +11,19 @@ implemented differently.
 
 Experimental, but sufficiently complete bug reports are welcome.
 
+> [!NOTE]
+> flake.lock is not yet updated automatically (I plan to add this after adding
+> more tests). This means using `nix flake update` to update Unstraightened will
+> not immediately give you the latest version of Doom Emacs and Elisp packages.
+
 ## How to use
 
 ### Test run
 
-Check out this repository, copy your Doom configuration into `doomdirs/examples`
-(overwriting what's there), then run `nix run .#doom-example`.
+1. Check out this repository
+1. Copy your Doom configuration into `doomdirs/example` (overwriting what's there)
+1. Make sure all files are added (`git add doomdirs/example`)
+1. Run `nix run .#doom-example`.
 
 If this does not work, the "with flakes" setup below is unlikely to work either.
 Please file an issue.
@@ -37,11 +45,10 @@ doom-config.url = "...";
 doom-config.flake = false;
 ```
 
-Next, you have two options:
-
 #### Home Manager
 
-Add Unstraightened's home-manager module:
+If you use [Home Manager](https://github.com/nix-community/home-manager), add
+Unstraightened's home-manager module:
 
 ``` nix
 imports = [ inputs.nix-doom-emacs-unstraightened.hmModule ];
@@ -58,7 +65,7 @@ Configure it:
   };
 ```
 
-There are a few other options, see below.
+There are a few other configurable options, see below.
 
 If you set `services.emacs.enable = true`, that will run Unstraightened as well
 (Unstraightened sets itself as `services.emacs.package`). Set
@@ -67,11 +74,12 @@ if you want a vanilla Emacs daemon instead.
 
 > [!WARNING]
 > Using the overlay described below with `programs.emacs.package` will not work
-> correctly (see HACKING.md for details).
+> correctly (see [HACKING.md] for details).
 
 #### Overlay
 
-Add Unstraightened's overlay. Typically that means adding:
+If you don't use Home Manager or prefer not to use Unstraightened's Home Manager
+module, add Unstraightened's overlay. Typically that means adding:
 
 ``` nix
 nixpkgs.overlays = [ inputs.nix-doom-emacs-unstraightened.overlays.default ];
