@@ -89,6 +89,45 @@ let
     eself: esuper:
       let
         customPackages = callPackages ./elisp-packages.nix { inherit emacs esuper eself; };
+        # If multiple packages are built from the same repository, straight.el pins the repository
+        # if only one of them is pinned. Doom relies on this behavior, so try to do the same.
+        #
+        # We need to do this for dependencies that are not in doomPackageSet. But we don't collect
+        # all extra pins here, as that would involve pulling the repository from all packages in
+        # esuper. Instead we map repositories to pins, and then do the rest of the work in
+        # makePackage.
+
+        # TODO: refactor url determination out of makePackage, use here?
+        # Probably best done at the same time as the codeberg TODO in fetch-overrides.nix.
+        repoToPin = let
+          # Not unique, but that's ok as this is only used with genAttrs.
+          packageNames = lib.attrNames doomPackageSet;
+          packageToRepo = lib.genAttrs packageNames (name: esuper.${name}.src.gitRepoUrl or null);
+          repoToPackages = lib.zipAttrs
+            (lib.mapAttrsToList (name: repo: { ${repo} = name; }) packageToRepo);
+          packageToPin = lib.mapAttrs
+            (name: p: p.pin or extraPins.${name} or null) doomPackageSet;
+          repoToPins = lib.mapAttrs (name: packages:
+            lib.unique (lib.filter (p: p != null) (map (p: packageToPin.${p}) packages)))
+            repoToPackages;
+          in
+            lib.mapAttrs (name: pins:
+              assert lib.assertMsg ((lib.length pins) <= 1) ''
+                ${name}:
+                  used by ${lib.concatStringsSep ", " repoToPackages.${name}}
+                  pinned to different versions ${lib.concatStringsSep ", " pins}
+
+                nix-doom-emacs-unstraightened assumes these packages would use the same repo
+                when Doom Emacs builds them using straight.el, meaning this would not work.
+
+                If that assumption is correct, this is a bug in Doom Emacs.
+
+                If that assumption is not correct, this is a bug in Unstraightened.
+
+                If unsure, report this as a bug in Unstraightened.'';
+              lib.findFirst (lib.const true) null pins)
+              repoToPins;
+
         # We want to override `version` along with `src` to avoid spurious
         # rebuilds on version bumps in emacs-overlay of packages Doom has
         # pinned.
@@ -112,8 +151,18 @@ let
             p.type
             [ "core" ];
           let
-            origEPkg = esuper.${name} or null;
-            pin = p.pin or extraPins.${name} or null;
+            # We're called for all attributes of esuper (to check if they're a package pinned via
+            # repoToPin). Some of those attributes are null. So we cannot use `esuper.${name} or
+            # null`, we need to explicitly check for presence.
+            hasOrigEPkg = esuper ? ${name};
+            origEPkg = esuper.${name};
+            pin = p.pin or extraPins.${name} or (
+              # Don't use `url`: this needs to be in sync with repoToPin above.
+              # (If we remap ELPA packages to emacs-straight here but not above, it breaks...)
+              let repo = esuper.${name}.src.gitRepoUrl or null; in
+              if repo != null
+              then repoToPin.${repo} or null
+              else null);
             # We have to specialcase ELPA packages pinned by Doom: Straight mirrors /
             # repackages them. Doom's pins assume that mirror is used (so we have to
             # use it), and replacing the source in nixpkgs's derivation will not work
@@ -121,12 +170,12 @@ let
 
             # TODO: check notmuch works correctly without notmuch-version.el
 
-            isElpa = origEPkg != null && (
+            isElpa = hasOrigEPkg && (
               origEPkg == esuper.elpaPackages.${name} or null
               || origEPkg == esuper.nongnuPackages.${name} or null);
             epkg =
               customPackages.${name}
-                or (if origEPkg == null || (p ? pin && isElpa)
+                or (if !hasOrigEPkg || (p ? pin && isElpa)
               then
                 assert lib.assertMsg
                   (isElpa || (p ? recipe && pin != null) || extraUrls ? ${name})
@@ -211,7 +260,11 @@ let
           }
           else epkg;
       in
-      lib.mapAttrs makePackage doomPackageSet
+        # Hack: we call makePackage for everything (not just doomPackageSet), just to hit the
+        # repoToPin check. We cannot easily call it just for transitive dependencies, because we
+        # need makePackage to figure out what the dependencies (for packages not in esuper) are...
+        # This seems to work ok in practice because makePackage is called lazily.
+        lib.mapAttrs makePackage ((lib.mapAttrs (name: (lib.const {})) esuper) // doomPackageSet)
   );
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from

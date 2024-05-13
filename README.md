@@ -256,20 +256,6 @@ programmatically, and because some flags are mutually exclusive.
 I may end up approximating this by checking in a hardcoded `init.el` with all
 (or at least most) currently-available flags enabled.
 
-### Some pins may not be applied
-
-Doom
-[mentions](https://github.com/doomemacs/doomemacs/blob/9620bb45ac4cd7b0274c497b2d9d93c4ad9364ee/modules/ui/treemacs/packages.el#L6)
-some packages "have no `:pin` because they're in the same repo".
-
-Doom assumes that if it pins `treemacs`, that pin applies to other packages
-built from the same Git repository (like `treemacs-evil`). That comes somewhat
-naturally to straight.el (since it only checks out each repository once), but it
-does not come naturally to Nix (since it builds each package fully
-independently).
-
-I think I will be able to fix this but I haven't implemented it yet.
-
 ### `doom doctor` fails with / complains about...
 
 #### "Checking for stale elc files... File is missing"
