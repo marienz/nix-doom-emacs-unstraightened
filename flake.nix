@@ -59,6 +59,22 @@
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           };
           mkDoom = args: (doomFromPackages pkgs (common // args)).doomEmacs;
+          doomTest = assertion: args: pkgs.testers.testEqualContents {
+            inherit assertion;
+            expected = pkgs.writeText "doom-expected" "Doom functions";
+            # Runs Doom in tmux, waiting (by polling) until its window disappears.
+            actual = pkgs.runCommand "interactive" {
+              nativeBuildInputs = [ pkgs.tmux (mkDoom args) ];
+            } ''
+              tmux new-session -s doom-testing -d
+              tmux new-window -n doom-window doom-emacs
+              for ((i = 0; i < 100; i++)); do
+                tmux list-windows -a | grep -q doom-window || break
+                sleep .1
+              done
+              tmux kill-session -t doom-testing
+            '';
+          };
         in {
           minimal = mkDoom { doomDir = ./doomdirs/minimal; };
           minimalEmacs = (doomFromPackages pkgs (common // {
@@ -71,6 +87,11 @@
           example = mkDoom { doomDir = ./doomdirs/example; };
           example-without-loader = mkDoom {
             doomDir = ./doomdirs/example;
+            profileName = "";
+          };
+          interactive = doomTest "minimal doom starts" { doomDir = ./doomdirs/test; };
+          interactive-without-loader = doomTest "minimal doom (without loader) starts" {
+            doomDir = ./doomdirs/test;
             profileName = "";
           };
         });
