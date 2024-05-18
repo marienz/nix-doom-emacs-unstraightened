@@ -12,9 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: check
+# This workflow does double duty: it runs checks against PRs/pushes, and it
+# updates flake.lock (run from a schedule or manually).
+#
+# This approach seems simpler than having a separate lockfile-updating workflow
+# that creates a PR that gets the normal check workflow ran against it before
+# merging, especially since (according to
+# https://github.com/DeterminateSystems/update-flake-lock) GitHub Actions does
+# not run workflows against PRs created by a GitHub Action.
 
-on: [push, pull_request]
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      updateFlakeLock:
+        description: 'Update flake.lock'
+        default: false
+        type: boolean
+# To enable once confirmed working.
+# schedule:
+#   - cron: '23 8 * * *' # runs daily at a randomly selected time
 
 jobs:
   check:
@@ -29,6 +49,9 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: Enable Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Update flake.lock
+        if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
+        run: nix flake update --commit-lock-file
       - name: Check flake.lock
         uses: DeterminateSystems/flake-checker-action@main
         with:
@@ -41,6 +64,9 @@ jobs:
           restore-keys: nix-gitv3-cache-
       - name: nix flake check
         run: nix flake check -L --show-trace
+      - name: Push changes
+        if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
+        run: git push
 
 # TODO: try to improve caching.
 #
