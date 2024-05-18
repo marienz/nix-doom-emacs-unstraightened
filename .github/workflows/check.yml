@@ -29,5 +29,23 @@ jobs:
       - uses: DeterminateSystems/flake-checker-action@main
         with:
           nixpkgs-keys: ""  # TODO: check nixpkgs used for cached builds
+      - name: Cache git checkouts
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/nix/gitv3
+          key: nix-gitv3-cache
       - name: Run `nix flake check`
         run: nix flake check -L --show-trace
+
+# TODO: try to improve caching.
+#
+# We spend a lot of time fetching sources. Caching all of ~/.cache/nix/gitv3 is
+# not ideal (it is likely too large).
+# https://github.com/DeterminateSystems/magic-nix-cache/issues/28 may help.
+#
+# The "magic" nix cache hits usage limits:
+#
+#   2024-05-18T06:45:19.165515Z ERROR magic_nix_cache::gha: Upload of path '/nix/store/fpq1vaw8vr88a67lc2jspskf2fa7zbvj-emacs-treepy-20230715.2154' failed: GitHub API error: API error (429 Too Many Requests): StructuredApiError { message: "Request was blocked due to exceeding usage of resource 'Count' in namespace ''." }
+#
+# This might get better as the cache populates, as long as I don't hit size
+# limits.
