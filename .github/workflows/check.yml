@@ -37,14 +37,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/nix/gitv3
-          key: nix-gitv3-cache
+          key: nix-gitv3-cache-${{ hashFiles('flake.lock') }}
+          restore-keys: nix-gitv3-cache-
       - name: nix flake check
         run: nix flake check -L --show-trace
 
 # TODO: try to improve caching.
 #
 # We spend a lot of time fetching sources. Caching all of ~/.cache/nix/gitv3 is
-# not ideal (it is likely too large).
+# not ideal: it is too large (3GiB) and we don't expire individual checkouts.
 # https://github.com/DeterminateSystems/magic-nix-cache/issues/28 may help.
 #
 # The "magic" nix cache hits usage limits:
