@@ -30,4 +30,4 @@ jobs:
         with:
           nixpkgs-keys: ""  # TODO: check nixpkgs used for cached builds
       - name: Run `nix flake check`
-        run: nix flake check -L
+        run: nix flake check -L --show-trace
