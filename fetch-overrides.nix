@@ -34,4 +34,9 @@
     # Looks stable enough we can get away with pinning it.
     "sly-stepper" = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
   };
+
+  # TODO figure out whether we're better off always setting allRefs.
+  allRefsRepos = {
+    "https://git.savannah.gnu.org/git/emms.git" = true;
+  };
 }
