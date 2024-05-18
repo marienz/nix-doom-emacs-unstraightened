@@ -38,5 +38,6 @@
   # TODO figure out whether we're better off always setting allRefs.
   allRefsRepos = {
     "https://git.savannah.gnu.org/git/emms.git" = true;
+    "https://git.notmuchmail.org/git/notmuch" = true;
   };
 }
