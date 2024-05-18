@@ -51,7 +51,10 @@ jobs:
         uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Update flake.lock
         if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
-        run: nix flake update --commit-lock-file
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          nix flake update --commit-lock-file
       - name: Check flake.lock
         uses: DeterminateSystems/flake-checker-action@main
         with:
