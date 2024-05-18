@@ -23,10 +23,14 @@ jobs:
       id-token: "write"
       contents: "read"
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - uses: DeterminateSystems/flake-checker-action@main
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - name: Enable Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Check flake.lock
+        uses: DeterminateSystems/flake-checker-action@main
         with:
           nixpkgs-keys: ""  # TODO: check nixpkgs used for cached builds
       - name: Cache git checkouts
@@ -34,7 +38,7 @@ jobs:
         with:
           path: ~/.cache/nix/gitv3
           key: nix-gitv3-cache
-      - name: Run `nix flake check`
+      - name: nix flake check
         run: nix flake check -L --show-trace
 
 # TODO: try to improve caching.
