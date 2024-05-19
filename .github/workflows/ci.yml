@@ -69,6 +69,14 @@ jobs:
       - name: Push changes
         if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
         run: git push
+        # `git push` only works because branch protection is not enabled.
+        #
+        # Currently branch protection is not effective anyway, since the only
+        # contributor (marienz) has admin permissions, and applying branch
+        # protection to administrators seems to be an "organization" feature.
+        #
+        # The supported path seems to be "create a PR and use the API to merge
+        # it", but that's more work to implement (see above): revisit later.
 
 # TODO: try to improve caching.
 #
