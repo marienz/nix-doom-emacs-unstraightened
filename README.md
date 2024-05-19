@@ -29,9 +29,19 @@ Please report any issues.
 ### Test run
 
 1. Check out this repository
-1. Copy your Doom configuration into `doomdirs/example` (overwriting what's there)
-1. Make sure all files are added (`git add doomdirs/example`)
-1. Run `nix run .#doom-example`.
+2. Optional: run `nix flake update nixpkgs` (Nix 2.19 or up) or `nix flake lock
+   --update-input nixpkgs` (earlier versions). If `nixpkgs` is in the system
+   registry (which it is by default on NixOS 24.05 and up) this will make
+   Unstraightened reuse more dependencies already on your system.
+
+> [!NOTE]
+> Updating other inputs (with `nix flake update`) is not recommended. These
+> inputs are automatically updated daily as long as tests pass. Updating
+> manually may update to an incompatible version of Doom or Emacs packages.
+
+3. Copy your Doom configuration into `doomdirs/example` (overwriting what's there)
+4. Make sure all files are added (`git add doomdirs/example`)
+5. Run `nix run .#doom-example`.
 
 If this does not work, the "with flakes" setup below is unlikely to work either.
 Please file an issue.
@@ -42,7 +52,8 @@ Add this flake as an input:
 
 ``` nix
 nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
-nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "nixpkgs";
+# Optional, to download less. Neither the module nor the overlay uses this input.
+nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "";
 ```
 
 If your Doom configuration lives in a different repository, add that as input
