@@ -32,9 +32,8 @@ on:
         description: 'Update flake.lock'
         default: false
         type: boolean
-# To enable once confirmed working.
-# schedule:
-#   - cron: '23 8 * * *' # runs daily at a randomly selected time
+  schedule:
+    - cron: '23 8 * * *' # runs daily at a randomly selected time
 
 jobs:
   check:
