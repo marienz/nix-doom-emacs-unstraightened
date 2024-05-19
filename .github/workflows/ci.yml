@@ -66,6 +66,21 @@ jobs:
           restore-keys: nix-gitv3-cache-
       - name: nix flake check
         run: nix flake check -L --show-trace
+      - name: Build packages for Cachix
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: nix build .#cachix-packages -L
+      # Intentionally install Cachix late: build artifacts are cached by Magic
+      # Nix Cache, only the runtime closure of cachix-packages goes to the
+      # public Cachix cache.
+      - name: Install Cachix
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: cachix/cachix-action@v14
+        with:
+          name: doom-emacs-unstraightened
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - name: Push to Cachix
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: readlink result | cachix push doom-emacs-unstraightened
       - name: Push changes
         if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
         run: git push

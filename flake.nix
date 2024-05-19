@@ -109,6 +109,15 @@
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           profileName = "";
         }).doomEmacs;
+        # TODO: cache more packages, cache for more Emacsen.
+        cachix-packages = pkgs.linkFarm "unstraightened-cachix-packages" {
+          full-emacs29 = (doomFromPackages pkgs {
+            emacs = pkgs.emacs29;
+            doomDir = ./doomdirs/minimal;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+            full = true;
+          }).doomEmacs;
+        };
       });
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
