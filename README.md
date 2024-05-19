@@ -9,12 +9,20 @@ implemented differently.
 
 ## Status
 
-Experimental, but sufficiently complete bug reports are welcome.
+[![CI](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml/badge.svg)](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml)
 
-> [!NOTE]
-> flake.lock is not yet updated automatically (I plan to add this after adding
-> more tests). This means using `nix flake update` to update Unstraightened will
-> not immediately give you the latest version of Doom Emacs and Elisp packages.
+Tested and working on Linux, with emacs-overlay and Doom inputs updated
+automatically. If you're reading this on Github, there should be a CI status
+badge above: if CI is passing, Unstraightened installs an up-to-date version of
+Doom Emacs.
+
+Not all Doom module flags may work (although all modules are covered by CI, not
+all module flags are). Please file an issue if you encounter a build failure.
+
+Not yet tested on macOS. Likely works as long as you do not need an "app" (you
+launch Emacs from the commandline or through other means). I intend to fix this.
+
+Please report any issues.
 
 ## How to use
 
