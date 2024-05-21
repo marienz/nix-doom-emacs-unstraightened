@@ -111,12 +111,13 @@
         }).doomEmacs;
         # TODO: cache more packages, cache for more Emacsen.
         cachix-packages = pkgs.linkFarm "unstraightened-cachix-packages" {
+          inherit doomemacs;
           full-emacs29 = (doomFromPackages pkgs {
             emacs = pkgs.emacs29;
             doomDir = ./doomdirs/minimal;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
             full = true;
-          }).doomEmacs;
+          }).doomEmacs.emacsWithPackages.deps;
         };
       });
       overlays.default = final: prev: {
