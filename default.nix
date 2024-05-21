@@ -340,6 +340,8 @@ let
   # Use runCommand, not runCommandLocal, because makeBinaryWrapper pulls in a compiler.
   doomEmacs = runCommand "doom-emacs" {
     nativeBuildInputs = [ makeBinaryWrapper ];
+    # Expose this so we can push it to cachix.
+    inherit emacsWithPackages;
   } ''
   if [[ -z "${profileName}" ]]; then
     profileArgs=()
