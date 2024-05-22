@@ -219,7 +219,9 @@ let
                   recipe = writeText "${name}-generated-recipe" ''
                     (${name} :fetcher github :repo "marienz/made-up"
                      ${optionalString (p ? recipe.files) ":files ${p.recipe.files}"})'';
-                  packageRequires = map (name: eself.${name}) reqlist;
+                  # TODO: refactor out the recursive call to makePackage.
+                  # (Currently needed for dependencies on packages not in epkgs or doom.)
+                  packageRequires = map (name: eself.${name} or (makePackage name {})) reqlist;
                 }
                 else origEPkg);
             url =
