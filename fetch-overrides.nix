@@ -19,7 +19,10 @@
     font-lock-ext = "https://github.com/sensorflo/font-lock-ext.git";
     sln-mode = "https://github.com/sensorflo/sln-mode.git";
     # Straight recipe from emacsmirror-mirror
+    # (emacsmirror-mirror includes emacsattic, emacs-overlay does not...)
     nose = "https://github.com/emacsattic/nose.git";
+    ob-ammonite = "https://github.com/emacsattic/ob-ammonite.git";
+    ammonite-term-repl = "https://github.com/emacsattic/ammonite-term-repl.git";
     # In nixpkgs, but uses codeberg, for which nixpkgs uses fetchzip.
     # TODO: consider parsing origEPkg.src.url instead.
     tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
@@ -32,7 +35,9 @@
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
   extraPins = {
     # Looks stable enough we can get away with pinning it.
-    "sly-stepper" = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
+    sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
+    # In emacsattic, so shouldn't change underneath us.
+    ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
   };
 
   # TODO figure out whether we're better off always setting allRefs.
