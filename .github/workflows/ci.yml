@@ -56,8 +56,6 @@ jobs:
           nix flake update --commit-lock-file
       - name: Check flake.lock
         uses: DeterminateSystems/flake-checker-action@main
-        with:
-          nixpkgs-keys: ""  # TODO: check nixpkgs used for cached builds
       - name: Cache git checkouts
         uses: actions/cache@v4
         with:
