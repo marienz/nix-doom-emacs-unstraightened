@@ -19,9 +19,20 @@
 ;; This tries to hook into startup as late as possible, write a sign of life
 ;; (currently a string written to $out), and then exits.
 
+(defun test-minimal ()
+  ;; The minimal test is a noop.
+  )
+
 (defun test-doom ()
-  (let ((out (getenv "out")))
-    (write-region "Doom functions" nil out nil nil nil 'mustbenew))
+  (let* ((out (getenv "out"))
+         (test (intern-soft (format "test-%s" (getenv "testName"))))
+         (result (condition-case err
+                     (funcall test)
+                   (error
+                    (format "%s failed: %s" test err))
+                   (:success
+                    "Doom functions"))))
+    (write-region result nil out nil nil nil 'mustbenew))
   (kill-emacs))
 
 (add-hook 'doom-after-init-hook 'test-doom)

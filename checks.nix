@@ -14,15 +14,19 @@
 
 {
   emacs29,
+  lib,
+  linkFarm,
   runCommand,
   testers,
   tmux,
   writeText,
   writeTextDir,
+
   makeDoomPackages,
   toInit,
 }:
 let
+  inherit (lib.generators) toPretty;
   common = {
     # TODO: drop after NixOS 24.05 release.
     emacs = emacs29;
@@ -31,12 +35,19 @@ let
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config = [ "default" ]; };
-  doomTest = assertion: args: testers.testEqualContents {
-    inherit assertion;
+  doomTest = name: init: doomArgs: testers.testEqualContents {
+    assertion = "name = ${name}; modules = ${toPretty {} init}; args = ${toPretty {} doomArgs};";
     expected = writeText "doom-expected" "Doom functions";
     # Runs Doom in tmux, waiting (by polling) until its window disappears.
     actual = runCommand "interactive" {
-      nativeBuildInputs = [ tmux (mkDoom args) ];
+      # Read by tests.el.
+      testName = name;
+      nativeBuildInputs = [ tmux (mkDoom (doomArgs // {
+        doomDir = linkFarm "test-doomdir" {
+          "config.el" = ./tests.el;
+          "init.el" = writeText "init.el" (toInit init);
+        };
+      })) ];
     } ''
       tmux new-session -s doom-testing -d
       tmux new-window -n doom-window doom-emacs
@@ -61,9 +72,6 @@ in {
     doomDir = ./doomdirs/example;
     profileName = "";
   };
-  interactive = doomTest "minimal doom starts" { doomDir = ./doomdirs/test; };
-  interactive-without-loader = doomTest "minimal doom (without loader) starts" {
-    doomDir = ./doomdirs/test;
-    profileName = "";
-  };
+  interactive = doomTest "minimal" { config = [ "default" ]; } { };
+  interactive-without-loader = doomTest "minimal" { config = [ "default" ]; } { profileName = ""; };
 }
