@@ -36,6 +36,7 @@
       eachSystem = nixpkgs.lib.genAttrs (import systems);
     in
       f: eachSystem (system: f nixpkgs.legacyPackages.${system});
+
     doomFromPackages = pkgs: args: let
       # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
       #
@@ -50,8 +51,32 @@
       };
     in
       pkgs.callPackages self mergedArgs;
+
+    toInit = let
+      inherit (nixpkgs.lib) concatLines concatStringsSep isList isString mapAttrsToList toPretty;
+    in
+      attrs:
+      concatLines (
+        [ "(doom!" ]
+        ++ (mapAttrsToList (
+          cat: modules:
+          (concatLines (
+            [ (":" + cat) ]
+            ++ (map (
+              mod:
+              if isString mod then mod
+              else if isList mod then "(" + (concatStringsSep " " mod) + ")"
+              else abort "${toPretty mod} not supported"
+            ))
+              modules
+          ))
+        ) attrs)
+        ++ [ ")" ]
+      );
+
     in {
       checks = perSystemPackages (pkgs: pkgs.callPackages ./checks.nix {
+        inherit toInit;
         makeDoomPackages = doomFromPackages pkgs;
       });
       packages = perSystemPackages (pkgs: {

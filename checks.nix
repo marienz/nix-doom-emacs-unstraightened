@@ -18,7 +18,9 @@
   testers,
   tmux,
   writeText,
+  writeTextDir,
   makeDoomPackages,
+  toInit,
 }:
 let
   common = {
@@ -27,6 +29,8 @@ let
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
   };
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
+  mkDoomDir = args: writeTextDir "init.el" (toInit args);
+  minimalDoomDir = mkDoomDir { config = [ "default" ]; };
   doomTest = assertion: args: testers.testEqualContents {
     inherit assertion;
     expected = writeText "doom-expected" "Doom functions";
@@ -46,11 +50,11 @@ let
 in {
   minimal = mkDoom { doomDir = ./doomdirs/minimal; };
   minimalEmacs = (makeDoomPackages (common // {
-    doomDir = ./doomdirs/minimal;
+    doomDir = minimalDoomDir;
   })).emacsWithDoom;
   full = mkDoom {
     full = true;
-    doomDir = ./doomdirs/minimal;
+    doomDir = minimalDoomDir;
   };
   example = mkDoom { doomDir = ./doomdirs/example; };
   example-without-loader = mkDoom {
