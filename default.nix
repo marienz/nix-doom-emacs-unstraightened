@@ -244,7 +244,10 @@ let
                 # TODO: pull ref from derivation.src when not pulling it from p.recipe?
                 # Note Doom does have packages with pin + branch (or nonrecursive) set,
                 # expecting to inherit the rest of the recipe from Straight.
-              } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
+
+                # Always specify a ref to work around https://github.com/NixOS/nix/issues/10773
+                ref = p.recipe.branch or "HEAD";
+              }
               // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
             );
             # Run locally to avoid a network roundtrip.
