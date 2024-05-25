@@ -52,7 +52,7 @@
 }:
 let
   inherit (lib) optionalAttrs optionalString;
-  inherit (import ./fetch-overrides.nix) extraPins extraUrls allRefsRepos;
+  inherit (import ./fetch-overrides.nix) extraPins extraUrls;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -239,7 +239,7 @@ let
               {
                 inherit url;
                 rev = pin;
-                allRefs = allRefsRepos.${url} or false;
+                allRefs = true;
                 submodules = !(p.recipe.nonrecursive or false);
                 # TODO: pull ref from derivation.src when not pulling it from p.recipe?
                 # Note Doom does have packages with pin + branch (or nonrecursive) set,

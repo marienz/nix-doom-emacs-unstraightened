@@ -39,10 +39,4 @@
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
   };
-
-  # TODO figure out whether we're better off always setting allRefs.
-  allRefsRepos = {
-    "https://git.savannah.gnu.org/git/emms.git" = true;
-    "https://git.notmuchmail.org/git/notmuch" = true;
-  };
 }
