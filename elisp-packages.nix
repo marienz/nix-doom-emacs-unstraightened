@@ -164,6 +164,46 @@
       done
     '';
   };
+  tree-sitter-langs =
+    # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
+    # grammar bundle from github. It also contains a build system to build that bundle from
+    # submodules.
+    #
+    # Normally (inside nixpkgs), nixpkgs substitutes its own bundle for upstream's. It puts
+    # upstream's version number (from melpa stable) in that bundle, which tree-sitter-langs compares
+    # against its version number hardcoded as tree-sitter-langs--bundle-version.
+    #
+    # If Doom pins this package (which it does), that affects tree-sitter-langs--bundle-version but
+    # not the version in the grammar bundle nixpkgs created. This causes tree-sitter-langs-build to
+    # attempt to download its bundle and overwrite the nixpkgs one. This fails (with a download
+    # error at build time and an attempt to write into the Nix store at runtime).
+    #
+    # Since the bundle version already does not match upstream's version anyway, take the easy way
+    # out: patch that version number to match what nixpkgs put in the grammar bundle.
+    let
+      inherit (esuper.melpaStablePackages.tree-sitter-langs) version;
+      elpaDir = "$out/share/emacs/site-lisp/elpa/";
+      wrongSiteDir = elpaDir + "tree-sitter-langs-${version}";
+      rightSiteDir = elpaDir + "tree-sitter-langs-9999snapshot";
+    in
+      esuper.tree-sitter-langs.overrideAttrs (old: {
+        postPatch = old.postPatch or "" + ''
+          sed -i -e '/defconst tree-sitter-langs--bundle-version/ s/"[0-9.]*"/"${version}"/' \
+            ./tree-sitter-langs-build.el
+        '';
+
+        postInstall = old.postInstall or "" + ''
+          mkdir ${rightSiteDir}
+          mv ${wrongSiteDir}/* ${rightSiteDir}/
+          rmdir ${wrongSiteDir}
+        '';
+    });
+  # Fix /build/ leaking into byte-compiled files (patch accepted upstream).
+  phpactor = esuper.phpactor.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/0001-Do-not-call-locate-user-emacs-file-when-compiling.patch
+    ];
+  });
   # https://github.com/emacs-taskrunner/helm-taskrunner/issues/2
   # TODO: make our generated melpaBuild available in esuper?
   # (upstream unchanged for 5 years, not urgent to make this robust...)

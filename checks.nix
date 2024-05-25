@@ -88,6 +88,11 @@ in {
 
   org-re-reveal = doomTest "org-re-reveal" { lang.org = [ "+present" ]; } { };
 
+  tree-sitter = doomTest "tree-sitter" {
+    tools.tree-sitter = true;
+    lang.go = [ "+tree-sitter" ];
+  } { };
+
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app.rss = [ "+org" ]; } { };
   # Dependencies that require a module flag enabled and a different module or flag disabled.

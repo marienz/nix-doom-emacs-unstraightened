@@ -46,6 +46,9 @@
   (unless (functionp 'cmake-mode)
     (error "cmake-mode not available")))
 
+(defun test-tree-sitter ()
+  (require 'tree-sitter-langs))
+
 (defun test-doom ()
   (let* ((out (getenv "out"))
          (test (intern-soft (format "test-%s" (getenv "testName"))))
