@@ -28,6 +28,7 @@
     tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
     undo-fu = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
     undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
+    consult-notmuch = "https://codeberg.org/jao/consult-notmuch.git";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
   };
