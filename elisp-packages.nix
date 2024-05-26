@@ -167,6 +167,24 @@
       ./elisp-patches/0001-Do-not-call-locate-user-emacs-file-when-compiling.patch
     ];
   });
+  # https://github.com/emacs-taskrunner/helm-taskrunner/issues/2
+  # TODO: make our generated melpaBuild available in esuper?
+  # (upstream unchanged for 5 years, not urgent to make this robust...)
+  helm-taskrunner = esuper.melpaBuild {
+    pname = "helm-taskrunner";
+    version = "9999snapshot";
+    commit = "unset";
+    meta = {
+      description = "trivial build for doom-emacs";
+    };
+    packageRequires = [ eself.projectile eself.helm ];
+    recipe = writeText "auctex-recipe" ''
+      (helm-taskrunner :fetcher github :repo "emacs-taskrunner/helm-taskrunner")
+    '';
+    patches = [
+      ./elisp-patches/helm-taskrunner-version.patch
+    ];
+  };
   # Make it byte-compile properly.
   code-review = esuper.code-review.overrideAttrs (attrs: {
     nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ git ];
