@@ -48,6 +48,8 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: Enable Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@main
+        with:
+          use-flakehub: false
       - name: Update flake.lock
         if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
         run: |
