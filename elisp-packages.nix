@@ -18,6 +18,7 @@
   esuper,
   git,
   makeWrapper,
+  stdenvNoCC,
   writeText,
 }:
 {
@@ -184,6 +185,17 @@
     patches = [
       ./elisp-patches/helm-taskrunner-version.patch
     ];
+  };
+  # reveal.js is not actually an ELisp package. Doom gets straight.el to install it,
+  # then makes org-re-reveal use it as data.
+  revealjs = stdenvNoCC.mkDerivation {
+    pname = "revealjs";
+    version = "9999snapshot";
+    buildPhase = ''
+      siteDir=$out/share/emacs/site-lisp/revealjs
+      mkdir -p $siteDir
+      cp -r css dist js plugin $siteDir/
+    '';
   };
   # Make it byte-compile properly.
   code-review = esuper.code-review.overrideAttrs (attrs: {

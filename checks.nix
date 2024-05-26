@@ -75,6 +75,8 @@ in {
   interactive = doomTest "minimal" { config = [ "default" ]; } { };
   interactive-without-loader = doomTest "minimal" { config = [ "default" ]; } { profileName = ""; };
 
+  org-re-reveal = doomTest "org-re-reveal" { lang = [ [ "org" "+present" ] ]; } { };
+
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app = [ [ "rss" "+org" ] ]; } { };
 }

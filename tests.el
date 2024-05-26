@@ -30,6 +30,13 @@
     (unless (string-search "/site-lisp/" path)
       (error "org-mode probably built-in: %s" path))))
 
+(defun test-org-re-reveal ()
+  "Test org-re-reveal can find reveal.js."
+  (require 'ox)
+  (require 'org-re-reveal)
+  (unless (string-search "/site-lisp/revealjs" org-re-reveal-root)
+    (error "org-re-reveal does not find our revealjs: %s" org-re-reveal-root)))
+
 (defun test-doom ()
   (let* ((out (getenv "out"))
          (test (intern-soft (format "test-%s" (getenv "testName"))))
