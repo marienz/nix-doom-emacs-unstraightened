@@ -101,6 +101,7 @@
             doomDir = ./doomdirs/minimal;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
             full = true;
+            experimentalFetchTree = true;
           }).doomEmacs.emacsWithPackages.deps;
         };
       });
