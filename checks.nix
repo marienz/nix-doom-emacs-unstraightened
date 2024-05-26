@@ -37,7 +37,7 @@ let
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config = [ "default" ]; };
-  fullDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllPackages;
+  fullDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModules;
   doomTest = name: init: doomArgs: testers.testEqualContents {
     assertion = "name = ${name}; modules = ${toPretty {} init}; args = ${toPretty {} doomArgs};";
     expected = writeText "doom-expected" "Doom functions";

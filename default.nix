@@ -56,7 +56,7 @@ let
   # This doesn't belong here: it does not depend on doomDir (only on doomSource).
   # But this is where all my doomscript execution lives.
   # TODO: consider splitting off doomdir execution to a separate helper.
-  doomDirWithAllPackages = runCommandLocal "doom-full-init"
+  doomDirWithAllModules = runCommandLocal "doom-full-init"
     {
       env = {
         EMACS = lib.getExe emacs;
@@ -426,5 +426,5 @@ let
   '';
 in
 {
-  inherit doomDirWithAllPackages doomEmacs emacsWithDoom;
+  inherit doomDirWithAllModules doomEmacs emacsWithDoom;
 }

@@ -95,11 +95,11 @@
         }).doomEmacs;
         # TODO: cache more packages, cache for more Emacsen.
         cachix-packages = let
-          # (Shouldn't need doomFromPackages, see doomDirWithAllPackages definition)
+          # (Shouldn't need doomFromPackages, see doomDirWithAllModules definition)
           fullDoomDir = (doomFromPackages pkgs {
             doomDir = pkgs.emptyDirectory;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-          }).doomDirWithAllPackages;
+          }).doomDirWithAllModules;
         in
           pkgs.linkFarm "unstraightened-cachix-packages" {
             inherit doomemacs;
