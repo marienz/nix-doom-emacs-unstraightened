@@ -23,6 +23,13 @@
   ;; The minimal test is a noop.
   )
 
+(defun test-external-org ()
+  "Test org can be loaded and it's not built-in."
+  (require 'org)
+  (let ((path (find-library-name "org")))
+    (unless (string-search "/site-lisp/" path)
+      (error "org-mode probably built-in: %s" path))))
+
 (defun test-doom ()
   (let* ((out (getenv "out"))
          (test (intern-soft (format "test-%s" (getenv "testName"))))

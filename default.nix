@@ -176,9 +176,10 @@ let
               origEPkg == esuper.elpaPackages.${name} or null
               || origEPkg == esuper.nongnuPackages.${name} or null);
             epkg =
-              customPackages.${name}
-                or (if !hasOrigEPkg || (p ? pin && isElpa)
-              then
+              if hasOrigEPkg && (pin != null -> !(isElpa || customPackages ? ${name}))
+              then origEPkg
+              else customPackages.${name}
+                or (
                 assert lib.assertMsg
                   (isElpa || (p ? recipe && pin != null) || extraUrls ? ${name})
                   "${name}: not in epkgs, not elpa, no recipe or not pinned";
@@ -224,8 +225,7 @@ let
                   # TODO: refactor out the recursive call to makePackage.
                   # (Currently needed for dependencies on packages not in epkgs or doom.)
                   packageRequires = map (name: eself.${name} or (makePackage name {})) reqlist;
-                }
-                else origEPkg);
+                });
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"
