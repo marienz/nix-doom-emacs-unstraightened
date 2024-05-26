@@ -18,12 +18,11 @@
 (require 'json)
 
 (defcli! dump
-    ((output-directory ("-o" dir) "Directory to dump into.")
-     (&flag full? ("--full")))
+    ((output-directory ("-o" dir) "Directory to dump into."))
   "Dump intermediates for nix-doom-emacs-unstraightened."
   ;; Load the user's init.el, or we'll dump only core packages.
   (load! doom-module-init-file doom-user-dir t)
-  (let* ((all-packages (doom-package-list full?))
+  (let* ((all-packages (doom-package-list))
          ;; For built-in packages, the :ignore property is the location of the
          ;; built-in library, which is a Nix store path. We do not want that
          ;; path to escape: avoid it by just filtering ignored packages here.

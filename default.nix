@@ -32,9 +32,6 @@
   doomSource,
   /* Emacs package to build against. */
   emacs,
-  /* Whether to enable all default dependencies. Primarily useful for CI /
-     testing. */
-  full ? false,
   /* Name of doom profile to use. */
   profileName ? "nix",
   /* Disable profile early in startup, so "normal" cache/state dirs are used. */
@@ -98,8 +95,7 @@ let
     } ''
     mkdir $out
     export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/dump} \
-      ${optionalString full "--full"} -o $out
+    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/dump} -o $out
   '';
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
