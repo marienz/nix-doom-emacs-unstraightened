@@ -94,16 +94,22 @@
           profileName = "";
         }).doomEmacs;
         # TODO: cache more packages, cache for more Emacsen.
-        cachix-packages = pkgs.linkFarm "unstraightened-cachix-packages" {
-          inherit doomemacs;
-          full-emacs29 = (doomFromPackages pkgs {
-            emacs = pkgs.emacs29;
-            doomDir = ./doomdirs/minimal;
+        cachix-packages = let
+          # (Shouldn't need doomFromPackages, see doomDirWithAllPackages definition)
+          fullDoomDir = (doomFromPackages pkgs {
+            doomDir = pkgs.emptyDirectory;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-            full = true;
-            experimentalFetchTree = true;
-          }).doomEmacs.emacsWithPackages.deps;
-        };
+          }).doomDirWithAllPackages;
+        in
+          pkgs.linkFarm "unstraightened-cachix-packages" {
+            inherit doomemacs;
+            full-emacs29 = (doomFromPackages pkgs {
+              emacs = pkgs.emacs29;
+              doomDir = fullDoomDir;
+              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+              experimentalFetchTree = true;
+            }).doomEmacs.emacsWithPackages.deps;
+          };
       });
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
