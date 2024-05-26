@@ -229,10 +229,16 @@ let
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"
+              else if (p.recipe.type or "") == "git"
+                      && p ? recipe.repo
+                      && (p.recipe.host or null) == null
+              then p.recipe.repo
               else epkg.src.gitRepoUrl
                 or extraUrls.${name}
                 or (if isElpa then "https://github.com/emacs-straight/${name}"
-                  else (throw "${name}: cannot derive url from recipe ${p.recipe or "<missing>"}"));
+                    else (let
+                      recipe = lib.generators.toPretty {} (p.recipe or "missing");
+                    in throw "${name}: cannot derive url from recipe ${recipe}"));
             # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
             # fetchGit allows fetching a specific git commit without a hash.
             fetchGitArgs = {
