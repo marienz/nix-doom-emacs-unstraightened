@@ -243,7 +243,7 @@ let
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"
-              else if (p.recipe.type or "") == "git"
+              else if (p.recipe.type or "git") == "git"
                       && p ? recipe.repo
                       && (p.recipe.host or null) == null
               then p.recipe.repo
