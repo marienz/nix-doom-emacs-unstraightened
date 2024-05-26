@@ -71,6 +71,22 @@ let
     ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/full-init} -o $out
   '';
 
+  doomDirWithAllModulesAndFlags = runCommandLocal "doom-full-init"
+    {
+      env = {
+        EMACS = lib.getExe emacs;
+        # Enable this to troubleshoot failures at this step.
+        #DEBUG = "1";
+      };
+      # We set DOOMLOCALDIR somewhere harmless below to stop Doom from trying to
+      # create it somewhere read-only.
+    } ''
+    mkdir $out
+    export DOOMLOCALDIR=$(mktemp -d)
+    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/full-init} --flags -o $out
+  '';
+
+
   # Step 1: determine which Emacs packages to pull in.
   #
   # Inputs: Doom, original DOOMDIR (only init.el and packages.el are used).
@@ -426,5 +442,5 @@ let
   '';
 in
 {
-  inherit doomDirWithAllModules doomEmacs emacsWithDoom;
+  inherit doomDirWithAllModules doomDirWithAllModulesAndFlags doomEmacs emacsWithDoom;
 }

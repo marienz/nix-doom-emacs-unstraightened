@@ -37,7 +37,8 @@ let
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config = [ "default" ]; };
-  fullDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModules;
+  allModsDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModules;
+  allFlagsDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModulesAndFlags;
   doomTest = name: init: doomArgs: testers.testEqualContents {
     assertion = "name = ${name}; modules = ${toPretty {} init}; args = ${toPretty {} doomArgs};";
     expected = writeText "doom-expected" "Doom functions";
@@ -66,7 +67,8 @@ in {
   minimalEmacs = (makeDoomPackages (common // {
     doomDir = minimalDoomDir;
   })).emacsWithDoom;
-  full = mkDoom { doomDir = fullDoomDir; };
+  allModules = mkDoom { doomDir = allModsDoomDir; };
+  allModulesAndFlags = mkDoom { doomDir = allFlagsDoomDir; };
   example = mkDoom { doomDir = ./doomdirs/example; };
   example-without-loader = mkDoom {
     doomDir = ./doomdirs/example;
