@@ -60,7 +60,7 @@ let
       '';
   };
 in {
-  minimal = mkDoom { doomDir = ./doomdirs/minimal; };
+  minimal = mkDoom { doomDir = minimalDoomDir; };
   minimalEmacs = (makeDoomPackages (common // {
     doomDir = minimalDoomDir;
   })).emacsWithDoom;
