@@ -48,6 +48,8 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
       - name: Enable Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@main
+        with:
+          use-flakehub: false
       - name: Update flake.lock
         if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
         run: |
@@ -56,12 +58,26 @@ jobs:
           nix flake update --commit-lock-file
       - name: Check flake.lock
         uses: DeterminateSystems/flake-checker-action@main
+      # Update the caches daily, flush the cache monthly.
+      - name: Set cache keys
+        id: cache-keys
+        run: |
+          {
+            echo "key=$(date +'%Y-%m-%d')"
+            echo "restore=$(date +'%Y-%m-')"
+          } >> "$GITHUB_OUTPUT"
       - name: Cache git checkouts
         uses: actions/cache@v4
         with:
           path: ~/.cache/nix/gitv3
-          key: nix-gitv3-cache-${{ hashFiles('flake.lock') }}
-          restore-keys: nix-gitv3-cache-
+          key: nix-gitv3-cache-${{ steps.cache-keys.outputs.key }}
+          restore-keys: nix-gitv3-cache-${{ steps.cache-keys.outputs.restore }}
+      - name: Cache tarballs
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/nix/tarball-cache
+          key: nix-tarball-cache-${{ steps.cache-keys.outputs.key }}
+          restore-keys: nix-tarball-cache-${{ steps.cache-keys.outputs.restore }}
       - name: nix flake check
         run: nix flake check -L --show-trace
       - name: Build packages for Cachix

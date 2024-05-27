@@ -31,6 +31,7 @@ let
     # TODO: drop after NixOS 24.05 release.
     emacs = emacs29;
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+    experimentalFetchTree = true;
   };
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);

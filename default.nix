@@ -39,6 +39,8 @@
   profileName ? "nix",
   /* Disable profile early in startup, so "normal" cache/state dirs are used. */
   noProfileHack ? false,
+  /* Use fetchTree instead of fetchGit for package fetches. */
+  experimentalFetchTree ? false,
 
   callPackages,
   git,
@@ -233,23 +235,40 @@ let
                   else (throw "${name}: cannot derive url from recipe ${p.recipe or "<missing>"}"));
             # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
             # fetchGit allows fetching a specific git commit without a hash.
-            # TODO: port to fetchTree once (mostly) stable
-            # (in particular the github fetcher may be noticably more efficient)
-            src = builtins.fetchGit (
-              {
-                inherit url;
-                rev = pin;
-                allRefs = true;
-                submodules = !(p.recipe.nonrecursive or false);
-                # TODO: pull ref from derivation.src when not pulling it from p.recipe?
-                # Note Doom does have packages with pin + branch (or nonrecursive) set,
-                # expecting to inherit the rest of the recipe from Straight.
+            fetchGitArgs = {
+              inherit url;
+              rev = pin;
+              allRefs = true;
+              # Skip submodules by default because they seem to be hitting
+              # https://github.com/NixOS/nix/issues/10773 (or a similar caching issue) and for
+              # parity between fetchTree's github fetcher and fetchGit (Github's exports don't
+              # seem to contain submodules).
+              submodules = !(p.recipe.nonrecursive or true);
+              # TODO: pull ref from derivation.src when not pulling it from p.recipe?
+              # Note Doom does have packages with pin + branch (or nonrecursive) set,
+              # expecting to inherit the rest of the recipe from Straight.
 
-                # Always specify a ref to work around https://github.com/NixOS/nix/issues/10773
-                ref = p.recipe.branch or "HEAD";
-              }
-              // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
-            );
+              # Always specify a ref to work around https://github.com/NixOS/nix/issues/10773
+              ref = p.recipe.branch or "HEAD";
+            }
+            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; };
+            src =
+              if experimentalFetchTree
+              then builtins.fetchTree (
+                if lib.hasPrefix "https://github.com/" url
+                then let
+                  tail = lib.removePrefix "https://github.com/" url;
+                  split = lib.splitString "/" tail;
+                  owner = lib.head split;
+                  repo = lib.removeSuffix ".git" (lib.elemAt split 1);
+                in {
+                  type = "github";
+                  inherit owner repo;
+                  rev = pin;
+                } else ({
+                  type = "git";
+                } // fetchGitArgs))
+              else builtins.fetchGit fetchGitArgs;
             # Run locally to avoid a network roundtrip.
             reqfile = runCommandLocal "${name}-deps" { } ''
               ${lib.getExe emacs} -Q --batch --script \
