@@ -69,9 +69,9 @@ in {
   })).emacsWithDoom;
   allModules = mkDoom { doomDir = allModsDoomDir; };
   allModulesAndFlags = mkDoom { doomDir = allFlagsDoomDir; };
-  example = mkDoom { doomDir = ./doomdirs/example; };
+  example = mkDoom { doomDir = ./doomdir; };
   example-without-loader = mkDoom {
-    doomDir = ./doomdirs/example;
+    doomDir = ./doomdir;
     profileName = "";
   };
   interactive = doomTest "minimal" { config = [ "default" ]; } { };

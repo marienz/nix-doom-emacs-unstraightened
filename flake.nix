@@ -80,16 +80,16 @@
         makeDoomPackages = doomFromPackages pkgs;
       });
       packages = perSystemPackages (pkgs: {
-        doom-example = (doomFromPackages pkgs {
+        doom-emacs = (doomFromPackages pkgs {
           # TODO: drop after NixOS 24.05 release.
           emacs = pkgs.emacs29;
-          doomDir = ./doomdirs/example;
+          doomDir = ./doomdir;
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
         }).doomEmacs;
-        doom-example-without-loader = (doomFromPackages pkgs {
+        doom-emacs-without-loader = (doomFromPackages pkgs {
           # TODO: drop after NixOS 24.05 release.
           emacs = pkgs.emacs29;
-          doomDir = ./doomdirs/example;
+          doomDir = ./doomdir;
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           profileName = "";
         }).doomEmacs;
