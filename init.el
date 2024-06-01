@@ -17,7 +17,7 @@
 ;; Extra initialization code for nix-doom-emacs-unstraightened, run before the
 ;; normal `init.el'.
 
-@maybe-set-profile-dir@
+@maybeSetProfileDir@
 
 (defadvice! nix-doom-skip-core-packages (&rest _)
   "HACK: don't install straight and core packages.
@@ -34,7 +34,7 @@ it. Just skip it entirely."
   (straight--load-build-cache))
 
 (after! doom-packages
-  (setq straight-base-dir "@straight-base-dir@"))
+  (setq straight-base-dir "@straightBaseDir@"))
 
 (defadvice! unstraightened-profile-init-file (&optional profile-id version)
   "Return unstraightened's profile init file.
@@ -47,7 +47,7 @@ or unstraightened profile (erroring out otherwise), then return the custom path.
 Returning the unstraightened profile if the default profile is
 requested makes `doom doctor' work."
   :override #'doom-profile-init-file
-  (let ((my-profile "@profile-name@"))
+  (let ((my-profile "@profileName@"))
     (unless (or (null profile-id)
                 (and (not (string-empty-p my-profile))
                      (string-equal profile-id my-profile)))
@@ -80,4 +80,4 @@ requested makes `doom doctor' work."
                       ,(read flycheck-emacs-lisp-check-form))))
 
 ;; Load the user's init.el.
-(load "@user-init@" nil 'nomessage)
+(load "@userInit@" nil 'nomessage)

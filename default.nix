@@ -325,15 +325,15 @@ let
     fi
     rm $out/doomdir/init.el
     if [[ -z "$profileName" ]]; then
-      setProfile="(setq doom-profile-dir \"$out/profile\")"
+      maybeSetProfileDir="(setq doom-profile-dir \"$out/profile\")"
     else
-      setProfile=""
+      maybeSetProfileDir=""
     fi
     substitute $initEl $out/doomdir/init.el \
-      --subst-var-by maybe-set-profile-dir "$setProfile" \
-      --subst-var-by profile-name "$profileName" \
-      --subst-var-by user-init "$doomDir/init.el" \
-      --subst-var-by straight-base-dir $out
+      --subst-var maybeSetProfileDir \
+      --subst-var profileName \
+      --subst-var-by userInit "$doomDir/init.el" \
+      --subst-var-by straightBaseDir $out
     ln -sf $doomIntermediates/packages.el $out/doomdir/
     export DOOMDIR=$out/doomdir
 
