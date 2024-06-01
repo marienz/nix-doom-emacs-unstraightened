@@ -56,22 +56,6 @@ let
   inherit (lib) optionalAttrs optionalString;
   inherit (import ./fetch-overrides.nix) extraPins extraUrls;
 
-  # This doesn't belong here: it does not depend on doomDir (only on doomSource).
-  # But this is where all my doomscript execution lives.
-  doomDirWithAllModules = callPackage ./build-helpers/doomscript.nix {
-    name = "doom-full-init";
-    inherit doomSource emacs;
-    script = ./build-helpers/full-init;
-    scriptArgs = "-o $out";
-  };
-
-  doomDirWithAllModulesAndFlags = callPackage ./build-helpers/doomscript.nix {
-    name = "doom-full-init";
-    inherit doomSource emacs;
-    script = ./build-helpers/full-init;
-    scriptArgs = "--flags -o $out";
-  };
-
   # Step 1: determine which Emacs packages to pull in.
   #
   # Inputs: Doom, original DOOMDIR (only init.el and packages.el are used).
@@ -419,5 +403,5 @@ let
   '';
 in
 {
-  inherit doomDirWithAllModules doomDirWithAllModulesAndFlags doomEmacs emacsWithDoom;
+  inherit doomEmacs emacsWithDoom;
 }

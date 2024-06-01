@@ -13,6 +13,7 @@
 # limitations under the License.
 
 {
+  callPackages,
   emptyDirectory,
   lib,
   linkFarm,
@@ -22,11 +23,14 @@
   writeText,
   writeTextDir,
 
+  doomSource,
   makeDoomPackages,
   toInit,
 }:
 let
   inherit (lib.generators) toPretty;
+  inherit (callPackages ./build-helpers/full-init.nix { inherit doomSource; })
+    doomDirWithAllModules doomDirWithAllModulesAndFlags;
   common = {
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;
@@ -34,8 +38,6 @@ let
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config = [ "default" ]; };
-  allModsDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModules;
-  allFlagsDoomDir = (makeDoomPackages (common // { doomDir = emptyDirectory; })).doomDirWithAllModulesAndFlags;
   doomTest = name: init: doomArgs: testers.testEqualContents {
     assertion = "name = ${name}; modules = ${toPretty {} init}; args = ${toPretty {} doomArgs};";
     expected = writeText "doom-expected" "Doom functions";
@@ -68,8 +70,8 @@ in {
     doomDir = minimalDoomDir;
     extraPackages = epkgs: [ epkgs.vterm epkgs.treesit-grammars.with-all-grammars ];
   };
-  allModules = mkDoom { doomDir = allModsDoomDir; };
-  allModulesAndFlags = mkDoom { doomDir = allFlagsDoomDir; };
+  allModules = mkDoom { doomDir = doomDirWithAllModules; };
+  allModulesAndFlags = mkDoom { doomDir = doomDirWithAllModulesAndFlags; };
   example = mkDoom { doomDir = ./doomdir; };
   example-without-loader = mkDoom {
     doomDir = ./doomdir;
