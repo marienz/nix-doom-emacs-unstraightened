@@ -79,6 +79,7 @@ in {
   };
   interactive = doomTest "minimal" { config = [ "default" ]; } { };
   interactive-without-loader = doomTest "minimal" { config = [ "default" ]; } { profileName = ""; };
+  interactive-no-profile-hack = doomTest "minimal" { config = [ "default" ]; } { noProfileHack = true; };
 
   org-re-reveal = doomTest "org-re-reveal" { lang = [ [ "org" "+present" ] ]; } { };
 
