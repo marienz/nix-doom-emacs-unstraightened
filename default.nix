@@ -332,8 +332,8 @@ let
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
   # the set from step 2.
-    emacsWithPackages = doomEmacsPackages.emacsWithPackages
-      (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)) ++ (extraPackages epkgs));
+  emacsWithPackages = doomEmacsPackages.emacsWithPackages
+    (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)) ++ (extraPackages epkgs));
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
   # step 3 and packages.el from step 1.
