@@ -41,6 +41,7 @@
   /* Extra emacs packages from nixpkgs */
   extraPackages ? epkgs: [ ],
 
+  callPackage,
   callPackages,
   git,
   emacsPackagesFor,
@@ -57,37 +58,19 @@ let
 
   # This doesn't belong here: it does not depend on doomDir (only on doomSource).
   # But this is where all my doomscript execution lives.
-  # TODO: consider splitting off doomdir execution to a separate helper.
-  doomDirWithAllModules = runCommandLocal "doom-full-init"
-    {
-      env = {
-        EMACS = lib.getExe emacs;
-        # Enable this to troubleshoot failures at this step.
-        #DEBUG = "1";
-      };
-      # We set DOOMLOCALDIR somewhere harmless below to stop Doom from trying to
-      # create it somewhere read-only.
-    } ''
-    mkdir $out
-    export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/full-init} -o $out
-  '';
+  doomDirWithAllModules = callPackage ./build-helpers/doomscript.nix {
+    name = "doom-full-init";
+    inherit doomSource emacs;
+    script = ./build-helpers/full-init;
+    scriptArgs = "-o $out";
+  };
 
-  doomDirWithAllModulesAndFlags = runCommandLocal "doom-full-init"
-    {
-      env = {
-        EMACS = lib.getExe emacs;
-        # Enable this to troubleshoot failures at this step.
-        #DEBUG = "1";
-      };
-      # We set DOOMLOCALDIR somewhere harmless below to stop Doom from trying to
-      # create it somewhere read-only.
-    } ''
-    mkdir $out
-    export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/full-init} --flags -o $out
-  '';
-
+  doomDirWithAllModulesAndFlags = callPackage ./build-helpers/doomscript.nix {
+    name = "doom-full-init";
+    inherit doomSource emacs;
+    script = ./build-helpers/full-init;
+    scriptArgs = "--flags -o $out";
+  };
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -100,21 +83,13 @@ let
   # (not even straight).
 
   # Force local build in case the user init.el does something weird and to avoid a roundtrip.
-  doomIntermediates = runCommandLocal "doom-intermediates"
-    {
-      env = {
-        EMACS = lib.getExe emacs;
-        DOOMDIR = "${doomDir}";
-        # Enable this to troubleshoot failures at this step.
-        #DEBUG = "1";
-      };
-      # We set DOOMLOCALDIR somewhere harmless below to stop Doom from trying to
-      # create it somewhere read-only.
-    } ''
-    mkdir $out
-    export DOOMLOCALDIR=$(mktemp -d)
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/dump} -o $out
-  '';
+  doomIntermediates = callPackage ./build-helpers/doomscript.nix {
+    name = "doom-intermediates";
+    inherit doomSource emacs;
+    extraArgs = { DOOMDIR = "${doomDir}"; };
+    script = ./build-helpers/dump;
+    scriptArgs = "-o $out";
+  };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
 
