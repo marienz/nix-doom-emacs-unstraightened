@@ -17,7 +17,7 @@
 
 let
   cfg = config.programs.doom-emacs;
-  inherit (lib) literalExpression mkEnableOption mkIf mkMerge mkOption types;
+  inherit (lib) literalExpression mkEnableOption mkIf mkMerge mkOption types hm;
 in {
   options = {
     programs.doom-emacs = {
@@ -94,13 +94,27 @@ in {
         readOnly = true;
         description = "The final doom-emacs package";
       };
+
+      extraPackages = mkOption {
+        default = self: [ ];
+        type = hm.types.selectorFunction;
+        defaultText = "epkgs: [ ]";
+        example = literalExpression
+          "epkgs: [ epkgs.vterm epkgs.treesit-grammars.with-all-grammars ]";
+        description = ''
+          Extra packages available to Doom Emacs.
+          To let nix handle a doom dependency '(package! ...)' we can leverage the ':built-in t' argument
+          Consider the following example for 'vterm' in the doom config packages.el:
+          (package! vterm :built-in t)
+        '';
+      };
     };
   };
 
   config = mkIf cfg.enable (mkMerge [
     (let
       doomPackages = doomFromPackages pkgs {
-        inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack;
+        inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack extraPackages;
       };
     in
       {
