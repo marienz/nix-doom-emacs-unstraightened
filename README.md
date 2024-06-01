@@ -79,8 +79,6 @@ Configure it:
   programs.doom-emacs = {
     enable = true;
     doomDir = inputs.doom-config;
-    # Any Emacs >= 29 should work. Defaults to pkgs.emacs.
-    emacs = pkgs.emacs29-pgtk;
   };
 ```
 
@@ -117,8 +115,6 @@ The overlay adds two packages:
     #   doomDir = ./path/to/doom/config;
     # instead.
     doomLocalDir = "~/.local/share/nix-doom";
-    # Emacs package to build on (any Emacs >= 29 should work).
-    emacs = pkgs.emacs29;
   })
   ```
 

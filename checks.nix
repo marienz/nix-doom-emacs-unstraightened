@@ -13,7 +13,6 @@
 # limitations under the License.
 
 {
-  emacs29,
   emptyDirectory,
   lib,
   linkFarm,
@@ -29,8 +28,6 @@
 let
   inherit (lib.generators) toPretty;
   common = {
-    # TODO: drop after NixOS 24.05 release.
-    emacs = emacs29;
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;
   };
