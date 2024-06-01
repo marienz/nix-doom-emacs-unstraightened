@@ -267,10 +267,11 @@ let
                 } // fetchGitArgs))
               else builtins.fetchGit fetchGitArgs;
             # Run locally to avoid a network roundtrip.
-            reqfile = runCommandLocal "${name}-deps" { } ''
-              ${lib.getExe emacs} -Q --batch --script \
-                ${./build-helpers/print-deps.el} ${src} > $out
-            '';
+            reqfile = runCommandLocal "${name}-deps" {
+              inherit src;
+              emacs = lib.getExe emacs;
+              printDeps = ./build-helpers/print-deps.el;
+            } "$emacs -Q --batch --script $printDeps $src > $out";
             reqjson = lib.importJSON reqfile;
             # json-encode encodes the empty list as null (nil), not [].
             reqlist = if reqjson == null then [ ] else reqjson;
@@ -306,46 +307,48 @@ let
   # Force local build in case the user init.el does something weird.
   doomProfile = runCommandLocal "doom-profile"
     {
-      env = {
-        EMACS = lib.getExe emacsWithPackages;
-        # Enable this to troubleshoot failures at this step.
-        #DEBUG = "1";
-      };
+      inherit doomDir doomIntermediates doomSource profileName runtimeShell;
+      buildProfileLoader = ./build-helpers/build-profile-loader;
+      buildProfile = ./build-helpers/build-profile;
+      initEl = ./init.el;
+      EMACS = lib.getExe emacsWithPackages;
+      # Enable this to troubleshoot failures at this step.
+      #DEBUG = "1";
       # Required to avoid Doom erroring out at startup.
       nativeBuildInputs = [ git ];
     } ''
     mkdir $out $out/loader $out/doomdir $out/profile $out/straight
-    ln -s ${doomDir}/* $out/doomdir/
+    ln -s $doomDir/* $out/doomdir/
     # yasnippet logs an error at startup if snippets/ does not exist.
     if ! [[ -e $out/doomdir/snippets ]]; then
       mkdir $out/doomdir/snippets
     fi
     rm $out/doomdir/init.el
-    if [[ -z "${profileName}" ]]; then
+    if [[ -z "$profileName" ]]; then
       setProfile="(setq doom-profile-dir \"$out/profile\")"
     else
       setProfile=""
     fi
-    substitute ${./init.el} $out/doomdir/init.el \
+    substitute $initEl $out/doomdir/init.el \
       --subst-var-by maybe-set-profile-dir "$setProfile" \
-      --subst-var-by profile-name "${profileName}" \
-      --subst-var-by user-init "${doomDir}/init.el" \
+      --subst-var-by profile-name "$profileName" \
+      --subst-var-by user-init "$doomDir/init.el" \
       --subst-var-by straight-base-dir $out
-    ln -sf ${doomIntermediates}/packages.el $out/doomdir/
+    ln -sf $doomIntermediates/packages.el $out/doomdir/
     export DOOMDIR=$out/doomdir
 
     # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
     export DOOMLOCALDIR=$(mktemp -d)
-    if [[ -n "${profileName}" ]]; then
+    if [[ -n "$profileName" ]]; then
       export DOOMPROFILELOADFILE=$out/loader/init.el
-      ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile-loader} \
-        -n "${profileName}" -b "$out" ${optionalString noProfileHack "-u"}
+      $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
+        -n "$profileName" -b "$out" ${optionalString noProfileHack "-u"}
 
       # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
       export HOME=$(mktemp -d)
-      export DOOMPROFILE='${profileName}';
+      export DOOMPROFILE="$profileName";
     fi
-    ${runtimeShell} ${doomSource}/bin/doomscript ${./build-helpers/build-profile}
+    $runtimeShell $doomSource/bin/doomscript $buildProfile
 
     # Similar to audit-tmpdir.sh in nixpkgs.
     if grep -q -F "$TMPDIR/" -r $out; then
@@ -358,47 +361,48 @@ let
 
   # Use runCommand, not runCommandLocal, because makeBinaryWrapper pulls in a compiler.
   doomEmacs = runCommand "doom-emacs" {
+    # emacsWithPackages also accessed externally (for pushing to Cachix).
+    inherit doomProfile doomLocalDir doomSource emacsWithPackages profileName;
     nativeBuildInputs = [ makeBinaryWrapper ];
-    # Expose this so we can push it to cachix.
-    inherit emacsWithPackages;
   } ''
-  if [[ -z "${profileName}" ]]; then
+  if [[ -z "$profileName" ]]; then
     profileArgs=()
   else
     profileArgs=(
-      --set DOOMPROFILELOADFILE ${doomProfile}/loader/init.el
-      --set DOOMPROFILE ${profileName}
+      --set DOOMPROFILELOADFILE $doomProfile/loader/init.el
+      --set DOOMPROFILE "$profileName"
     )
   fi
-  makeWrapper ${emacsWithPackages}/bin/emacs $out/bin/doom-emacs \
+  makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
     "''${profileArgs[@]}" \
-    --set DOOMDIR ${doomProfile}/doomdir \
-    --set-default DOOMLOCALDIR "${doomLocalDir}" \
-    --add-flags "--init-directory=${doomSource}"
-  makeWrapper ${doomSource}/bin/doomscript $out/bin/doomscript \
-    --set EMACS ${emacsWithPackages}/bin/emacs \
-    --set-default DOOMLOCALDIR "${doomLocalDir}"
-  makeWrapper ${doomSource}/bin/doom $out/bin/doom \
-    --set EMACS ${emacsWithPackages}/bin/emacs \
+    --set DOOMDIR $doomProfile/doomdir \
+    --set-default DOOMLOCALDIR "$doomLocalDir" \
+    --add-flags "--init-directory=$doomSource"
+  makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
+    --set EMACS $emacsWithPackages/bin/emacs \
+    --set-default DOOMLOCALDIR "$doomLocalDir"
+  makeWrapper $doomSource/bin/doom $out/bin/doom \
+    --set EMACS $emacsWithPackages/bin/emacs \
     "''${profileArgs[@]}" \
-    --set DOOMDIR ${doomProfile}/doomdir \
-    --set-default DOOMLOCALDIR "${doomLocalDir}"
+    --set DOOMDIR $doomProfile/doomdir \
+    --set-default DOOMLOCALDIR "$doomLocalDir"
   '';
 
   emacsWithDoom = runCommand (lib.appendToName "with-doom" emacs).name {
     inherit (emacs) meta;
+    inherit doomEmacs emacs;
   } ''
     mkdir -p $out/bin
-    ln -s ${emacs}/bin/* $out/bin/
+    ln -s $emacs/bin/* $out/bin/
     rm $out/bin/emacs-*
-    ln -sf ${doomEmacs}/bin/doom-emacs $out/bin/emacs
-    ln -sf ${doomEmacs}/bin/{doom,doomscript} $out/bin/
+    ln -sf $doomEmacs/bin/doom-emacs $out/bin/emacs
+    ln -sf $doomEmacs/bin/{doom,doomscript} $out/bin/
 
     mkdir -p $out/share
     # Don't link everything: the systemd units would still refer to normal Emacs.
     # This links the same stuff emacsWithPackages does.
     for dir in applications icons info man; do
-      ln -s ${emacs}/share/$dir $out/share/$dir
+      ln -s $emacs/share/$dir $out/share/$dir
     done
   '';
 in
