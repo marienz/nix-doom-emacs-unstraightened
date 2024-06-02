@@ -100,12 +100,25 @@ in {
         type = hm.types.selectorFunction;
         defaultText = "epkgs: [ ]";
         example = literalExpression
-          "epkgs: [ epkgs.vterm epkgs.treesit-grammars.with-all-grammars ]";
+          "epkgs: [ epkgs.treesit-grammars.with-all-grammars ]";
         description = ''
-          Extra packages available to Doom Emacs.
-          To let nix handle a doom dependency '(package! ...)' we can leverage the ':built-in t' argument
-          Consider the following example for 'vterm' in the doom config packages.el:
-          (package! vterm :built-in t)
+          Extra Emacs packages from nixpkgs available to Doom Emacs,
+          unless that packages is handled by Doom Emacs.
+
+          If Doom Emacs specifies a package,
+          then that specific package and version will be exactly as Doom specifies even if it's
+          included in 'extraPackages'.
+
+          To use 'extraPackages' to override a specific package otherwise specified by Doom Emacs,
+          it is required that the Doom Emacs config use the following arguments for the package:
+          '(package! ... :built-in t)'
+          This allows nix to be used to apply patches to an Emacs package.
+
+          Some Emacs packages from nixpkgs have additional side-effects specific to nix,
+          consider the Emacs Package 'treesit-grammars.with-all-grammars'.
+          It downloads all treesitter grammars defined in nixpkgs at build time and makes them
+          available on path for Emacs at runtime.
+          Doom cannot specify that package using the '(package! ...)' syntax.
         '';
       };
     };
