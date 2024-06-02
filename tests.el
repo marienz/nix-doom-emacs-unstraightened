@@ -49,4 +49,7 @@
     (write-region result nil out nil nil nil 'mustbenew))
   (kill-emacs))
 
+(defun test-extraPackages ()
+  (require 'vterm))
+
 (add-hook 'doom-after-init-hook 'test-doom)

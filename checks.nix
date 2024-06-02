@@ -85,4 +85,6 @@ in {
 
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app = [ [ "rss" "+org" ] ]; } { };
+
+  extraPackages = doomTest "extraPackages" { config = [ "default" ]; } { extraPackages = epkgs: [ epkgs.vterm ]; };
 }
