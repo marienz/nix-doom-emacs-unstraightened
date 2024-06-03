@@ -307,7 +307,7 @@ let
   # Force local build in case the user init.el does something weird.
   doomProfile = runCommandLocal "doom-profile"
     {
-      inherit doomDir doomIntermediates doomSource profileName runtimeShell;
+      inherit doomDir doomIntermediates doomSource noProfileHack profileName runtimeShell;
       buildProfileLoader = ./build-helpers/build-profile-loader;
       buildProfile = ./build-helpers/build-profile;
       initEl = ./init.el;
@@ -342,7 +342,7 @@ let
     if [[ -n "$profileName" ]]; then
       export DOOMPROFILELOADFILE=$out/loader/init.el
       $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
-        -n "$profileName" -b "$out" ${optionalString noProfileHack "-u"}
+        ''${noProfileHack:+-u} -n "$profileName" -b "$out"
 
       # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
       export HOME=$(mktemp -d)
