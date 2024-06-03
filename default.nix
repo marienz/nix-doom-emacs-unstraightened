@@ -46,11 +46,12 @@
   git,
   emacsPackagesFor,
   lib,
-  runCommand,
   runCommandLocal,
   runtimeShell,
   writeText,
   makeBinaryWrapper,
+  stdenv,
+  stdenvNoCC,
 }:
 let
   inherit (lib) optionalAttrs optionalString;
@@ -304,107 +305,48 @@ let
   # - The path to the generated profile is included in the loader
   # - Generating the profile depends on the loader
 
-  # Force local build in case the user init.el does something weird.
-  doomProfile = runCommandLocal "doom-profile"
-    {
-      inherit doomDir doomIntermediates doomSource noProfileHack profileName runtimeShell;
-      buildProfileLoader = ./build-helpers/build-profile-loader;
-      buildProfile = ./build-helpers/build-profile;
-      initEl = ./init.el;
-      EMACS = lib.getExe emacsWithPackages;
-      # Enable this to troubleshoot failures at this step.
-      #DEBUG = "1";
-      # Required to avoid Doom erroring out at startup.
-      nativeBuildInputs = [ git ];
-    } ''
-    mkdir $out $out/loader $out/doomdir $out/profile $out/straight
-    ln -s $doomDir/* $out/doomdir/
-    # yasnippet logs an error at startup if snippets/ does not exist.
-    if ! [[ -e $out/doomdir/snippets ]]; then
-      mkdir $out/doomdir/snippets
-    fi
-    rm $out/doomdir/init.el
-    if [[ -z "$profileName" ]]; then
-      maybeSetProfileDir="(setq doom-profile-dir \"$out/profile\")"
-    else
-      maybeSetProfileDir=""
-    fi
-    substitute $initEl $out/doomdir/init.el \
-      --subst-var maybeSetProfileDir \
-      --subst-var profileName \
-      --subst-var-by userInit "$doomDir/init.el" \
-      --subst-var-by straightBaseDir $out
-    ln -sf $doomIntermediates/packages.el $out/doomdir/
-    export DOOMDIR=$out/doomdir
+  doomProfile = stdenvNoCC.mkDerivation {
+    name = "doom-profile";
+    buildCommandPath = ./build-helpers/build-doom-profile.sh;
 
-    # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
-    export DOOMLOCALDIR=$(mktemp -d)
-    if [[ -n "$profileName" ]]; then
-      export DOOMPROFILELOADFILE=$out/loader/init.el
-      $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
-        ''${noProfileHack:+-u} -n "$profileName" -b "$out"
+    inherit doomDir doomIntermediates doomSource noProfileHack profileName runtimeShell;
+    buildProfileLoader = ./build-helpers/build-profile-loader;
+    buildProfile = ./build-helpers/build-profile;
+    initEl = ./init.el;
+    EMACS = lib.getExe emacsWithPackages;
+    # Enable this to troubleshoot failures at this step.
+    #DEBUG = "1";
 
-      # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
-      export HOME=$(mktemp -d)
-      export DOOMPROFILE="$profileName";
-    fi
-    $runtimeShell $doomSource/bin/doomscript $buildProfile
-
-    # Similar to audit-tmpdir.sh in nixpkgs.
-    if grep -q -F "$TMPDIR/" -r $out; then
-      echo "Doom profile contains a forbidden reference to $TMPDIR/"
-      exit 1
-    fi
-  '';
+    # Required to avoid Doom erroring out at startup.
+    nativeBuildInputs = [ git ];
+    # Force local build in case the user init.el does something weird.
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 
   # Step 6: write wrappers to start the whole thing.
 
-  # Use runCommand, not runCommandLocal, because makeBinaryWrapper pulls in a compiler.
-  doomEmacs = runCommand "doom-emacs" {
+  # makeBinaryWrapper pulls in a compiler, so don't force this one local.
+  doomEmacs = stdenv.mkDerivation {
+    name = "doom-emacs";
+    buildCommandPath = ./build-helpers/build-doom-emacs.sh;
+
     # emacsWithPackages also accessed externally (for pushing to Cachix).
     inherit doomProfile doomLocalDir doomSource emacsWithPackages profileName;
-    nativeBuildInputs = [ makeBinaryWrapper ];
-  } ''
-  if [[ -z "$profileName" ]]; then
-    profileArgs=()
-  else
-    profileArgs=(
-      --set DOOMPROFILELOADFILE $doomProfile/loader/init.el
-      --set DOOMPROFILE "$profileName"
-    )
-  fi
-  makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
-    "''${profileArgs[@]}" \
-    --set DOOMDIR $doomProfile/doomdir \
-    --set-default DOOMLOCALDIR "$doomLocalDir" \
-    --add-flags "--init-directory=$doomSource"
-  makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
-    --set EMACS $emacsWithPackages/bin/emacs \
-    --set-default DOOMLOCALDIR "$doomLocalDir"
-  makeWrapper $doomSource/bin/doom $out/bin/doom \
-    --set EMACS $emacsWithPackages/bin/emacs \
-    "''${profileArgs[@]}" \
-    --set DOOMDIR $doomProfile/doomdir \
-    --set-default DOOMLOCALDIR "$doomLocalDir"
-  '';
 
-  emacsWithDoom = runCommand (lib.appendToName "with-doom" emacs).name {
+    nativeBuildInputs = [ makeBinaryWrapper ];
+  };
+
+  emacsWithDoom = stdenvNoCC.mkDerivation {
+    inherit (lib.appendToName "with-doom" emacs) name;
     inherit (emacs) meta;
     inherit doomEmacs emacs;
-  } ''
-    mkdir -p $out/bin
-    ln -s $emacs/bin/* $out/bin/
-    rm $out/bin/emacs-*
-    ln -sf $doomEmacs/bin/doom-emacs $out/bin/emacs
-    ln -sf $doomEmacs/bin/{doom,doomscript} $out/bin/
+    buildCommandPath = ./build-helpers/build-emacs-with-doom.sh;
 
-    mkdir -p $out/share
-    # Don't link everything: the systemd units would still refer to normal Emacs.
-    # This links the same stuff emacsWithPackages does.
-    for dir in applications icons info man; do
-      ln -s $emacs/share/$dir $out/share/$dir
-    done
-  '';
+    # Force local build as it's near-trivial.
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  };
 in
 {
   inherit doomEmacs emacsWithDoom;
