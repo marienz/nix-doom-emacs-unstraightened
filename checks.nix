@@ -77,9 +77,9 @@ in {
     doomDir = ./doomdir;
     profileName = "";
   };
-  interactive = doomTest "minimal" { config = [ "default" ]; } { };
-  interactive-without-loader = doomTest "minimal" { config = [ "default" ]; } { profileName = ""; };
-  interactive-no-profile-hack = doomTest "minimal" { config = [ "default" ]; } { noProfileHack = true; };
+  interactive = doomTest "nix-profile" { config = [ "default" ]; } { };
+  interactive-without-loader = doomTest "no-profile" { config = [ "default" ]; } { profileName = ""; };
+  interactive-no-profile-hack = doomTest "no-profile" { config = [ "default" ]; } { noProfileHack = true; };
 
   org-re-reveal = doomTest "org-re-reveal" { lang = [ [ "org" "+present" ] ]; } { };
 

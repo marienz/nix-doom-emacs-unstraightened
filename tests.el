@@ -19,9 +19,13 @@
 ;; This tries to hook into startup as late as possible, write a sign of life
 ;; (currently a string written to $out), and then exits.
 
-(defun test-minimal ()
-  ;; The minimal test is a noop.
-  )
+(defun test-no-profile ()
+  (when doom-profile
+    (error "doom-profile should be unset, is %s" doom-profile)))
+
+(defun test-nix-profile ()
+  (unless (and doom-profile (equal (car doom-profile) "nix"))
+    (error "non-nix doom-profile %s" doom-profile)))
 
 (defun test-external-org ()
   "Test org can be loaded and it's not built-in."
