@@ -58,19 +58,6 @@ requested makes `doom doctor' work."
   (file-name-concat
    doom-profile-dir (format "init.%d.elc" emacs-major-version))))
 
-;; TODO: remove if Doom accepts https://github.com/doomemacs/doomemacs/pull/7849
-(defadvice! nix-doom-configs-without-git (package)
-  "Override to use ripgrep instead of git."
-  :override #'doom--help-package-configs
-  (let ((default-directory doom-emacs-dir))
-    (split-string
-     (cdr (doom-call-process
-           "rg" "--no-heading" "--line-number" "--iglob" "!*.org"
-           (format "%s %s($| )"
-                   "(^;;;###package|\\(after!|\\(use-package!)"
-                   package)))
-     "\n" t)))
-
 ;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
 ;; Doom. Extend this to set our profile dir before it does so.
 (setq-hook! +emacs-lisp--flycheck-non-package-mode
