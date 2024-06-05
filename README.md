@@ -172,6 +172,11 @@ The home-manager module supports the same options, as well as:
 - `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
   this if you want to install vanilla Emacs in parallel.
+  
+- `extraPackages`: Specify extra Emacs packages from nixpkgs to be available to Doom Emacs. 
+Defaults to this function `epkgs: [ ]` (no extra packages).
+For example to include Emacs package `treesit-grammars.with-all-grammars`:
+`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
 
 ## Comparison to "normal" Doom Emacs
 
