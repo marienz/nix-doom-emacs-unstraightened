@@ -314,6 +314,25 @@ Unstraightened uses `--init-directory`, as the doctor recommends.
 
 Safe to ignore, for the same reason as the previous warning.
 
+### tree-sitter error on initialization with `file-error "Opening output file" "Read-only file system"`
+The ABI loaded for some grammars from nixpkgs is too new (14) compared to what vanilla Doom Emacs receives (13).
+This results in tree-sitter and some particular grammars to be incompatible.
+This issue is currently confirmed to affect golang.
+
+See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
+
+As a workaround the following is possible:
+- Temporarily disable Doom Emacs from handling tree-sitter in `init.el`.
+- Define your nix Emacs package to be compiled with native tree-sitter support.
+- Use package [treesit-auto](https://github.com/renzmann/treesit-auto) (e.g. it to `packages.el`) 
+to gracefully include activation of tree-sitter specific modes of a programming language, 
+depending on if a particular grammer is installed or not.
+- Include Emacs package `treesit-grammars.with-all-grammars` from nixpkgs,
+e.g. use the home-manager option `extraPackages` like so:
+`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
+
+As a result tree-sitter (built-in to Emacs) will be compatible with the current ABI for grammars included in nixpkgs.
+
 ## Frequently Anticipated Questions
 
 ### How do I add more packages?
