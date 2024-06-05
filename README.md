@@ -342,8 +342,8 @@ Add `(package! foo)` to `packages.el`.
 Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
 not work.
 
-If this is not sufficient, file an issue. I can add a hook to add more packages
-from Nix: I just don't want to add that hook unless someone has a use for it.
+The home-manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
+If this is not sufficient, please file an issue. 
 
 ### How do I add packages not in Emacs overlay?
 
