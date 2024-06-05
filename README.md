@@ -321,6 +321,10 @@ This issue is currently confirmed to affect golang.
 
 See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
 
+Considering that Doom Emacs will likely use the Emacs 29+ built-in tree-sitter at some point at least as an opt-in 
+(see related [Doom Emacs issue](https://github.com/doomemacs/doomemacs/issues/7623)) 
+this particular issue for Unstraightened is unlikely to get solved.
+
 As a workaround the following is possible:
 - Temporarily disable Doom Emacs from handling tree-sitter in `init.el`.
 - Define your nix Emacs package to be compiled with native tree-sitter support.
