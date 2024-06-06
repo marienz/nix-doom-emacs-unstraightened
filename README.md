@@ -172,6 +172,11 @@ The home-manager module supports the same options, as well as:
 - `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
   this if you want to install vanilla Emacs in parallel.
+  
+- `extraPackages`: Specify extra Emacs packages from nixpkgs to be available to Doom Emacs. 
+Defaults to this function `epkgs: [ ]` (no extra packages).
+For example to include Emacs package `treesit-grammars.with-all-grammars`:
+`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
 
 ## Comparison to "normal" Doom Emacs
 
@@ -309,6 +314,29 @@ Unstraightened uses `--init-directory`, as the doctor recommends.
 
 Safe to ignore, for the same reason as the previous warning.
 
+### tree-sitter error on initialization with `file-error "Opening output file" "Read-only file system"`
+The ABI loaded for some grammars from nixpkgs is too new (14) compared to what vanilla Doom Emacs receives (13).
+This results in tree-sitter and some particular grammars to be incompatible.
+This issue is currently confirmed to affect golang.
+
+See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
+
+Considering that Doom Emacs will likely use the Emacs 29+ built-in tree-sitter at some point at least as an opt-in 
+(see related [Doom Emacs issue](https://github.com/doomemacs/doomemacs/issues/7623)) 
+this particular issue for Unstraightened is unlikely to get solved.
+
+As a workaround the following is possible:
+- Temporarily disable Doom Emacs from handling tree-sitter in `init.el`.
+- Define your nix Emacs package to be compiled with native tree-sitter support.
+- Use package [treesit-auto](https://github.com/renzmann/treesit-auto) (e.g. it to `packages.el`) 
+to gracefully include activation of tree-sitter specific modes of a programming language, 
+depending on if a particular grammer is installed or not.
+- Include Emacs package `treesit-grammars.with-all-grammars` from nixpkgs,
+e.g. use the home-manager option `extraPackages` like so:
+`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
+
+As a result tree-sitter (built-in to Emacs) will be compatible with the current ABI for grammars included in nixpkgs.
+
 ## Frequently Anticipated Questions
 
 ### How do I add more packages?
@@ -318,8 +346,8 @@ Add `(package! foo)` to `packages.el`.
 Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
 not work.
 
-If this is not sufficient, file an issue. I can add a hook to add more packages
-from Nix: I just don't want to add that hook unless someone has a use for it.
+The home-manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
+If this is not sufficient, please file an issue. 
 
 ### How do I add packages not in Emacs overlay?
 

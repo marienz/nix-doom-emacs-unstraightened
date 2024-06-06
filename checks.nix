@@ -67,6 +67,10 @@ in {
   minimalEmacs = (makeDoomPackages (common // {
     doomDir = minimalDoomDir;
   })).emacsWithDoom;
+  minimalExtraPackages = mkDoom {
+    doomDir = minimalDoomDir;
+    extraPackages = epkgs: [ epkgs.vterm epkgs.treesit-grammars.with-all-grammars ];
+  };
   allModules = mkDoom { doomDir = allModsDoomDir; };
   allModulesAndFlags = mkDoom { doomDir = allFlagsDoomDir; };
   example = mkDoom { doomDir = ./doomdir; };
@@ -81,4 +85,6 @@ in {
 
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app = [ [ "rss" "+org" ] ]; } { };
+
+  extraPackages = doomTest "extraPackages" { config = [ "default" ]; } { extraPackages = epkgs: [ epkgs.vterm ]; };
 }
