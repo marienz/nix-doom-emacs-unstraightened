@@ -52,8 +52,14 @@
     in
       pkgs.callPackages self mergedArgs;
 
+    # Convert a Nix expression to a `doom!` block suitable for init.el.
+    #
+    # Input: a nested attribute set.
+    # The keys of the first level are categories (like `lang`).
+    # The keys of the second level are module names (like `nix`).
+    # The values are lists of module flags, or `true` for no flags.
     toInit = let
-      inherit (nixpkgs.lib) concatLines concatStringsSep isList isString mapAttrsToList toPretty;
+      inherit (nixpkgs.lib) concatLines concatStringsSep isList mapAttrsToList toPretty;
     in
       attrs:
       concatLines (
@@ -62,11 +68,11 @@
           cat: modules:
           (concatLines (
             [ (":" + cat) ]
-            ++ (map (
-              mod:
-              if isString mod then mod
-              else if isList mod then "(" + (concatStringsSep " " mod) + ")"
-              else abort "${toPretty mod} not supported"
+            ++ (mapAttrsToList (
+              mod: value:
+              if value == true then mod
+              else if isList value then "(${mod} ${concatStringsSep " " value})"
+              else abort "${toPretty value} not supported"
             ))
               modules
           ))

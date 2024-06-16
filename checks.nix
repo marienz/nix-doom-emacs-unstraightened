@@ -37,7 +37,7 @@ let
   };
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
-  minimalDoomDir = mkDoomDir { config = [ "default" ]; };
+  minimalDoomDir = mkDoomDir { config.default = true; };
   doomTest = name: init: doomArgs: testers.testEqualContents {
     assertion = "name = ${name}; modules = ${toPretty {} init}; args = ${toPretty {} doomArgs};";
     expected = writeText "doom-expected" "Doom functions";
@@ -77,14 +77,14 @@ in {
     doomDir = ./doomdir;
     profileName = "";
   };
-  interactive = doomTest "nix-profile" { config = [ "default" ]; } { };
-  interactive-without-loader = doomTest "no-profile" { config = [ "default" ]; } { profileName = ""; };
-  interactive-no-profile-hack = doomTest "no-profile" { config = [ "default" ]; } { noProfileHack = true; };
+  interactive = doomTest "nix-profile" { config.default = true; } { };
+  interactive-without-loader = doomTest "no-profile" { config.default = true; } { profileName = ""; };
+  interactive-no-profile-hack = doomTest "no-profile" { config.default = true; } { noProfileHack = true; };
 
-  org-re-reveal = doomTest "org-re-reveal" { lang = [ [ "org" "+present" ] ]; } { };
+  org-re-reveal = doomTest "org-re-reveal" { lang.org = [ "+present" ]; } { };
 
   # Various tests of module combinations.
-  unpinned-org = doomTest "external-org" { app = [ [ "rss" "+org" ] ]; } { };
+  unpinned-org = doomTest "external-org" { app.rss = [ "+org" ]; } { };
 
-  extraPackages = doomTest "extraPackages" { config = [ "default" ]; } { extraPackages = epkgs: [ epkgs.vterm ]; };
+  extraPackages = doomTest "extraPackages" { config.default = true; } { extraPackages = epkgs: [ epkgs.vterm ]; };
 }
