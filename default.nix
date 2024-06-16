@@ -204,7 +204,7 @@ let
                 # something package.el understands as satisfying dependencies.
                 # This is necessary if we're replacing a pinned ELPA dependency
                 # of an unpinned ELPA package.
-                esuper.melpaBuild {
+                (esuper.melpaBuild {
                   pname = name;
                   # melpaBuild requires we set `version` and `commit` here
                   # (leaving `version` unset until overrideAttrs below does not
@@ -221,7 +221,15 @@ let
                   # TODO: refactor out the recursive call to makePackage.
                   # (Currently needed for dependencies on packages not in epkgs or doom.)
                   packageRequires = map (name: eself.${name} or (makePackage name {})) reqlist;
-                });
+                }).overrideAttrs (prev: {
+                  # We only depend on this during evaluation. Force a dependency so it does not
+                  # get garbage-collected, which slows down subsequent evaluation.
+                  inherit reqfile;
+                  postInstall = (prev.postInstall or "") + ''
+                    mkdir -p $out/nix-support
+                    ln -s $reqfile $out/nix-support/unstraightened-dependencies.json
+                  '';
+                }));
             url =
               if (p.recipe.host or "") == "github" && p ? recipe.repo
               then "https://github.com/${p.recipe.repo}"

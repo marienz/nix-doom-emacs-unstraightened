@@ -401,11 +401,6 @@ There are a few issues:
   determine packages to install and to determine package dependencies for
   packages not in emacs-overlay. Especially the latter is slow.
 
-  - The dependency data probably gets garbage-collected, making subsequent
-    evaluation slow even if nothing changed. I intend to make the installed
-    packages depend on this data to work around this, but I have not implemented
-    it yet.
-
 - Doom (currently) [does not native-compile ahead of
   time](https://github.com/doomemacs/doomemacs/issues/6811), but Unstraightened
   (or nixpkgs, really), does.
