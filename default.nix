@@ -40,10 +40,14 @@
   experimentalFetchTree ? false,
   /* Extra emacs packages from nixpkgs */
   extraPackages ? epkgs: [ ],
+  /* Extra packages to add to $PATH */
+  extraBinPackages ? [ git fd ripgrep ],
 
   callPackage,
   callPackages,
+  fd,
   git,
+  ripgrep,
   emacsPackagesFor,
   lib,
   runCommandLocal,
@@ -325,6 +329,7 @@ let
   };
 
   # Step 6: write wrappers to start the whole thing.
+  binPath = lib.makeBinPath extraBinPackages;
 
   # makeBinaryWrapper pulls in a compiler, so don't force this one local.
   doomEmacs = stdenv.mkDerivation {
@@ -332,7 +337,7 @@ let
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
 
     # emacsWithPackages also accessed externally (for pushing to Cachix).
-    inherit doomProfile doomLocalDir doomSource emacsWithPackages profileName;
+    inherit binPath doomProfile doomLocalDir doomSource emacsWithPackages profileName;
 
     nativeBuildInputs = [ makeBinaryWrapper ];
   };

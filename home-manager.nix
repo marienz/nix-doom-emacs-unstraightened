@@ -121,6 +121,17 @@ in {
           Doom cannot specify that package using the '(package! ...)' syntax.
         '';
       };
+      extraBinPackages = mkOption {
+        default = [
+          config.programs.ripgrep.package
+          config.programs.git.package
+          config.programs.fd.package
+        ];
+        type = types.listOf types.package;
+        defaultText = literalExpression
+          "[ programs.ripgrep.package programs.git.package programs.fd.package ]";
+        description = "Extra packages to add to Doom's $PATH.";
+      };
     };
   };
 
