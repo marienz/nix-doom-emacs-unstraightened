@@ -160,6 +160,11 @@ support use without flakes.
 - `doomSource`: Doom source tree. Defaults to a flake input: overriding that
   input is probably easier than passing this.
 
+- `extraPackages`: Specify extra Emacs packages from nixpkgs to be available to
+  Doom Emacs. Defaults to this function `epkgs: [ ]` (no extra packages).
+  For example to include Emacs package `treesit-grammars.with-all-grammars`:
+  `extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
+
 There are a few other settings but they are not typically useful. See the
 source.
 
@@ -169,11 +174,6 @@ The home-manager module supports the same options, as well as:
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
   this if you want to install vanilla Emacs in parallel.
   
-- `extraPackages`: Specify extra Emacs packages from nixpkgs to be available to Doom Emacs. 
-Defaults to this function `epkgs: [ ]` (no extra packages).
-For example to include Emacs package `treesit-grammars.with-all-grammars`:
-`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
-
 ## Comparison to "normal" Doom Emacs
 
 - Unstraightened updates Doom and its dependencies along with the rest of your
