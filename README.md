@@ -14,10 +14,7 @@ implemented differently.
 Tested and working on Linux, with emacs-overlay and Doom inputs updated
 automatically. If you're reading this on Github, there should be a CI status
 badge above: if CI is passing, Unstraightened installs an up-to-date version of
-Doom Emacs.
-
-Not all Doom module flags may work (although all modules are covered by CI, not
-all module flags are). Please file an issue if you encounter a build failure.
+Doom Emacs and (almost) all module dependencies.
 
 Not yet tested on macOS. Likely works as long as you do not need an "app" (you
 launch Emacs from the commandline or through other means). I intend to fix this.
