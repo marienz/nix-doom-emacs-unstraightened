@@ -85,6 +85,37 @@ in {
 
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app.rss = [ "+org" ]; } { };
+  # Dependencies that require a module flag enabled and a different module or flag disabled.
+  # Several are "+lsp and lsp without eglot" or "some flag and syntax without flymake".
+  # TODO: Might be worth doing a full init.el build with just those two flags disabled.
+  flycheck-guile = doomTest "nix-profile" { lang.scheme = [ "+guile" ]; checkers.syntax = true; } { };
+  lsp-treemacs = doomTest "nix-profile" { ui.treemacs = [ "+lsp" ]; tools.lsp = true; } { };
+  flycheck-eglot = doomTest "nix-profile" { tools.lsp = [ "+eglot" ]; checkers.syntax = true; } { };
+  lsp-sourcekit-flycheck-swift = doomTest "nix-profile" {
+    lang.swift = [ "+lsp" ];
+    tools.lsp = true;
+    checkers.syntax = true;
+  } { };
+  lsp-metals = doomTest "nix-profile" { lang.scala = [ "+lsp" ]; tools.lsp = true; } { };
+  lsp-pyright = doomTest "nix-profile" { lang.python = [ "+lsp" "+pyright" ]; tools.lsp = true; } { };
+  lsp-python-ms = doomTest "nix-profile" { lang.python = [ "+lsp" ]; tools.lsp = true; } { };
+  org-roam2 = doomTest "nix-profile" { lang.org = [ "+roam2" ]; } { };
+  flycheck-moonscript = doomTest "nix-profile" { lang.lua = [ "+moonscript" ]; checkers.syntax = true; } { };
+  lsp-julia = doomTest "nix-profile" { lang.julia = [ "+lsp" ]; tools.lsp = true; } { };
+  lsp-java = doomTest "nix-profile" { lang.java = [ "+lsp" ]; tools.lsp = true; } { };
+  lsp-haskell = doomTest "nix-profile" { lang.haskell = [ "+lsp" ]; tools.lsp = true; } { };
+  flycheck-stan = doomTest "nix-profile" { lang.ess = [ "+stan" ]; checkers.syntax = true; } { };
+  lsp-dart = doomTest "nix-profile" { lang.dart = [ "+lsp" ]; tools.lsp = true; } { };
+  ccls = doomTest "nix-profile" { lang.cc = [ "+lsp" ]; tools.lsp = true; } { };
+  flycheck-irony = doomTest "nix-profile" { lang.cc = [ "+lsp" ]; checkers.syntax = true; } { };
+  nerd-icons-dired = doomTest "nix-profile" { emacs.dired = [ "+icons" ]; } { };
+  multiple-cursors = doomTest "nix-profile" { editor.multiple-cursors = true; } { };
+  flx = doomTest "nix-profile" { completion.ivy = [ "+fuzzy" ]; } { };
+  corfu-orderless = doomTest "nix-profile" { completion.corfu = [ "+orderless" ]; } { };
+  flycheck-posframe = doomTest "nix-profile" { checkers.syntax = [ "+childframe" ]; } { };
+  flyspell-correct-ivy = doomTest "nix-profile" { checkers.spell = [ "+flyspell" ]; completion.ivy = true; } { };
+  flyspell-correct-helm = doomTest "nix-profile" { checkers.spell = [ "+flyspell" ]; completion.helm = true; } { };
+  flyspell-correct-popup = doomTest "nix-profile" { checkers.spell = [ "+flyspell" ]; } { };
 
   extraPackages = doomTest "extraPackages" { config.default = true; } { extraPackages = epkgs: [ epkgs.vterm ]; };
 }
