@@ -21,6 +21,8 @@ on:
 
 jobs:
   flake-update:
+    permissions:
+      contents: write
     uses: ./.github/workflows/flake-update.yml
   check:
     uses: ./.github/workflows/check.yml
@@ -33,6 +35,8 @@ jobs:
       ref: flake-update
     needs: [flake-update]
   push:
+    permissions:
+      contents: write
     uses: ./.github/workflows/push-flake-update.yml
     needs: [check, cachix]
 
