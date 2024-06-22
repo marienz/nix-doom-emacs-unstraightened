@@ -19,6 +19,12 @@ on:
     branches:
       - 'main'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Ref/branch to check'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -26,6 +32,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
       - name: Install Nix
         uses: cachix/install-nix-action@v27
         with:

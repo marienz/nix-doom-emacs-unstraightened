@@ -18,6 +18,12 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Ref/branch to check'
+        required: false
+        type: string
 
 jobs:
   check:
@@ -25,6 +31,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
       - name: Enable Magic Nix Cache
