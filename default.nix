@@ -104,7 +104,7 @@ let
           repoToPackages = lib.zipAttrs
             (lib.mapAttrsToList (name: repo: { ${repo} = name; }) packageToRepo);
           packageToPin = lib.mapAttrs
-            (name: p: p.pin or extraPins.${name} or null) doomPackageSet;
+            (name: p: extraPins.${name} or p.pin or null) doomPackageSet;
           repoToPins = lib.mapAttrs (name: packages:
             lib.unique (lib.filter (p: p != null) (map (p: packageToPin.${p}) packages)))
             repoToPackages;
@@ -154,7 +154,7 @@ let
             # null`, we need to explicitly check for presence.
             hasOrigEPkg = esuper ? ${name};
             origEPkg = esuper.${name};
-            pin = p.pin or extraPins.${name} or (
+            pin = extraPins.${name} or p.pin or (
               # Don't use `url`: this needs to be in sync with repoToPin above.
               # (If we remap ELPA packages to emacs-straight here but not above, it breaks...)
               let repo = esuper.${name}.src.gitRepoUrl or null; in
