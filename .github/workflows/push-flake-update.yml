@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: nix flake update
+name: Push flake-update
 
 on:
   workflow_dispatch:
   workflow_call:
 
 jobs:
-  update:
+  commit:
     runs-on: ubuntu-latest
     permissions:
       contents: "write"
@@ -27,13 +27,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: main
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - name: Update and push flake.lock
-        run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git checkout -b flake-update
-          nix flake update --commit-lock-file
-          git push --force origin flake-update
+          ref: flake-update
+      - name: Push changes
+        run: git push origin HEAD:main
+        # `git push` only works because branch protection is not enabled.
+        #
+        # Currently branch protection is not effective anyway, since the only
+        # contributor (marienz) has admin permissions, and applying branch
+        # protection to administrators seems to be an "organization" feature.
+        #
+        # The supported path seems to be "create a PR and use the API to merge
+        # it", but that's more work to implement: revisit later if needed.

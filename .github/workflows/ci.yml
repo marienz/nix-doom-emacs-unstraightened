@@ -12,80 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This workflow does double duty: it runs checks against PRs/pushes, and it
-# updates flake.lock (run from a schedule or manually).
-#
-# This approach seems simpler than having a separate lockfile-updating workflow
-# that creates a PR that gets the normal check workflow ran against it before
-# merging, especially since (according to
-# https://github.com/DeterminateSystems/update-flake-lock) GitHub Actions does
-# not run workflows against PRs created by a GitHub Action.
-
 name: CI
 
 on:
   workflow_dispatch:
-    inputs:
-      updateFlakeLock:
-        description: 'Update flake.lock'
-        default: false
-        type: boolean
   schedule:
     - cron: '23 8 * * *' # runs daily at a randomly selected time
 
 jobs:
+  flake-update:
+    uses: ./.github/workflows/flake-update.yml
   check:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: "write"
-      contents: "write"
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - name: Enable Magic Nix Cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-        with:
-          use-flakehub: false
-      - name: Update flake.lock
-        if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
-        run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          nix flake update --commit-lock-file
-      - name: Check flake.lock
-        uses: DeterminateSystems/flake-checker-action@main
-      - name: Cache downloads
-        uses: ./.github/actions/cache-downloads
-      - name: nix flake check
-        run: nix flake check -L --show-trace
-      - name: Build packages for Cachix
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: nix build .#cachix-packages -L
-      # Intentionally install Cachix late: build artifacts are cached by Magic
-      # Nix Cache, only the runtime closure of cachix-packages goes to the
-      # public Cachix cache.
-      - name: Install Cachix
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        uses: cachix/cachix-action@v15
-        with:
-          name: doom-emacs-unstraightened
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - name: Push to Cachix
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: readlink result | cachix push doom-emacs-unstraightened
-      - name: Push changes
-        if: github.event_name == 'schedule' || ( github.event_name == 'workflow_dispatch' && inputs.updateFlakeLock )
-        run: git push
-        # `git push` only works because branch protection is not enabled.
-        #
-        # Currently branch protection is not effective anyway, since the only
-        # contributor (marienz) has admin permissions, and applying branch
-        # protection to administrators seems to be an "organization" feature.
-        #
-        # The supported path seems to be "create a PR and use the API to merge
-        # it", but that's more work to implement (see above): revisit later.
+    uses: ./.github/workflows/check.yml
+    with:
+      ref: flake-update
+    needs: [flake-update]
+  cachix:
+    uses: ./.github/workflows/cachix.yml
+    with:
+      ref: flake-update
+    needs: [flake-update]
+  push:
+    uses: ./.github/workflows/push-flake-update.yml
+    needs: [check, cachix]
 
 # TODO: try to improve caching.
 #
