@@ -15,6 +15,7 @@
 {
   callPackages,
   emptyDirectory,
+  emacs,
   lib,
   linkFarm,
   runCommand,
@@ -34,6 +35,7 @@ let
   common = {
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;
+    emacs = emacs.override { withNativeCompilation = false; };
   };
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
