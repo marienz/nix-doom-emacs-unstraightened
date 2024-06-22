@@ -42,5 +42,11 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
+
+    # Temporarily override git-commit, which Doom pins to an earlier commit than magit
+    # (built from the same repo). When building with straight, the magit pin seems to "win",
+    # making this a non-issue for Doom (since there have been no significant changes to git-commit).
+    # CI should fail again the next time Doom updates magit, so this won't go stale.
+    git-commit = "ea0f07e54967197ac0b072a69ba314314a4080c1";
   };
 }
