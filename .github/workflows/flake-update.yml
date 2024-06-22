@@ -13,7 +13,6 @@
 # limitations under the License.
 
 name: nix flake update
-description: "Check out main, update flake.lock, push to flake-update."
 
 on:
   workflow_dispatch:
