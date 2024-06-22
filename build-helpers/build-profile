@@ -18,6 +18,21 @@
 ;; We skip Doom's normal install and initialization.
 (require 'straight)
 
+;; Set from run!
+(defvar site-lisp)
+
+(defun generate-nix-autoloads ()
+  "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
+  (let (filenames)
+    (dolist (filename (directory-files site-lisp))
+      (when (string-suffix-p "-autoloads.el" filename)
+        (push (expand-file-name filename site-lisp) filenames)))
+    (doom-autoloads--scan filenames doom-autoloads-excluded-files 'literal)))
+
+(add-to-list
+ 'doom-profile-generators
+ '("80-loaddefs-nix.auto.el" . generate-nix-autoloads))
+
 ;; Doom runs this with package.el activated, but suppresses activation during
 ;; normal startup. Store the side effects of activation in the profile to avoid
 ;; (slow) package activation during normal startup.
@@ -54,7 +69,8 @@
 
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
-(defcli! build-profile ()
+(defcli! build-profile
+    ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from"))
   "Write a Doom profile."
   ;; Load our generated profile's init.el. Both to get the profile right and to
   ;; load the advice to make Doom not install straight.

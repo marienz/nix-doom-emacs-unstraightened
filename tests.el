@@ -41,6 +41,11 @@
   (unless (string-search "/site-lisp/revealjs" org-re-reveal-root)
     (error "org-re-reveal does not find our revealjs: %s" org-re-reveal-root)))
 
+(defun test-cmake ()
+  "Test cmake-mode autoloads are loaded."
+  (unless (functionp 'cmake-mode)
+    (error "cmake-mode not available")))
+
 (defun test-doom ()
   (let* ((out (getenv "out"))
          (test (intern-soft (format "test-%s" (getenv "testName"))))

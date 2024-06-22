@@ -81,6 +81,8 @@ in {
   interactive-without-loader = doomTest "no-profile" { config.default = true; } { profileName = ""; };
   interactive-no-profile-hack = doomTest "no-profile" { config.default = true; } { noProfileHack = true; };
 
+  cmake = doomTest "cmake" { lang.cc = true; } { };
+
   org-re-reveal = doomTest "org-re-reveal" { lang.org = [ "+present" ]; } { };
 
   # Various tests of module combinations.

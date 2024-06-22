@@ -45,7 +45,8 @@ if [[ -n "$profileName" ]]; then
     export HOME=$(mktemp -d)
     export DOOMPROFILE="$profileName";
 fi
-$runtimeShell $doomSource/bin/doomscript $buildProfile
+$runtimeShell $doomSource/bin/doomscript $buildProfile \
+    -l $deps/share/emacs/site-lisp
 
 # Similar to audit-tmpdir.sh in nixpkgs.
 if grep -q -F "$TMPDIR/" -r $out; then
