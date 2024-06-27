@@ -162,12 +162,6 @@
       done
     '';
   };
-  # Fix /build/ leaking into byte-compiled files (patch accepted upstream).
-  phpactor = esuper.phpactor.overrideAttrs (attrs: {
-    patches = (attrs.patches or [ ]) ++ [
-      ./elisp-patches/0001-Do-not-call-locate-user-emacs-file-when-compiling.patch
-    ];
-  });
   # https://github.com/emacs-taskrunner/helm-taskrunner/issues/2
   # TODO: make our generated melpaBuild available in esuper?
   # (upstream unchanged for 5 years, not urgent to make this robust...)
