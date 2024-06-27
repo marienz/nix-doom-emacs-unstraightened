@@ -237,8 +237,8 @@ let
                       && p ? recipe.repo
                       && (p.recipe.host or null) == null
               then p.recipe.repo
-              else epkg.src.gitRepoUrl
-                or extraUrls.${name}
+              else extraUrls.${name}
+                or epkg.src.gitRepoUrl
                 or (if isElpa then "https://github.com/emacs-straight/${name}"
                     else (let
                       recipe = lib.generators.toPretty {} (p.recipe or "missing");
