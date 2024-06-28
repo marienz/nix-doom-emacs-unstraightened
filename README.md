@@ -45,37 +45,49 @@ Please file an issue.
 
 ### With flakes
 
-Add this flake as an input:
+Add this flake as an input in `flake.nix`:
 
 ``` nix
-nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
-# Optional, to download less. Neither the module nor the overlay uses this input.
-nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "";
+inputs = {
+  nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
+  # Optional, to download less. Neither the module nor the overlay uses this input.
+  nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "";
+};
 ```
 
 If your Doom configuration lives in a different repository, add that as input
 too:
 
 ``` nix
-doom-config.url = "...";
-doom-config.flake = false;
+inputs = {
+  doom-config.url = "...";
+  doom-config.flake = false;
+};
 ```
 
 #### Home Manager
 
 If you use [Home Manager](https://github.com/nix-community/home-manager), add
-Unstraightened's home-manager module:
+Unstraightened's home-manager module in `flake.nix`:
 
 ``` nix
-imports = [ inputs.nix-doom-emacs-unstraightened.hmModule ];
+outputs = inputs @ { nixpkgs, home-manager, ... }: {
+  homeConfigurations."username" = home-manager.lib.homeManagerConfiguration {
+    modules = [
+      inputs.nix-doom-emacs-unstraightened.hmModule
+      ./home.nix
+    ];
+    extraSpecialArgs = { inherit inputs; };
+  };
+};
 ```
 
-Configure it:
+Configure it in `home.nix`:
 
 ``` nix
   programs.doom-emacs = {
     enable = true;
-    doomDir = inputs.doom-config;
+    doomDir = inputs.doom-config;  # or e.g. `./doom.d` for a local configuration
   };
 ```
 
