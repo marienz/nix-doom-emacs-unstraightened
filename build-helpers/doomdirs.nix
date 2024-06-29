@@ -16,8 +16,10 @@
   callPackage,
   doomSource,
   emacs,
+  lib,
+  writeTextDir,
 }:
-{
+let
   allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
@@ -31,4 +33,16 @@
     script = ./full-init;
     scriptArgs = "--flags -o $out";
   };
+
+  # Hack, but given how this is used it's good enough even if the replacement misfires.
+  #
+  # Goal is to disable eglot and flymake, because doing so enables lsp-mode and flycheck
+  # respectively. We also want to keep most other flags enabled. But even if Doom introduces a flag
+  # starting with "eglot" or "flymake", disabling it and enabling a nonsensical flag is not really
+  # an issue.
+  allModulesMostFlags = writeTextDir "init.el" (
+    lib.replaceStrings [ " +eglot" " +flymake" ] [ "" "" ] (
+      lib.readFile "${allModulesAndFlags}/init.el"));
+in {
+  inherit allModules allModulesAndFlags allModulesMostFlags;
 }
