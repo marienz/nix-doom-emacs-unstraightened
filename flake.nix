@@ -98,15 +98,15 @@
         }).doomEmacs;
         # TODO: cache more packages, cache for more Emacsen.
         cachix-packages = let
-          inherit (pkgs.callPackages ./build-helpers/full-init.nix {
+          doomDirs = pkgs.callPackages ./build-helpers/doomdirs.nix {
             doomSource = doomemacs;
-          }) doomDirWithAllModules;
+          };
         in
           pkgs.linkFarm "unstraightened-cachix-packages" {
             inherit doomemacs;
             full-emacs29 = (doomFromPackages pkgs {
               emacs = pkgs.emacs29;
-              doomDir = doomDirWithAllModules;
+              doomDir = doomDirs.allModules;
               doomLocalDir = "~/.local/share/nix-doom-unstraightened";
               experimentalFetchTree = true;
             }).doomEmacs.emacsWithPackages.deps;

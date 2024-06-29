@@ -18,14 +18,14 @@
   emacs,
 }:
 {
-  doomDirWithAllModules = callPackage ./doomscript.nix {
+  allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;
     scriptArgs = "-o $out";
   };
 
-  doomDirWithAllModulesAndFlags = callPackage ./doomscript.nix {
+  allModulesAndFlags = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;

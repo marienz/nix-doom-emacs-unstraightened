@@ -30,8 +30,7 @@
 }:
 let
   inherit (lib.generators) toPretty;
-  inherit (callPackages ./build-helpers/full-init.nix { inherit doomSource; })
-    doomDirWithAllModules doomDirWithAllModulesAndFlags;
+  doomDirs = callPackages ./build-helpers/doomdirs.nix { inherit doomSource; };
   common = {
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;
@@ -72,8 +71,8 @@ in {
     doomDir = minimalDoomDir;
     extraPackages = epkgs: [ epkgs.vterm epkgs.treesit-grammars.with-all-grammars ];
   };
-  allModules = mkDoom { doomDir = doomDirWithAllModules; };
-  allModulesAndFlags = mkDoom { doomDir = doomDirWithAllModulesAndFlags; };
+  allModules = mkDoom { doomDir = doomDirs.allModules; };
+  allModulesAndFlags = mkDoom { doomDir = doomDirs.allModulesAndFlags; };
   example = mkDoom { doomDir = ./doomdir; };
   example-without-loader = mkDoom {
     doomDir = ./doomdir;
