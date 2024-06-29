@@ -53,10 +53,5 @@
     # making this a non-issue for Doom (since there have been no significant changes to git-commit).
     # CI should fail again the next time Doom updates magit, so this won't go stale.
     git-commit = "ea0f07e54967197ac0b072a69ba314314a4080c1";
-
-    # Temporarily pin opencl-mode. It renamed to opencl-c-mode, which triggers a build failure:
-    #
-    # error("%s" "Single file opencl-c-mode.el does not match package name opencl-mode")
-    opencl-mode = "15091eff92c33ee0d1ece40eb99299ef79fee92d";
   };
 }
