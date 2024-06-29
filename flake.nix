@@ -96,21 +96,33 @@
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           profileName = "";
         }).doomEmacs;
-        # TODO: cache more packages, cache for more Emacsen.
         cachix-packages = let
           doomDirs = pkgs.callPackages ./build-helpers/doomdirs.nix {
             doomSource = doomemacs;
           };
+          inherit (nixpkgs) lib;
+          depBuilds = lib.mapCartesianProduct
+            ({doomDir, emacs}: (
+              lib.nameValuePair
+                "${emacs.name}-${doomDir.name}"
+                (doomFromPackages pkgs {
+                  doomDir = doomDir.value;
+                  emacs = emacs.value;
+                  doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+                  experimentalFetchTree = true;
+                }).doomEmacs.emacsWithPackages.deps))
+            {
+              doomDir = lib.attrsToList doomDirs;
+              # TODO: emacs29-gtk3 and emacs29-pgtk fail to build jupyter (segfault in zmq)
+              emacs = lib.attrsToList {
+                inherit (pkgs) emacs29 emacs29-nox;
+              };
+            };
         in
-          pkgs.linkFarm "unstraightened-cachix-packages" {
-            inherit doomemacs;
-            full-emacs29 = (doomFromPackages pkgs {
-              emacs = pkgs.emacs29;
-              doomDir = doomDirs.allModules;
-              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-              experimentalFetchTree = true;
-            }).doomEmacs.emacsWithPackages.deps;
-          };
+          pkgs.linkFarm "unstraightened-cachix-packages" (
+            { inherit doomemacs; }
+            // lib.listToAttrs depBuilds
+          );
       });
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
