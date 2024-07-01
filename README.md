@@ -19,6 +19,10 @@ Doom Emacs and (almost) all module dependencies.
 Not yet tested on macOS. Likely works as long as you do not need an "app" (you
 launch Emacs from the commandline or through other means). I intend to fix this.
 
+You may encounter "Cannot find Git revision" errors on Nix versions newer than
+2.18.x (see #14). Try enabling `experimentalFetchTree` to work around this (see
+below).
+
 Please report any issues.
 
 ## How to use
@@ -176,6 +180,10 @@ support use without flakes.
   Doom Emacs. Defaults to this function `epkgs: [ ]` (no extra packages).
   For example to include Emacs package `treesit-grammars.with-all-grammars`:
   `extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
+
+- `experimentalFetchTree`: fetch packages using `fetchTree`, which is more
+  efficient but considered experimental in Nix (subject to changes which might
+  break fetches).
 
 There are a few other settings but they are not typically useful. See the
 source.
