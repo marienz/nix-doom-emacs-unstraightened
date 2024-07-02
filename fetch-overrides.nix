@@ -54,4 +54,9 @@
     # CI should fail again the next time Doom updates magit, so this won't go stale.
     git-commit = "ea0f07e54967197ac0b072a69ba314314a4080c1";
   };
+
+  # Repositories for which to force `shallow = false`.
+  forceDeepClone = {
+      "https://git.notmuchmail.org/git/notmuch" = true;
+  };
 }

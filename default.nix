@@ -59,7 +59,7 @@
 }:
 let
   inherit (lib) optionalAttrs optionalString;
-  inherit (import ./fetch-overrides.nix) extraPins extraUrls;
+  inherit (import ./fetch-overrides.nix) extraPins extraUrls forceDeepClone;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -260,7 +260,8 @@ let
 
             }
             // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
-            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; };
+            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
+            // optionalAttrs (forceDeepClone.${url} or false) { shallow = false; };
             src =
               if experimentalFetchTree
               then builtins.fetchTree (
