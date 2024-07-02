@@ -59,5 +59,6 @@
   forceDeepCloneDomains = [
       "https://git.notmuchmail.org/"
       "https://git.savannah.gnu.org/"
+      "https://git.sr.ht/"
   ];
 }
