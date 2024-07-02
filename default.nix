@@ -59,7 +59,7 @@
 }:
 let
   inherit (lib) optionalAttrs optionalString;
-  inherit (import ./fetch-overrides.nix) extraPins extraUrls;
+  inherit (import ./fetch-overrides.nix) extraPins extraUrls forceDeepCloneDomains;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -260,7 +260,10 @@ let
 
             }
             // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
-            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; };
+            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
+            // optionalAttrs (lib.any (d: lib.hasPrefix d url) forceDeepCloneDomains) {
+              shallow = false;
+            };
             src =
               if experimentalFetchTree
               then builtins.fetchTree (
@@ -272,6 +275,16 @@ let
                   repo = lib.removeSuffix ".git" (lib.elemAt split 1);
                 in {
                   type = "github";
+                  inherit owner repo;
+                  rev = pin;
+                } else if lib.hasPrefix "https://git.sr.ht/" url
+                then let
+                  tail = lib.removePrefix "https://git.sr.ht/" url;
+                  split = lib.splitString "/" tail;
+                  owner = lib.head split;
+                  repo = lib.elemAt split 1;
+                in {
+                  type = "sourcehut";
                   inherit owner repo;
                   rev = pin;
                 } else ({

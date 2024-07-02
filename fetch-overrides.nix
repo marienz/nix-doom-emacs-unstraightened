@@ -54,4 +54,12 @@
     # CI should fail again the next time Doom updates magit, so this won't go stale.
     git-commit = "ea0f07e54967197ac0b072a69ba314314a4080c1";
   };
+
+  # Domains for which to force `shallow = false`.
+  forceDeepCloneDomains = [
+      "https://git.notmuchmail.org/"
+      "https://git.savannah.gnu.org/"
+      "https://git.sr.ht/"
+      "https://codeberg.org/"
+  ];
 }
