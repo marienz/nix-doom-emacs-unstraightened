@@ -55,8 +55,9 @@
     git-commit = "ea0f07e54967197ac0b072a69ba314314a4080c1";
   };
 
-  # Repositories for which to force `shallow = false`.
-  forceDeepClone = {
-      "https://git.notmuchmail.org/git/notmuch" = true;
-  };
+  # Domains for which to force `shallow = false`.
+  forceDeepCloneDomains = [
+      "https://git.notmuchmail.org/"
+      "https://git.savannah.gnu.org/"
+  ];
 }
