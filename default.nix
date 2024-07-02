@@ -277,6 +277,16 @@ let
                   type = "github";
                   inherit owner repo;
                   rev = pin;
+                } else if lib.hasPrefix "https://git.sr.ht/" url
+                then let
+                  tail = lib.removePrefix "https://git.sr.ht/" url;
+                  split = lib.splitString "/" tail;
+                  owner = lib.head split;
+                  repo = lib.elemAt split 1;
+                in {
+                  type = "sourcehut";
+                  inherit owner repo;
+                  rev = pin;
                 } else ({
                   type = "git";
                 } // fetchGitArgs))
