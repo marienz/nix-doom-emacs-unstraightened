@@ -61,5 +61,6 @@
       "https://git.savannah.gnu.org/"
       "https://git.sr.ht/"
       "https://codeberg.org/"
+      "https://gitlab.com/"
   ];
 }
