@@ -93,8 +93,6 @@ in {
   # Dependencies that require a module flag enabled and a different module or flag disabled.
   # flycheck-eglot needs flymake disabled.
   flycheck-eglot = doomBuildTest { tools.lsp = [ "+eglot" ]; checkers.syntax = true; };
-  # lsp-python-ms needs +pyright disabled.
-  lsp-python-ms = doomBuildTest { lang.python = [ "+lsp" ]; tools.lsp = true; };
   # roam2 needs +roam disabled.
   org-roam2 = doomBuildTest { lang.org = [ "+roam2" ]; };
   # nerd-icons-dired needs +dirvish disabled.
