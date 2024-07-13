@@ -177,25 +177,25 @@ let
               else customPackages.${name}
                 or (
                 assert lib.assertMsg
-                  (isElpa || (p ? recipe && pin != null) || extraUrls ? ${name})
-                  "${name}: not in epkgs, not elpa, no recipe or not pinned";
+                  (isElpa || (p ? recipe) || extraUrls ? ${name}) ''
+                  nix-doom-emacs-unstraightened: ${name}: unable to derive repository URL:
+                  - no recipe provided
+                  - not an ELPA package
+                  - not in Unstraightened's fetch-overrides.nix
+
+                  If this is a custom `package!` entry in packages.el, add a `:recipe`.
+                '';
                 # Assume we can safely ignore (pre-)build unless we're actually
                 # building our own package.
                 assert lib.assertMsg (!(p ? recipe.pre-build)) "${name}: pre-build not supported";
                 assert lib.assertMsg (!(p ? recipe.build)) "${name}: build not supported";
-                # TODO: lift "pin" requirement, if that turns out to be
-                # necessary or at least desirable. Requires figuring out why
-                # melpa2nix requires `commit`. Not a priority because if it's
-                # not in epkgs we'd need a recipe passed in, and it's uncommon
-                # for Doom to pass in a recipe without pinning.
-                #
-                # Doom does currently have unpinned packages with an explicit
-                # recipe, but they're in epkgs (popon and flymake-popon) so it
-                # should be ok. Users might do this to pull in a custom package
-                # they don't care about pinning, though: we may want to support
-                # that.
-                assert lib.assertMsg (pin != null)
-                  "${name}: not in epkgs and not pinned. This is not yet supported.";
+                assert lib.assertMsg (pin != null) ''
+                  nix-doom-emacs-unstraightened: ${name}: not in nixpkgs or emacs-overlay, not pinned.
+                  All packages must be pinned so they can be fetched deterministically.
+
+                  If this is a custom `package!` entry in your packages.el, add a `:pin`.
+                  If it is a `package!` in Doom, add an entry to Unstraightened's fetch-overrides.nix.
+                '';
                 # epkgs.*Build helpers take an attrset, they do not support
                 # mkDerivation's fixed-point evaluation (`finalAttrs`).
                 # If they did, the buildInputs stuff should use finalAttrs.src.
