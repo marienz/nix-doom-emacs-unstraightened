@@ -34,11 +34,6 @@
     ol-notmuch = "https://git.sr.ht/~tarsius/ol-notmuch";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
-
-    # Melpa and emacs-overlay updated to https://gitlab.com/emacs-ansible/emacs-ansible,
-    # but Doom seems to use the old location via el-get.
-    # TODO: check if this becomes obsolete and/or el-get/doom need updating later.
-    ansible = "https://github.com/k1LoW/emacs-ansible";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
