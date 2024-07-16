@@ -47,7 +47,7 @@
     # (built from the same repo). When building with straight, the magit pin seems to "win",
     # making this a non-issue for Doom (since there have been no significant changes to git-commit).
     # CI should fail again the next time Doom updates magit, so this won't go stale.
-    git-commit = "9d1f8db507e080e032943a3ed1445bd8d9aaa9fc";
+    git-commit = "b9948f9571928bb7f39f4b3a112bd76e52a072ce";
   };
 
   # Domains for which to force `shallow = false`.
