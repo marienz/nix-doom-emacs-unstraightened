@@ -80,7 +80,10 @@ let
     scriptArgs = "-o $out";
   };
 
-  doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
+  # Ignore agda-input: nixpkgs installs this as part of agda2-mode.
+  doomPackageSet = lib.filterAttrs
+    (n: v: n != "agda-input")
+    (lib.importJSON "${doomIntermediates}/packages.json");
 
   # Step 2: override Emacs packages to respect Doom's pins.
   doomEmacsPackages = (emacsPackagesFor emacs).overrideScope (
