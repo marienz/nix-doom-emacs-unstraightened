@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir $out $out/loader $out/doomdir $out/profile $out/straight
+mkdir $out $out/loader $out/doomdir $out/profile $out/straight doomlocaldir home
 ln -s $doomDir/* $out/doomdir/
 # yasnippet logs an error at startup if snippets/ does not exist.
 if ! [[ -e $out/doomdir/snippets ]]; then
@@ -35,14 +35,14 @@ ln -sf $doomIntermediates/packages.el $out/doomdir/
 export DOOMDIR=$out/doomdir
 
 # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
-export DOOMLOCALDIR=$(mktemp -d)
+export DOOMLOCALDIR="$PWD/doomlocaldir"
 if [[ -n "$profileName" ]]; then
     export DOOMPROFILELOADFILE=$out/loader/init.el
     $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
         ${noProfileHack:+-u} -n "$profileName" -b "$out"
 
     # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
-    export HOME=$(mktemp -d)
+    export HOME="$PWD/home"
     export DOOMPROFILE="$profileName";
 fi
 $runtimeShell $doomSource/bin/doomscript $buildProfile \

@@ -36,7 +36,7 @@ runCommandLocal name
   )
   # Set DOOMLOCALDIR somewhere harmless to stop Doom from trying to create it somewhere read-only.
   ''
-    mkdir $out
-    export DOOMLOCALDIR=$(mktemp -d)
+    mkdir $out doomlocaldir
+    export DOOMLOCALDIR="$PWD/doomlocaldir"
     $runtimeShell $doomSource/bin/doomscript $script ${scriptArgs}
   ''

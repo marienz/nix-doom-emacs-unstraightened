@@ -40,7 +40,8 @@
     # TODO: figure out why this is necessary (there may be a better
     # solution).
     preBuild = ''
-      export HOME=$(mktemp -d)
+      mkdir home
+      export HOME="$PWD/home"
     '';
     # TODO: set this properly (melpa2nix requires it).
     commit = "unset";
@@ -208,7 +209,8 @@
   # Make it byte-compile (see auctex)
   company-auctex = esuper.company-auctex.overrideAttrs (attrs: {
     preBuild = (attrs.preBuild or "") + ''
-      export HOME=$(mktemp -d)
+      mkdir home
+      export HOME="$PWD/home"
   '';
   });
   # Make it byte-compile.
