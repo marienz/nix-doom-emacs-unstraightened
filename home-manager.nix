@@ -158,7 +158,7 @@ in {
     (let
       doomPackages = doomFromPackages pkgs {
         inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack extraPackages
-          experimentalFetchTree;
+          extraBinPackages experimentalFetchTree;
       };
     in
       {
