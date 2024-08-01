@@ -51,5 +51,6 @@
       "https://git.sr.ht/"
       "https://codeberg.org/"
       "https://gitlab.com/"
+      "https://repo.or.cz/"
   ];
 }
