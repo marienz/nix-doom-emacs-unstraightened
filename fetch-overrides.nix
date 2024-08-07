@@ -31,9 +31,12 @@
     consult-notmuch = "https://codeberg.org/jao/consult-notmuch.git";
     # sourcehut fetcher doesn't work for the same reason codeberg doesn't.
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
-    ol-notmuch = "https://git.sr.ht/~tarsius/ol-notmuch";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
+    # Moved from sourcehut to github, see
+    # https://github.com/melpa/melpa/commit/c13d67c87248b9af8f9d6265a8626a330f9d478c
+    # To be removed after updating emacs-overlay.
+    ol-notmuch = "https://github.com/tarsius/ol-notmuch";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
