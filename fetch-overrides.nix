@@ -42,14 +42,4 @@
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
   };
-
-  # Domains for which to force `shallow = false`.
-  forceDeepCloneDomains = [
-      "https://git.notmuchmail.org/"
-      "https://git.savannah.gnu.org/"
-      "https://git.sr.ht/"
-      "https://codeberg.org/"
-      "https://gitlab.com/"
-      "https://repo.or.cz/"
-  ];
 }
