@@ -41,15 +41,5 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
-
-    # Doom pinned magit to a different revision than git-commit.
-    # They are built from the same repository, which means we require the commits match.
-    #
-    # Doom's pin of magit (cf94190410ef163fd102cdbcb67f28599d31eabc) has the git-commit pin as
-    # parent, and looks like it adds prebuilt documentation for use from Melpa.
-    # Use the git-commit commit, since our derivation should be able to build the documentation.
-    #
-    # TODO: consider allowing git-commit and magit pins to deviate?
-    magit = "55656a31cc4fe6c8996c621f4cf14aa4a1bfe47d";
   };
 }
