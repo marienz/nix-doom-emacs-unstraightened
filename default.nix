@@ -59,7 +59,7 @@
 }:
 let
   inherit (lib) optionalAttrs optionalString;
-  inherit (import ./fetch-overrides.nix) extraPins extraUrls forceDeepCloneDomains;
+  inherit (import ./fetch-overrides.nix) extraPins extraUrls;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -261,12 +261,10 @@ let
               # Note Doom does have packages with pin + branch (or nonrecursive) set,
               # expecting to inherit the rest of the recipe from Straight.
 
-            }
-            // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; }
-            // optionalAttrs (p ? recipe.depth) { shallow = p.recipe.depth == 1; }
-            // optionalAttrs (lib.any (d: lib.hasPrefix d url) forceDeepCloneDomains) {
+              # TODO: remove if https://github.com/NixOS/nix/issues/11012 is fixed.
               shallow = false;
-            };
+            }
+            // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; };
             src =
               if experimentalFetchTree
               then builtins.fetchTree (

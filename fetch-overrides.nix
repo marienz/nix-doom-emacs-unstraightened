@@ -31,7 +31,6 @@
     consult-notmuch = "https://codeberg.org/jao/consult-notmuch.git";
     # sourcehut fetcher doesn't work for the same reason codeberg doesn't.
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
-    ol-notmuch = "https://git.sr.ht/~tarsius/ol-notmuch";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
   };
@@ -43,13 +42,4 @@
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
   };
-
-  # Domains for which to force `shallow = false`.
-  forceDeepCloneDomains = [
-      "https://git.notmuchmail.org/"
-      "https://git.savannah.gnu.org/"
-      "https://git.sr.ht/"
-      "https://codeberg.org/"
-      "https://gitlab.com/"
-  ];
 }

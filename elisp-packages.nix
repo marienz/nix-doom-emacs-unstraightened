@@ -185,12 +185,7 @@
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
-  opencl-mode = esuper.opencl-mode.overrideAttrs (attrs: {
-    ename = "opencl-c-mode";
-    recipe = writeText "opencl-c-mode-recipe" (
-      lib.replaceStrings ["(opencl-mode"] ["(opencl-c-mode"] (
-        lib.readFile attrs.recipe));
-  });
+  opencl-mode = esuper.opencl-c-mode;
   # reveal.js is not actually an ELisp package. Doom gets straight.el to install it,
   # then makes org-re-reveal use it as data.
   revealjs = stdenvNoCC.mkDerivation {
