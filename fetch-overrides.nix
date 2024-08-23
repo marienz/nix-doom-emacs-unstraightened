@@ -23,6 +23,7 @@
     nose = "https://github.com/emacsattic/nose.git";
     ob-ammonite = "https://github.com/emacsattic/ob-ammonite.git";
     ammonite-term-repl = "https://github.com/emacsattic/ammonite-term-repl.git";
+    ob-clojure-literate = "https://github.com/emacsattic/ob-clojure-literate.git";
     # In nixpkgs, but uses codeberg, for which nixpkgs uses fetchzip.
     # TODO: consider parsing origEPkg.src.url instead.
     tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
