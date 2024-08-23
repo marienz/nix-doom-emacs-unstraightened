@@ -23,14 +23,8 @@ in {
     programs.doom-emacs = {
       enable = mkEnableOption "Doom Emacs";
 
-      emacs = mkOption {
-        type = types.package;
-        default = pkgs.emacs;
-        defaultText = literalExpression "pkgs.emacs";
-        example = literalExpression "pkgs.emacs29-pgtk";
-        description = "The Emacs package to wrap.";
-      };
-
+      # Options passed through to default.nix.
+      # Keep in the same order as default.nix, and in sync with the inherit below!
       doomDir = mkOption {
         type = types.path;
         example = literalExpression "./doom";
@@ -47,6 +41,14 @@ in {
 
           `~` is expanded, but shell variables are not! Use `config.xdg.*`, not
           `XDG_DATA_*`.'';
+      };
+
+      emacs = mkOption {
+        type = types.package;
+        default = pkgs.emacs;
+        defaultText = literalExpression "pkgs.emacs";
+        example = literalExpression "pkgs.emacs29-pgtk";
+        description = "The Emacs package to wrap.";
       };
 
       profileName = mkOption {
@@ -69,18 +71,6 @@ in {
         '';
       };
 
-      provideEmacs = mkOption {
-        type = types.bool;
-        default = true;
-        example = false;
-        description = ''
-          If enabled (the default), provide "emacs" (and "emacsclient", etc).
-          If disabled, provide a "doom-emacs" binary.
-
-          Disable this to install doom-emacs in parallel with vanilla Emacs.
-        '';
-      };
-
       experimentalFetchTree = mkOption {
         type = types.bool;
         default = false;
@@ -98,20 +88,6 @@ in {
           if you encounter fetch issues, especially if they start after an
           upgrade of Nix.
         '';
-      };
-
-      finalEmacsPackage = mkOption {
-        type = types.package;
-        visible = false;
-        readOnly = true;
-        description = "The final Emacs-compatible package";
-      };
-
-      finalDoomPackage = mkOption {
-        type = types.package;
-        visible = false;
-        readOnly = true;
-        description = "The final doom-emacs package";
       };
 
       extraPackages = mkOption {
@@ -140,6 +116,7 @@ in {
           Doom cannot specify that package using the '(package! ...)' syntax.
         '';
       };
+
       extraBinPackages = mkOption {
         default = [
           config.programs.ripgrep.package
@@ -151,14 +128,43 @@ in {
           "[ programs.ripgrep.package programs.git.package programs.fd.package ]";
         description = "Extra packages to add to Doom's $PATH.";
       };
+
+      # Home Manager-specific options.
+      provideEmacs = mkOption {
+        type = types.bool;
+        default = true;
+        example = false;
+        description = ''
+          If enabled (the default), provide "emacs" (and "emacsclient", etc).
+          If disabled, provide a "doom-emacs" binary.
+
+          Disable this to install doom-emacs in parallel with vanilla Emacs.
+        '';
+      };
+
+      # Hidden/internal options.
+      finalEmacsPackage = mkOption {
+        type = types.package;
+        visible = false;
+        readOnly = true;
+        description = "The final Emacs-compatible package";
+      };
+
+      finalDoomPackage = mkOption {
+        type = types.package;
+        visible = false;
+        readOnly = true;
+        description = "The final doom-emacs package";
+      };
+
     };
   };
 
   config = mkIf cfg.enable (mkMerge [
     (let
       doomPackages = doomFromPackages pkgs {
-        inherit (cfg) emacs doomDir doomLocalDir profileName noProfileHack extraPackages
-          experimentalFetchTree;
+        inherit (cfg) doomDir doomLocalDir emacs profileName noProfileHack
+          experimentalFetchTree extraPackages extraBinPackages;
       };
     in
       {
