@@ -182,20 +182,11 @@
     # out: patch that version number to match what nixpkgs put in the grammar bundle.
     let
       inherit (esuper.melpaStablePackages.tree-sitter-langs) version;
-      elpaDir = "$out/share/emacs/site-lisp/elpa/";
-      wrongSiteDir = elpaDir + "tree-sitter-langs-${version}";
-      rightSiteDir = elpaDir + "tree-sitter-langs-9999snapshot";
     in
       esuper.tree-sitter-langs.overrideAttrs (old: {
         postPatch = old.postPatch or "" + ''
           sed -i -e '/defconst tree-sitter-langs--bundle-version/ s/"[0-9.]*"/"${version}"/' \
             ./tree-sitter-langs-build.el
-        '';
-
-        postInstall = old.postInstall or "" + ''
-          mkdir ${rightSiteDir}
-          mv ${wrongSiteDir}/* ${rightSiteDir}/
-          rmdir ${wrongSiteDir}
         '';
     });
   # Fix /build/ leaking into byte-compiled files (patch accepted upstream).
