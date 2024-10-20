@@ -34,6 +34,9 @@
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
+    # Fetches from git.notmuchmail.org, which I currently cannot reach.
+    # Use the github mirror instead.
+    notmuch = "https://github.com/notmuch/notmuch";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
