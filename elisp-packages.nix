@@ -245,6 +245,23 @@
       (mu4e-compat :fetcher github :repo "tecosaur/mu4e-compat")
     '';
   };
+  # TODO: attempt to fix sly-stepper properly.
+  # sly-stepper `require`s `sly-stickers`. That lives in sly's contribs subdirectory: it looks like
+  # that is normally added to the load path by `sly-setup`, which Doom runs from after-init-hook.
+  # But at byte compile time that subdirectory is not on the load path, breaking byte compilation.
+  sly-stepper = esuper.melpaBuild {
+    pname = "sly-stepper";
+    version = "9999snapshot";
+    commit = "unset";
+    meta = {
+      description = "trivial build for doom-emacs";
+    };
+    packageRequires = [ eself.sly ];
+    recipe = writeText "sly-stepper-recipe" ''
+      (sly-stepper :fetcher github :repo "joaotavora/sly-stepper")
+    '';
+    ignoreCompilationError = true;
+  };
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
