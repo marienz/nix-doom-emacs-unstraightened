@@ -230,6 +230,21 @@
       ./elisp-patches/helm-taskrunner-version.patch
     ];
   };
+  # mu4e-compat depends on mu4e, which (if I understand correctly) cannot be on melpa because it is
+  # bundled with mu, and therefore mu4e-compat cannot have the dependency in its package-requires.
+  # But it does not byte-compile without mu4e present. Add the dependency.
+  mu4e-compat = esuper.melpaBuild {
+    pname = "mu4e-compat";
+    version = "9999snapshot";
+    commit = "unset";
+    meta = {
+      description = "trivial build for doom-emacs";
+    };
+    packageRequires = [ eself.mu4e ];
+    recipe = writeText "mu4e-recipe" ''
+      (mu4e-compat :fetcher github :repo "tecosaur/mu4e-compat")
+    '';
+  };
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
