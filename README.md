@@ -11,6 +11,9 @@ implemented differently.
 
 [![CI](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml/badge.svg)](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml)
 
+org-roam likely currently does not work. Please file an issue if you use this.
+(I expect this to get fixed / have been fixed upstream).
+
 Tested and working on Linux, with emacs-overlay and Doom inputs updated
 automatically. If you're reading this on Github, there should be a CI status
 badge above: if CI is passing, Unstraightened installs an up-to-date version of

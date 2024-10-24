@@ -262,6 +262,16 @@
     '';
     ignoreCompilationError = true;
   };
+  org-roam = esuper.org-roam.overrideAttrs (attrs: {
+    packageRequires = (attrs.packageRequires or [ ]) ++ [ eself.f ];
+    # XXX TODO remove ignoreCompilationError after the next org-roam bump.
+    # The current snapshot is probably broken: it uses emacs-sqlite3, which is no longer available.
+    ignoreCompilationError = true;
+  });
+  citar-org-roam = esuper.citar-org-roam.overrideAttrs (attrs: {
+    # See above (needs org-roam to work).
+    ignoreCompilationError = true;
+  });
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
