@@ -3,11 +3,11 @@
     "doomemacs": {
       "flake": false,
       "locked": {
-        "lastModified": 1729405936,
-        "narHash": "sha256-5YvJenKHFOZQ5MRv4Rb05kCiLH4u9394x5OeiwmxSRE=",
+        "lastModified": 1729406511,
+        "narHash": "sha256-hTJId3fwetRJFGF5OLh2cYXicjPduKT/UcBXdDjsbPE=",
         "owner": "doomemacs",
         "repo": "doomemacs",
-        "rev": "b9deb35aabf99d71d25cd44fff579dac102f6a94",
+        "rev": "fafdb25dd8a6ecd21ba82ffc0e92be3816d063ba",
         "type": "github"
       },
       "original": {

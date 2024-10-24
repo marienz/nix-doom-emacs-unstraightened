@@ -20,11 +20,17 @@
 ;; Does not cover (modulep! :cat mod +flag). That is: assumes each flag is
 ;; referenced at least once by shortened form in the module itself.
 ;;
+;; Ignores negated flags (assumes they are used positively at least once).
+;;
 ;; No attempt at efficiency, but package.el files are small...
 
 (defun walk-package-exp (l)
   (cond ((not (consp l)) nil)
-        ((and (= 2 (length l)) (eq 'modulep! (car l))) (cdr l))
+        ((and (> (length l) 1)
+              (eq 'modulep! (car l))
+              (not (keywordp (cadr l))))
+         (seq-filter (lambda (flag) (string-prefix-p "+" (symbol-name flag)))
+                     (cdr l)))
         (t (mapcan #'walk-package-exp l))))
 
 (defcli! full-init
@@ -38,13 +44,14 @@
 
 (doom!
 ")
+    (doom-modules-initialize)
     (dolist (kp (doom-module-list 'all))
       (let ((cat (car kp))
             (name (cdr kp)))
         (when name
           (if-let ((flags?)
                    (packages-path (doom-module-locate-path
-                                   cat name doom-module-packages-file))
+                                   kp doom-module-packages-file))
                    (tree (with-temp-buffer
                            (insert "(\n")
                            (insert-file-contents packages-path)

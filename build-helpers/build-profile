@@ -72,9 +72,9 @@
 (defcli! build-profile
     ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from"))
   "Write a Doom profile."
-  ;; Load our generated profile's init.el. Both to get the profile right and to
-  ;; load the advice to make Doom not install straight.
-  (load! doom-module-init-file doom-user-dir t)
+  ;; This also loads our generated profile's init.el. We need that both to get
+  ;; the profile right and to load the advice to make Doom not install straight.
+  (doom-modules-initialize)
   ;; Trigger a write of straight's build cache (which we write into the profile
   ;; and load again later).
   (straight-prune-build-cache)
