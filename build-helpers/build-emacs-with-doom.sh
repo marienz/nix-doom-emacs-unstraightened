@@ -14,15 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir -p $out/bin
-ln -s $emacs/bin/* $out/bin/
-rm $out/bin/emacs-*
-ln -sf $doomEmacs/bin/doom-emacs $out/bin/emacs
-ln -sf $doomEmacs/bin/{doom,doomscript} $out/bin/
+mkdir -p "$out/bin"
+ln -s "$emacs"/bin/* "$out/bin/"
+rm "$out"/bin/emacs-*
+ln -sf "$doomEmacs/bin/doom-emacs" "$out/bin/emacs"
+ln -sf "$doomEmacs"/bin/{doom,doomscript} "$out/bin/"
 
-mkdir -p $out/share
+mkdir -p "$out/share"
 # Don't link everything: the systemd units would still refer to normal Emacs.
 # This links the same stuff emacsWithPackages does.
 for dir in applications icons info man; do
-    ln -s $emacs/share/$dir $out/share/$dir
+    ln -s "$emacs/share/$dir" "$out/share/$dir"
 done
+
+if [ -d "$emacs/Applications" ]; then 
+    cp -R "$emacs/Applications" "$out/Applications"
+    chmod -R u+w "$out/Applications"
+    ln -sf "$out/bin/emacs" "$out/Applications/Emacs.app/Contents/MacOS/Emacs"
+fi
