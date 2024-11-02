@@ -45,5 +45,7 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
+    # TODO: drop this pin again, see https://github.com/marienz/nix-doom-emacs-unstraightened/issues/37
+    forge = "c819271dd056d9608e6dd7e788bb3007f0a44517";
   };
 }
