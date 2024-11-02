@@ -308,12 +308,21 @@ let
             version = snapshotVersion;
           }
           else epkg;
-      in
         # Hack: we call makePackage for everything (not just doomPackageSet), just to hit the
         # repoToPin check. We cannot easily call it just for transitive dependencies, because we
-        # need makePackage to figure out what the dependencies (for packages not in esuper) are...
-        # This seems to work ok in practice because makePackage is called lazily.
-        lib.mapAttrs makePackage ((lib.mapAttrs (name: (lib.const {})) esuper) // doomPackageSet)
+        # need makePackage to figure out what the dependencies (for packages not in esuper) are.
+        # But we do need some filtering (currently just "emacs" itself) to avoid infinite recursion
+        # while populating repoToPin.
+        upstreamWithPins = lib.mapAttrs
+          (n: p:
+            if lib.elem p [ esuper.emacs ]
+            then p
+            else makePackage n {})
+          esuper;
+        doomPackages = lib.mapAttrs makePackage doomPackageSet;
+        allPackages = upstreamWithPins // doomPackages;
+      in
+        allPackages
   );
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
