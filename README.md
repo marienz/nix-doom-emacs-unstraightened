@@ -14,13 +14,10 @@ implemented differently.
 org-roam likely currently does not work. Please file an issue if you use this.
 (I expect this to get fixed / have been fixed upstream).
 
-Tested and working on Linux, with emacs-overlay and Doom inputs updated
-automatically. If you're reading this on Github, there should be a CI status
-badge above: if CI is passing, Unstraightened installs an up-to-date version of
-Doom Emacs and (almost) all module dependencies.
-
-Not yet tested on macOS. Likely works as long as you do not need an "app" (you
-launch Emacs from the commandline or through other means). I intend to fix this.
+Tested and working on Linux and macOS, with emacs-overlay and Doom inputs
+updated automatically. If you're reading this on Github, there should be a CI
+status badge above: if CI is passing, Unstraightened installs an up-to-date
+version of Doom Emacs and (almost) all module dependencies.
 
 You may encounter "Cannot find Git revision" errors on Nix versions newer than
 2.18.x (see #14). Try enabling `experimentalFetchTree` to work around this (see
