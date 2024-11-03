@@ -11,6 +11,10 @@ implemented differently.
 
 [![CI](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml/badge.svg)](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml)
 
+Doom Emacs is currently pinned to a commit from early November, as recent
+changes to Doom's initialization break Unstraightened.
+https://github.com/marienz/nix-doom-emacs-unstraightened/issues/39 tracks this.
+
 org-roam likely currently does not work. Please file an issue if you use this.
 (I expect this to get fixed / have been fixed upstream).
 
