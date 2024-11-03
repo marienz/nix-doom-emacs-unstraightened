@@ -54,7 +54,7 @@ let
       })) ];
     } ''
       tmux new-session -s doom-testing -d
-      tmux new-window -n doom-window doom-emacs
+      tmux new-window -n doom-window 'doom-emacs -nw'
       for ((i = 0; i < 100; i++)); do
         tmux list-windows -a | grep -q doom-window || break
         sleep .1
