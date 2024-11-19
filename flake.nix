@@ -91,7 +91,7 @@
           doomDir = ./doomdir;
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
         }).doomEmacs;
-        doom-emacs-without-loader = (doomFromPackages pkgs {
+        doom-emacs-unset-profile = (doomFromPackages pkgs {
           doomDir = ./doomdir;
           doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           profileName = "";

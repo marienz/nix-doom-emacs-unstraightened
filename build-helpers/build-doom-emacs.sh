@@ -14,14 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [[ -z "$profileName" ]]; then
-    profileArgs=()
-else
-    profileArgs=(
-        --set DOOMPROFILELOADFILE $doomProfile/loader/init.el
-        --set DOOMPROFILE "$profileName"
-    )
-fi
+profileArgs=(
+    --set DOOMPROFILELOADFILE $doomProfile/loader/init.el
+    --set DOOMPROFILE "$profileName"
+)
 common=()
 if [[ -n "$binPath" ]]; then
     common+=(

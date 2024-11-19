@@ -58,19 +58,6 @@ in {
         description = "Doom profile. Set to the empty string to disable.";
       };
 
-      noProfileHack = mkOption {
-        type = types.bool;
-        default = false;
-        example = true;
-        description = ''
-          Use a hack to make Doom use normal paths (relative to DOOMLOCALDIR).
-
-          Has no effect if doomProfile is unset (set to the empty string).
-
-          Currently not recommended: unset doomProfile instead;
-        '';
-      };
-
       experimentalFetchTree = mkOption {
         type = types.bool;
         default = false;
@@ -163,7 +150,7 @@ in {
   config = mkIf cfg.enable (mkMerge [
     (let
       doomPackages = doomFromPackages pkgs {
-        inherit (cfg) doomDir doomLocalDir emacs profileName noProfileHack
+        inherit (cfg) doomDir doomLocalDir emacs profileName
           experimentalFetchTree extraPackages extraBinPackages;
       };
     in

@@ -32,10 +32,8 @@
   doomSource,
   /* Emacs package to build against. */
   emacs,
-  /* Name of doom profile to use. */
+  /* Name of doom profile to use. Empty string to disable profile early in startup. */
   profileName ? "nix",
-  /* Disable profile early in startup, so "normal" cache/state dirs are used. */
-  noProfileHack ? false,
   /* Use fetchTree instead of fetchGit for package fetches. */
   experimentalFetchTree ? false,
   /* Extra emacs packages from nixpkgs */
@@ -60,6 +58,8 @@
 let
   inherit (lib) optionalAttrs optionalString;
   inherit (import ./fetch-overrides.nix) extraPins extraUrls;
+
+  nonEmptyProfileName = if profileName != "" then profileName else "nix";
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -343,7 +343,9 @@ let
     name = "doom-profile";
     buildCommandPath = ./build-helpers/build-doom-profile.sh;
 
-    inherit doomDir doomIntermediates doomSource noProfileHack profileName runtimeShell;
+    inherit doomDir doomIntermediates doomSource runtimeShell;
+    profileName = nonEmptyProfileName;
+    noProfileHack = profileName == "";
     buildProfileLoader = ./build-helpers/build-profile-loader;
     buildProfile = ./build-helpers/build-profile;
     initEl = ./init.el;
@@ -368,7 +370,8 @@ let
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
 
     # emacsWithPackages also accessed externally (for pushing to Cachix).
-    inherit binPath doomProfile doomLocalDir doomSource emacsWithPackages profileName;
+    inherit binPath doomProfile doomLocalDir doomSource emacsWithPackages;
+    profileName = nonEmptyProfileName;
 
     nativeBuildInputs = [ makeBinaryWrapper ];
   };

@@ -17,8 +17,6 @@
 ;; Extra initialization code for nix-doom-emacs-unstraightened, run before the
 ;; normal `init.el'.
 
-@maybeSetProfileDir@
-
 (defadvice! nix-doom-skip-core-packages (&rest _)
   "HACK: don't install straight and core packages.
 

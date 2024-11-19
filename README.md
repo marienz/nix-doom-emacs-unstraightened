@@ -235,9 +235,9 @@ The home-manager module supports the same options, as well as:
 
   When migrating from "normal" Doom, you may need to move some files around.
 
-  If this bothers you, you can try setting `noProfileHack = true`. This makes
-  Unstraightened use the usual paths (relative to `doomLocalDir`), but is
-  experimental.
+  If this bothers you, you can try setting `profileName = ""`. This makes
+  Unstraightened use the usual paths (relative to `doomLocalDir`), but uses
+  somewhat of a hack to do so (please report any issues observed).
 
 ## Comparison to `nix-doom-emacs`
 

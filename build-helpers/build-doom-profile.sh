@@ -21,13 +21,7 @@ if ! [[ -e $out/doomdir/snippets ]]; then
     mkdir $out/doomdir/snippets
 fi
 rm $out/doomdir/init.el
-if [[ -z "$profileName" ]]; then
-    maybeSetProfileDir="(setq doom-profile-dir \"$out/profile\")"
-else
-    maybeSetProfileDir=""
-fi
 substitute $initEl $out/doomdir/init.el \
-    --subst-var maybeSetProfileDir \
     --subst-var profileName \
     --subst-var-by userInit "$doomDir/init.el" \
     --subst-var-by straightBaseDir $out
@@ -36,15 +30,13 @@ export DOOMDIR=$out/doomdir
 
 # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
 export DOOMLOCALDIR="$PWD/doomlocaldir"
-if [[ -n "$profileName" ]]; then
-    export DOOMPROFILELOADFILE=$out/loader/init.el
-    $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
-        ${noProfileHack:+-u} -n "$profileName" -b "$out"
+export DOOMPROFILELOADFILE=$out/loader/init.el
+$runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
+    ${noProfileHack:+-u} -n "$profileName" -b "$out"
 
-    # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
-    export HOME="$PWD/home"
-    export DOOMPROFILE="$profileName";
-fi
+# With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
+export HOME="$PWD/home"
+export DOOMPROFILE="$profileName";
 $runtimeShell $doomSource/bin/doomscript $buildProfile \
     -l $deps/share/emacs/site-lisp
 

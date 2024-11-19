@@ -81,8 +81,7 @@ in {
     profileName = "";
   };
   interactive = doomTest "nix-profile" { config.default = true; } { };
-  interactive-without-loader = doomTest "no-profile" { config.default = true; } { profileName = ""; };
-  interactive-no-profile-hack = doomTest "no-profile" { config.default = true; } { noProfileHack = true; };
+  interactive-unset-profile = doomTest "no-profile" { config.default = true; } { profileName = ""; };
 
   cmake = doomTest "cmake" { lang.cc = true; } { };
 

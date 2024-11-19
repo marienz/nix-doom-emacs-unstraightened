@@ -17,9 +17,9 @@ its const-ness is not enforced but I'd prefer not to take advantage of that. I
 also have not checked if writing the profile would work out of the box with this
 approach.
 
-`noProfileHack` unsets `DOOMPROFILE` from the profile loader. This feels like a
-hack, but it does get us the usual `DOOMLOCALDIR`-relative `doom-cache-dir` and
-friends back.
+Setting `profileName` to the empty string triggers a special case: we unset
+`DOOMPROFILE` from the profile loader. This feels like a hack, but it does get
+us the usual `DOOMLOCALDIR`-relative `doom-cache-dir` and friends back.
 
 ## Why put `doom-user-dir`/`DOOMDIR` in the Nix store?
 
