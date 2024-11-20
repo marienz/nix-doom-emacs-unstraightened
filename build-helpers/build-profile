@@ -15,23 +15,23 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;; We skip Doom's normal install and initialization.
-(require 'straight)
-
 ;; Set from run!
 (defvar site-lisp)
 
 (defun generate-nix-autoloads ()
   "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
-  (let (filenames)
-    (dolist (filename (directory-files site-lisp))
-      (when (string-suffix-p "-autoloads.el" filename)
-        (push (expand-file-name filename site-lisp) filenames)))
-    (doom-autoloads--scan filenames doom-autoloads-excluded-files 'literal)))
+  `((defun unstraightened--startup-nix-autoloads ()
+      (let ((load-in-progress t))
+        ,@(let (filenames)
+            (dolist (filename (directory-files site-lisp))
+              (when (string-suffix-p "-autoloads.el" filename)
+                (push (expand-file-name filename site-lisp) filenames)))
+            (doom-autoloads--scan
+             filenames doom-autoloads-excluded-files 'literal))))))
 
 (add-to-list
  'doom-profile-generators
- '("80-loaddefs-nix.auto.el" . generate-nix-autoloads))
+ '("80-loaddefs-nix.auto.el" generate-nix-autoloads unstraightened--startup-nix-autoloads))
 
 ;; Doom runs this with package.el activated, but suppresses activation during
 ;; normal startup. Store the side effects of activation in the profile to avoid
@@ -45,27 +45,31 @@
 
 (defun generate-unstraightened-autoloads ()
   "Like doom-profile--generate-package-autoloads but for package.el."
-  (doom-autoloads--scan
-   (mapcar (lambda (s)
-             (format "%s.el"
-                     (package--autoloads-file-name (package-get-descriptor s))))
-           ;; Packages are (currently...) pushed onto package-activated-list as
-           ;; they are activated. Reverse the list here so packages activated
-           ;; first get their autoloads loaded first.
-           ;;
-           ;; An example package that requires this is geiser-guile: it calls
-           ;; geiser-activate-implementation from autoloads, requiring geiser's
-           ;; autoloads are loaded first.
-           (nreverse
-            (seq-difference package-activated-list
-                            (mapcar #'intern-soft
-                                    doom-autoloads-excluded-packages))))
-   doom-autoloads-excluded-files
-   'literal))
+  `((defun unstraightened--startup-unstraightened-autoloads ()
+      (let ((load-in-progress t))
+        ,@(doom-autoloads--scan
+           (mapcar (lambda (s)
+                     (format "%s.el"
+                             (package--autoloads-file-name
+                              (package-get-descriptor s))))
+                   ;; Packages are (currently...) pushed onto
+                   ;; package-activated-list as they are activated. Reverse the
+                   ;; list here so packages activated first get their autoloads
+                   ;; loaded first.
+                   ;;
+                   ;; An example package that requires this is geiser-guile: it
+                   ;; calls geiser-activate-implementation from autoloads,
+                   ;; requiring geiser's autoloads are loaded first.
+                   (nreverse
+                    (seq-difference package-activated-list
+                                    (mapcar #'intern-soft
+                                            doom-autoloads-excluded-packages))))
+           doom-autoloads-excluded-files
+           'literal)))))
 
 (add-to-list
  'doom-profile-generators
- '("90-loaddefs-unstraightened.auto.el" . generate-unstraightened-autoloads))
+ '("90-loaddefs-unstraightened.auto.el" generate-unstraightened-autoloads unstraightened--startup-unstraightened-autoloads))
 
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
@@ -75,6 +79,12 @@
   ;; This also loads our generated profile's init.el. We need that both to get
   ;; the profile right and to load the advice to make Doom not install straight.
   (doom-modules-initialize)
+  ;; Now load straight (straight-prune-build-cache is not autoloaded).
+  ;;
+  ;; (Doom may call doom-initialize-packages / doom-initialize-core-packages
+  ;; from an after-load hook on straight, so we want to do this after we
+  ;; installed our advice of doom-initialize-core-packages above.)
+  (require 'straight)
   ;; Trigger a write of straight's build cache (which we write into the profile
   ;; and load again later).
   (straight-prune-build-cache)

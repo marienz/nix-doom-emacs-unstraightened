@@ -22,7 +22,6 @@ if ! [[ -e $out/doomdir/snippets ]]; then
 fi
 rm $out/doomdir/init.el
 substitute $initEl $out/doomdir/init.el \
-    --subst-var profileName \
     --subst-var-by userInit "$doomDir/init.el" \
     --subst-var-by straightBaseDir $out
 ln -sf $doomIntermediates/packages.el $out/doomdir/

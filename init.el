@@ -31,30 +31,8 @@ it. Just skip it entirely."
   (require 'straight)  ;; straight-load-build-cache is not autoloaded.
   (straight--load-build-cache))
 
-(after! doom-packages
+(after! doom-straight
   (setq straight-base-dir "@straightBaseDir@"))
-
-(defadvice! unstraightened-profile-init-file (&optional profile-id version)
-  "Return unstraightened's profile init file.
-
-`doom-profile-init-file' locates the profile relative to `doom-data-dir', but
-nix-doom-emacs-unstraightened keeps its profile in a different location.
-Override `doom-profile-init-file' to confirm it is called to get the default
-or unstraightened profile (erroring out otherwise), then return the custom path.
-
-Returning the unstraightened profile if the default profile is
-requested makes `doom doctor' work."
-  :override #'doom-profile-init-file
-  (let ((my-profile "@profileName@"))
-    (unless (or (null profile-id)
-                (and (not (string-empty-p my-profile))
-                     (string-equal profile-id my-profile)))
-      (error "Accessing other profiles from Unstraightened is unsupported."))
-  (unless (null version)
-    (error
-     "Accessing other profile versions from Unstraightened is unsupported."))
-  (file-name-concat
-   doom-profile-dir (format "init.%d.elc" emacs-major-version))))
 
 ;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
 ;; Doom. Extend this to set our profile dir before it does so.

@@ -24,7 +24,39 @@
          (new-profiles `((,profile-name
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-profile-data-dir . ,profile-directory)
+                          (_ :eval
+;; HACK: install advice of doom-profile-init-file from the profile loader,
+;; because we do not gain control between here and Doom using this to find the
+;; profile init file (from which our own init.el is loaded).
+(define-advice doom-profile-init-file (:override (profile) unstraightened)
+  "Return unstraightened's profile init file.
+
+`doom-profile-init-file' locates the profile relative to `doom-data-dir', but
+nix-doom-emacs-unstraightened keeps its profile in a different location.
+Override `doom-profile-init-file' to confirm it is called to get the default
+or unstraightened profile (erroring out otherwise), then return the custom path.
+
+Returning the unstraightened profile if the default profile is
+requested makes `doom doctor' work."
+  (declare (side-effect-free t))
+  (let* ((my-profile ,(symbol-name profile-name))
+         ;; Open-code cl-destructuring-bind into (name . ref),
+         ;; to avoid loading cl in the profile loader.
+         (ref (if profile (doom-profile-key profile t) (cons nil nil)))
+         (name (pop ref)))
+    (unless (or (null name)
+                (and (not (string-empty-p my-profile))
+                     (string-equal name my-profile)))
+      (error "Accessing other profiles from Unstraightened is unsupported."))
+    (unless (or (null ref)
+                (string-equal "0" ref))
+      (error
+       "Accessing other profile versions from Unstraightened is unsupported."))
+    (file-name-concat doom-profile-dir
+                      (format "init.%d.%d.el"
+                              emacs-major-version emacs-minor-version))))
+)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
-    (doom-profiles-save new-profiles)))
+    (doom-profiles-write-load-file new-profiles)))
 
 (run! "build-profile-loader" (cdr (member "--" argv)))

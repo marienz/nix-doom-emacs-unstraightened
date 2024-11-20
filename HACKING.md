@@ -2,20 +2,14 @@
 
 ## Why [profiles](https://github.com/doomemacs/doomemacs/tree/master/profiles)?
 
-Because the profile loader runs early enough we can set `doom-profile-data-dir`
-(where the generated profile is stored and loaded from) outside `DOOMLOCALDIR`
-relatively cleanly. Not using the "global" profile is a largely unintended side
-effect, but the changes to other paths made seem largely reasonable so for now
-I'm sticking with it.
+Because the profile loader runs early enough we can get Doom to load the profile
+init file from outside `DOOMLOCALDIR` relatively cleanly. Not using the "global"
+profile is a largely unintended side effect, but the changes to other paths made
+seem largely reasonable.
 
-After the profile loader, the next point we would get control is `doom-start.el`
-loading `init.el` from `doom-user-dir`. We currently point `doom-user-dir` into
-the store (see below): setting `doom-profile-data-dir` and `doom-profile-dir`
-from there (by prepending to the user's `init.el`) would probably also work.
-This seems a bit questionable because `doom-profile-dir` is set with `defconst`:
-its const-ness is not enforced but I'd prefer not to take advantage of that. I
-also have not checked if writing the profile would work out of the box with this
-approach.
+We do not regain control in time after the loader without patching Doom: the
+first user code it runs is `init.el` from `doom-user-dir` (which we point into
+the store), but it loads that from the profile init file.
 
 Setting `profileName` to the empty string triggers a special case: we unset
 `DOOMPROFILE` from the profile loader. This feels like a hack, but it does get
