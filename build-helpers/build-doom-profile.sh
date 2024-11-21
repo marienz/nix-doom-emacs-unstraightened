@@ -20,9 +20,6 @@ ln -s $doomDir/* $out/doomdir/
 if ! [[ -e $out/doomdir/snippets ]]; then
     mkdir $out/doomdir/snippets
 fi
-rm $out/doomdir/init.el
-substitute $initEl $out/doomdir/init.el \
-    --subst-var-by userInit "$doomDir/init.el"
 ln -sf $doomIntermediates/packages.el $out/doomdir/
 export DOOMDIR=$out/doomdir
 
@@ -36,6 +33,7 @@ $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
 export HOME="$PWD/home"
 export DOOMPROFILE="$profileName";
 $runtimeShell $doomSource/bin/doomscript $buildProfile \
+    -i $initEl \
     -l $deps/share/emacs/site-lisp
 
 # Similar to audit-tmpdir.sh in nixpkgs.

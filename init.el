@@ -14,8 +14,9 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;; Extra initialization code for nix-doom-emacs-unstraightened, run before the
-;; normal `init.el'.
+;; Extra initialization code for nix-doom-emacs-unstraightened.
+;;
+;; Loaded from the profile init file.
 
 (defadvice! nix-doom-skip-core-packages (&rest _)
   "HACK: don't install straight and core packages.
@@ -42,6 +43,3 @@ it. Just skip it entirely."
   (prin1-to-string `(progn
                       (setq doom-profile-data-dir ,doom-profile-data-dir)
                       ,(read flycheck-emacs-lisp-check-form))))
-
-;; Load the user's init.el.
-(load "@userInit@" nil 'nomessage)

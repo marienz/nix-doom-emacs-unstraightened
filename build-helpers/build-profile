@@ -17,6 +17,16 @@
 
 ;; Set from run!
 (defvar site-lisp)
+(defvar init-file)
+
+(defun generate-unstraightened-init-load ()
+  "Load unstraightened init.el."
+  `((defun unstraightened--startup-init ()
+      (doom-load ,init-file))))
+
+(add-to-list
+ 'doom-profile-generators
+ '("00-unstraightened-init.auto.el" generate-unstraightened-init-load unstraightened--startup-init))
 
 (defun generate-nix-autoloads ()
   "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
@@ -87,16 +97,16 @@
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
 (defcli! build-profile
-    ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from"))
+    ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from")
+     (init-file ("-i" file) "unstraightened init.el"))
   "Write a Doom profile."
-  ;; This also loads our generated profile's init.el. We need that both to get
-  ;; the profile right and to load the advice to make Doom not install straight.
+  ;; This also loads our generated profile's init.el (so we include the right
+  ;; packages in the profile).
   (doom-modules-initialize)
+  ;; Load our init.el, so we can load straight without hitting
+  ;; doom-initialize-packages / doom-initialize-core-packages.
+  (doom-load init-file)
   ;; Now load straight (straight-prune-build-cache is not autoloaded).
-  ;;
-  ;; (Doom may call doom-initialize-packages / doom-initialize-core-packages
-  ;; from an after-load hook on straight, so we want to do this after we
-  ;; installed our advice of doom-initialize-core-packages above.)
   (require 'straight)
   ;; Trigger a write of straight's build cache (which we write into the profile
   ;; and load again later).
