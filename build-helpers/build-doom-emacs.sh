@@ -15,7 +15,7 @@
 # limitations under the License.
 
 profileArgs=(
-    --set DOOMPROFILELOADFILE $doomProfile/loader/init.el
+    --set DOOMPROFILELOADFILE $doomProfile/loader/init.elc
     --set DOOMPROFILE "$profileName"
 )
 common=()

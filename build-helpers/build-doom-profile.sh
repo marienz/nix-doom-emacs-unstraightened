@@ -29,7 +29,7 @@ export DOOMDIR=$out/doomdir
 
 # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
 export DOOMLOCALDIR="$PWD/doomlocaldir"
-export DOOMPROFILELOADFILE=$out/loader/init.el
+export DOOMPROFILELOADFILE=$out/loader/init.elc
 $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
     ${noProfileHack:+-u} -n "$profileName" -b "$out"
 
