@@ -15,9 +15,6 @@ Doom Emacs is currently pinned to a commit from early November, as recent
 changes to Doom's initialization break Unstraightened.
 https://github.com/marienz/nix-doom-emacs-unstraightened/issues/39 tracks this.
 
-org-roam likely currently does not work. Please file an issue if you use this.
-(I expect this to get fixed / have been fixed upstream).
-
 Tested and working on Linux and macOS, with emacs-overlay and Doom inputs
 updated automatically. If you're reading this on Github, there should be a CI
 status badge above: if CI is passing, Unstraightened installs an up-to-date
