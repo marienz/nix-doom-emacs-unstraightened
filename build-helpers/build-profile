@@ -71,6 +71,19 @@
  'doom-profile-generators
  '("90-loaddefs-unstraightened.auto.el" generate-unstraightened-autoloads unstraightened--startup-unstraightened-autoloads))
 
+;; Subtle: Doom currently combines the partials in lexicographical order, but
+;; calls their closures in doom-profile-generators list order.
+;;
+;; Those orders are identical for Doom's own generators (so this may not be
+;; intentional). But it means unstraightened--startup-init runs later than
+;; intended.
+;;
+;; Fix it by sorting the list.
+;;
+;; TODO: ask about this upstream.
+(setq doom-profile-generators
+      (seq-sort-by #'car #'string< doom-profile-generators))
+
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
 (defcli! build-profile
