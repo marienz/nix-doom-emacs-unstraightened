@@ -22,8 +22,7 @@ if ! [[ -e $out/doomdir/snippets ]]; then
 fi
 rm $out/doomdir/init.el
 substitute $initEl $out/doomdir/init.el \
-    --subst-var-by userInit "$doomDir/init.el" \
-    --subst-var-by straightBaseDir $out
+    --subst-var-by userInit "$doomDir/init.el"
 ln -sf $doomIntermediates/packages.el $out/doomdir/
 export DOOMDIR=$out/doomdir
 

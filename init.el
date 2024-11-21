@@ -32,7 +32,8 @@ it. Just skip it entirely."
   (straight--load-build-cache))
 
 (after! doom-straight
-  (setq straight-base-dir "@straightBaseDir@"))
+  (setq straight-base-dir
+        (file-name-directory (directory-file-name doom-user-dir))))
 
 ;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
 ;; Doom. Extend this to set our profile dir before it does so.
