@@ -27,12 +27,17 @@ let
     scriptArgs = "-o $out";
   };
 
-  allModulesAndFlags = callPackage ./doomscript.nix {
+  allModulesAndReallyAllFlags = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;
     scriptArgs = "--flags -o $out";
   };
+
+  # HACK: drop roam v1. See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/39
+  allModulesAndFlags = writeTextDir "init.el" (
+    lib.replaceStrings [ " +roam " ] [ " " ] (lib.readFile "${allModulesAndReallyAllFlags}/init.el")
+  );
 
   # Hack, but given how this is used it's good enough even if the replacement misfires.
   #

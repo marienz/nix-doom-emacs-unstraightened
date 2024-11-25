@@ -97,8 +97,6 @@ in {
   # Dependencies that require a module flag enabled and a different module or flag disabled.
   # flycheck-eglot needs flymake disabled.
   flycheck-eglot = doomBuildTest { tools.lsp = [ "+eglot" ]; checkers.syntax = true; };
-  # roam2 needs +roam disabled.
-  org-roam2 = doomBuildTest { lang.org = [ "+roam2" ]; };
   # multiple-cursors needs :editor evil disabled.
   multiple-cursors = doomBuildTest { editor.multiple-cursors = true; };
   # flx needs +prescient disabled.

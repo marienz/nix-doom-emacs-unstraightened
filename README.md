@@ -20,6 +20,8 @@ You may encounter "Cannot find Git revision" errors on Nix versions newer than
 2.18.x (see #14). Try enabling `experimentalFetchTree` to work around this (see
 below).
 
+`org +roam` does not work. Use `org +roam2` instead, or file an issue.
+
 Please report any issues.
 
 ## How to use
