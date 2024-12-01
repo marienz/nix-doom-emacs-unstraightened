@@ -15,19 +15,7 @@
 {
   # DOOMDIR / Doom private directory / module.
   doomDir,
-  /*
-    Default DOOMLOCALDIR.
-
-    Required, because the default is relative to Doom's source tree,
-    which is read-only.
-
-    Expanded using expand-file-name (an initial ~ is supported,
-    shell variable expansion is not).
-
-    DOOMLOCALDIR in the environment Emacs is started with overrides this.
-
-    Suggested value: ~/.local/share/doom
-  */
+  # Default DOOMLOCALDIR (use something like ~/.local/share/doom).
   doomLocalDir,
   # Doom source tree.
   doomSource,
