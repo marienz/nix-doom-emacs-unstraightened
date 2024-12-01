@@ -13,12 +13,27 @@
 # limitations under the License.
 
 { doomFromPackages }:
-{ config, options, lib, pkgs, ... }:
+{
+  config,
+  options,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.programs.doom-emacs;
-  inherit (lib) literalExpression mkEnableOption mkIf mkMerge mkOption types hm;
-in {
+  inherit (lib)
+    literalExpression
+    mkEnableOption
+    mkIf
+    mkMerge
+    mkOption
+    types
+    hm
+    ;
+in
+{
   options = {
     programs.doom-emacs = {
       enable = mkEnableOption "Doom Emacs";
@@ -81,8 +96,7 @@ in {
         default = self: [ ];
         type = hm.types.selectorFunction;
         defaultText = "epkgs: [ ]";
-        example = literalExpression
-          "epkgs: [ epkgs.treesit-grammars.with-all-grammars ]";
+        example = literalExpression "epkgs: [ epkgs.treesit-grammars.with-all-grammars ]";
         description = ''
           Extra Emacs packages from nixpkgs available to Doom Emacs,
           unless that packages is handled by Doom Emacs.
@@ -111,8 +125,7 @@ in {
           config.programs.fd.package
         ];
         type = types.listOf types.package;
-        defaultText = literalExpression
-          "[ programs.ripgrep.package programs.git.package programs.fd.package ]";
+        defaultText = literalExpression "[ programs.ripgrep.package programs.git.package programs.fd.package ]";
         description = "Extra packages to add to Doom's $PATH.";
       };
 
@@ -148,20 +161,29 @@ in {
   };
 
   config = mkIf cfg.enable (mkMerge [
-    (let
-      doomPackages = doomFromPackages pkgs {
-        inherit (cfg) doomDir doomLocalDir emacs profileName
-          experimentalFetchTree extraPackages extraBinPackages;
-      };
-    in
+    (
+      let
+        doomPackages = doomFromPackages pkgs {
+          inherit (cfg)
+            doomDir
+            doomLocalDir
+            emacs
+            profileName
+            experimentalFetchTree
+            extraPackages
+            extraBinPackages
+            ;
+        };
+      in
       {
         programs.doom-emacs.finalDoomPackage = doomPackages.doomEmacs;
         programs.doom-emacs.finalEmacsPackage = doomPackages.emacsWithDoom;
-      })
+      }
+    )
     {
-      home.packages = [(
-        if cfg.provideEmacs then cfg.finalEmacsPackage else cfg.finalDoomPackage
-      )];
+      home.packages = [
+        (if cfg.provideEmacs then cfg.finalEmacsPackage else cfg.finalDoomPackage)
+      ];
     }
     (mkIf (options.services ? emacs && cfg.provideEmacs) {
       services.emacs.package = cfg.finalEmacsPackage;

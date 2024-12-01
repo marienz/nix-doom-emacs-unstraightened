@@ -13,33 +13,38 @@
 # limitations under the License.
 
 {
-  /* DOOMDIR / Doom private directory / module. */
+  # DOOMDIR / Doom private directory / module.
   doomDir,
-  /* Default DOOMLOCALDIR.
-   *
-   * Required, because the default is relative to Doom's source tree,
-   * which is read-only.
-   *
-   * Expanded using expand-file-name (an initial ~ is supported,
-   * shell variable expansion is not).
-   *
-   * DOOMLOCALDIR in the environment Emacs is started with overrides this.
-   *
-   * Suggested value: ~/.local/share/doom
-   */
+  /*
+    Default DOOMLOCALDIR.
+
+    Required, because the default is relative to Doom's source tree,
+    which is read-only.
+
+    Expanded using expand-file-name (an initial ~ is supported,
+    shell variable expansion is not).
+
+    DOOMLOCALDIR in the environment Emacs is started with overrides this.
+
+    Suggested value: ~/.local/share/doom
+  */
   doomLocalDir,
-  /* Doom source tree. */
+  # Doom source tree.
   doomSource,
-  /* Emacs package to build against. */
+  # Emacs package to build against.
   emacs,
-  /* Name of doom profile to use. Empty string to disable profile early in startup. */
+  # Name of doom profile to use. Empty string to disable profile early in startup.
   profileName ? "nix",
-  /* Use fetchTree instead of fetchGit for package fetches. */
+  # Use fetchTree instead of fetchGit for package fetches.
   experimentalFetchTree ? false,
-  /* Extra emacs packages from nixpkgs */
+  # Extra emacs packages from nixpkgs
   extraPackages ? epkgs: [ ],
-  /* Extra packages to add to $PATH */
-  extraBinPackages ? [ git fd ripgrep ],
+  # Extra packages to add to $PATH
+  extraBinPackages ? [
+    git
+    fd
+    ripgrep
+  ],
 
   callPackage,
   callPackages,
@@ -75,112 +80,117 @@ let
   doomIntermediates = callPackage ./build-helpers/doomscript.nix {
     name = "doom-intermediates";
     inherit doomSource emacs;
-    extraArgs = { DOOMDIR = "${doomDir}"; };
+    extraArgs = {
+      DOOMDIR = "${doomDir}";
+    };
     script = ./build-helpers/dump;
     scriptArgs = "-o $out";
   };
 
   # Ignore agda-input: nixpkgs installs this as part of agda2-mode.
-  doomPackageSet = lib.filterAttrs
-    (n: v: n != "agda-input")
-    (lib.importJSON "${doomIntermediates}/packages.json");
+  doomPackageSet = lib.filterAttrs (n: v: n != "agda-input") (
+    lib.importJSON "${doomIntermediates}/packages.json"
+  );
 
   # Step 2: override Emacs packages to respect Doom's pins.
   doomEmacsPackages = (emacsPackagesFor emacs).overrideScope (
     eself: esuper:
-      let
-        customPackages = callPackages ./elisp-packages.nix { inherit emacs esuper eself; };
-        # If multiple packages are built from the same repository, straight.el pins the repository
-        # if only one of them is pinned. Doom relies on this behavior, so try to do the same.
-        #
-        # We need to do this for dependencies that are not in doomPackageSet. But we don't collect
-        # all extra pins here, as that would involve pulling the repository from all packages in
-        # esuper. Instead we map repositories to pins, and then do the rest of the work in
-        # makePackage.
+    let
+      customPackages = callPackages ./elisp-packages.nix { inherit emacs esuper eself; };
+      # If multiple packages are built from the same repository, straight.el pins the repository
+      # if only one of them is pinned. Doom relies on this behavior, so try to do the same.
+      #
+      # We need to do this for dependencies that are not in doomPackageSet. But we don't collect
+      # all extra pins here, as that would involve pulling the repository from all packages in
+      # esuper. Instead we map repositories to pins, and then do the rest of the work in
+      # makePackage.
 
-        # TODO: refactor url determination out of makePackage, use here?
-        # Probably best done at the same time as the codeberg TODO in fetch-overrides.nix.
-        repoToPin = let
+      # TODO: refactor url determination out of makePackage, use here?
+      # Probably best done at the same time as the codeberg TODO in fetch-overrides.nix.
+      repoToPin =
+        let
           # Not unique, but that's ok as this is only used with genAttrs.
           packageNames = lib.attrNames doomPackageSet;
           packageToRepo = lib.genAttrs packageNames (name: esuper.${name}.src.gitRepoUrl or null);
-          repoToPackages = lib.zipAttrs
-            (lib.mapAttrsToList (name: repo: { ${repo} = name; }) packageToRepo);
-          packageToPin = lib.mapAttrs
-            (name: p: extraPins.${name} or p.pin or null) doomPackageSet;
-          repoToPins = lib.mapAttrs (name: packages:
-            lib.unique (lib.filter (p: p != null) (map (p: packageToPin.${p}) packages)))
-            repoToPackages;
-          in
-            lib.mapAttrs (name: pins:
-              assert lib.assertMsg ((lib.length pins) <= 1) ''
-                ${name}:
-                  used by ${lib.concatStringsSep ", " repoToPackages.${name}}
-                  pinned to different versions ${lib.concatStringsSep ", " pins}
+          repoToPackages = lib.zipAttrs (lib.mapAttrsToList (name: repo: { ${repo} = name; }) packageToRepo);
+          packageToPin = lib.mapAttrs (name: p: extraPins.${name} or p.pin or null) doomPackageSet;
+          repoToPins = lib.mapAttrs (
+            name: packages: lib.unique (lib.filter (p: p != null) (map (p: packageToPin.${p}) packages))
+          ) repoToPackages;
+        in
+        lib.mapAttrs (
+          name: pins:
+          assert lib.assertMsg ((lib.length pins) <= 1) ''
+            ${name}:
+              used by ${lib.concatStringsSep ", " repoToPackages.${name}}
+              pinned to different versions ${lib.concatStringsSep ", " pins}
 
-                nix-doom-emacs-unstraightened assumes these packages would use the same repo
-                when Doom Emacs builds them using straight.el, meaning this would not work.
+            nix-doom-emacs-unstraightened assumes these packages would use the same repo
+            when Doom Emacs builds them using straight.el, meaning this would not work.
 
-                If that assumption is correct, this is a bug in Doom Emacs.
+            If that assumption is correct, this is a bug in Doom Emacs.
 
-                If that assumption is not correct, this is a bug in Unstraightened.
+            If that assumption is not correct, this is a bug in Unstraightened.
 
-                If unsure, report this as a bug in Unstraightened.'';
-              lib.findFirst (lib.const true) null pins)
-              repoToPins;
+            If unsure, report this as a bug in Unstraightened.'';
+          lib.findFirst (lib.const true) null pins
+        ) repoToPins;
 
-        # We want to override `version` along with `src` to avoid spurious
-        # rebuilds on version bumps in emacs-overlay of packages Doom has
-        # pinned.
-        #
-        # The elisp manual says we need a version `version-to-list` can parse,
-        # which means it must start with a number and cannot contain the actual
-        # commit ID. We start with a large integer in case package.el starts
-        # version-checking dependencies (it currently does not but a comment in
-        # the code says it should). Additionally, `(package-version-join
-        # (version-to-list v))` must roundtrip to avoid elpa2nix failing with
-        # "Package does not untar cleanly".
-        snapshotVersion = "9999snapshot";
+      # We want to override `version` along with `src` to avoid spurious
+      # rebuilds on version bumps in emacs-overlay of packages Doom has
+      # pinned.
+      #
+      # The elisp manual says we need a version `version-to-list` can parse,
+      # which means it must start with a number and cannot contain the actual
+      # commit ID. We start with a large integer in case package.el starts
+      # version-checking dependencies (it currently does not but a comment in
+      # the code says it should). Additionally, `(package-version-join
+      # (version-to-list v))` must roundtrip to avoid elpa2nix failing with
+      # "Package does not untar cleanly".
+      snapshotVersion = "9999snapshot";
 
-        makePackage = name: p:
-          assert lib.asserts.assertEachOneOf
-            "keys for ${name}"
-            (lib.attrNames p)
-            [ "modules" "recipe" "pin" "type" ];
-          assert (p ? type) -> lib.asserts.assertOneOf
-            "type of ${name}"
-            p.type
-            [ "core" ];
-          let
-            # We're called for all attributes of esuper (to check if they're a package pinned via
-            # repoToPin). Some of those attributes are null. So we cannot use `esuper.${name} or
-            # null`, we need to explicitly check for presence.
-            hasOrigEPkg = esuper ? ${name};
-            origEPkg = esuper.${name};
-            pin = extraPins.${name} or p.pin or (
+      makePackage =
+        name: p:
+        assert lib.asserts.assertEachOneOf "keys for ${name}" (lib.attrNames p) [
+          "modules"
+          "recipe"
+          "pin"
+          "type"
+        ];
+        assert (p ? type) -> lib.asserts.assertOneOf "type of ${name}" p.type [ "core" ];
+        let
+          # We're called for all attributes of esuper (to check if they're a package pinned via
+          # repoToPin). Some of those attributes are null. So we cannot use `esuper.${name} or
+          # null`, we need to explicitly check for presence.
+          hasOrigEPkg = esuper ? ${name};
+          origEPkg = esuper.${name};
+          pin =
+            extraPins.${name} or p.pin or (
               # Don't use `url`: this needs to be in sync with repoToPin above.
               # (If we remap ELPA packages to emacs-straight here but not above, it breaks...)
-              let repo = esuper.${name}.src.gitRepoUrl or null; in
-              if repo != null
-              then repoToPin.${repo} or null
-              else null);
-            # We have to specialcase ELPA packages pinned by Doom: Straight mirrors /
-            # repackages them. Doom's pins assume that mirror is used (so we have to
-            # use it), and replacing the source in nixpkgs's derivation will not work
-            # (it assumes it gets a tarball as input).
+              let
+                repo = esuper.${name}.src.gitRepoUrl or null;
+              in
+              if repo != null then repoToPin.${repo} or null else null
+            );
+          # We have to specialcase ELPA packages pinned by Doom: Straight mirrors /
+          # repackages them. Doom's pins assume that mirror is used (so we have to
+          # use it), and replacing the source in nixpkgs's derivation will not work
+          # (it assumes it gets a tarball as input).
 
-            # TODO: check notmuch works correctly without notmuch-version.el
+          # TODO: check notmuch works correctly without notmuch-version.el
 
-            isElpa = hasOrigEPkg && (
-              origEPkg == esuper.elpaPackages.${name} or null
-              || origEPkg == esuper.nongnuPackages.${name} or null);
-            epkg =
-              if hasOrigEPkg && (pin != null -> !(isElpa || customPackages ? ${name}))
-              then origEPkg
-              else customPackages.${name}
-                or (
-                assert lib.assertMsg
-                  (isElpa || (p ? recipe) || extraUrls ? ${name}) ''
+          isElpa =
+            hasOrigEPkg
+            && (
+              origEPkg == esuper.elpaPackages.${name} or null || origEPkg == esuper.nongnuPackages.${name} or null
+            );
+          epkg =
+            if hasOrigEPkg && (pin != null -> !(isElpa || customPackages ? ${name})) then
+              origEPkg
+            else
+              customPackages.${name} or (
+                assert lib.assertMsg (isElpa || (p ? recipe) || extraUrls ? ${name}) ''
                   nix-doom-emacs-unstraightened: ${name}: unable to derive repository URL:
                   - no recipe provided
                   - not an ELPA package
@@ -223,112 +233,128 @@ let
                      ${optionalString (p ? recipe.files) ":files ${p.recipe.files}"})'';
                   # TODO: refactor out the recursive call to makePackage.
                   # (Currently needed for dependencies on packages not in epkgs or doom.)
-                  packageRequires = map (name: eself.${name} or (makePackage name {})) reqlist;
-                }).overrideAttrs (prev: {
-                  # We only depend on this during evaluation. Force a dependency so it does not
-                  # get garbage-collected, which slows down subsequent evaluation.
-                  inherit reqfile;
-                  postInstall = (prev.postInstall or "") + ''
-                    mkdir -p $out/nix-support
-                    ln -s $reqfile $out/nix-support/unstraightened-dependencies.json
-                  '';
-                }));
-            url =
-              if (p.recipe.host or "") == "github" && p ? recipe.repo
-              then "https://github.com/${p.recipe.repo}"
-              else if (p.recipe.type or "git") == "git"
-                      && p ? recipe.repo
-                      && (p.recipe.host or null) == null
-              then p.recipe.repo
-              else extraUrls.${name}
-                or epkg.src.gitRepoUrl
-                or (if isElpa then "https://github.com/emacs-straight/${name}"
-                    else (let
-                      recipe = lib.generators.toPretty {} (p.recipe or "missing");
-                    in throw "${name}: cannot derive url from recipe ${recipe}"));
-            # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
-            # fetchGit allows fetching a specific git commit without a hash.
-            fetchGitArgs = {
-              inherit url;
-              rev = pin;
-              allRefs = true;
-              # Skip submodules by default because they seem to be hitting
-              # https://github.com/NixOS/nix/issues/10773 (or a similar caching issue) and for
-              # parity between fetchTree's github fetcher and fetchGit (Github's exports don't
-              # seem to contain submodules).
-              submodules = !(p.recipe.nonrecursive or true);
-              # TODO: pull ref from derivation.src when not pulling it from p.recipe?
-              # Note Doom does have packages with pin + branch (or nonrecursive) set,
-              # expecting to inherit the rest of the recipe from Straight.
+                  packageRequires = map (name: eself.${name} or (makePackage name { })) reqlist;
+                }).overrideAttrs
+                  (prev: {
+                    # We only depend on this during evaluation. Force a dependency so it does not
+                    # get garbage-collected, which slows down subsequent evaluation.
+                    inherit reqfile;
+                    postInstall =
+                      (prev.postInstall or "")
+                      + ''
+                        mkdir -p $out/nix-support
+                        ln -s $reqfile $out/nix-support/unstraightened-dependencies.json
+                      '';
+                  })
+              );
+          url =
+            if (p.recipe.host or "") == "github" && p ? recipe.repo then
+              "https://github.com/${p.recipe.repo}"
+            else if (p.recipe.type or "git") == "git" && p ? recipe.repo && (p.recipe.host or null) == null then
+              p.recipe.repo
+            else
+              extraUrls.${name} or epkg.src.gitRepoUrl or (
+                if isElpa then
+                  "https://github.com/emacs-straight/${name}"
+                else
+                  (
+                    let
+                      recipe = lib.generators.toPretty { } (p.recipe or "missing");
+                    in
+                    throw "${name}: cannot derive url from recipe ${recipe}"
+                  )
+              );
+          # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
+          # fetchGit allows fetching a specific git commit without a hash.
+          fetchGitArgs = {
+            inherit url;
+            rev = pin;
+            allRefs = true;
+            # Skip submodules by default because they seem to be hitting
+            # https://github.com/NixOS/nix/issues/10773 (or a similar caching issue) and for
+            # parity between fetchTree's github fetcher and fetchGit (Github's exports don't
+            # seem to contain submodules).
+            submodules = !(p.recipe.nonrecursive or true);
+            # TODO: pull ref from derivation.src when not pulling it from p.recipe?
+            # Note Doom does have packages with pin + branch (or nonrecursive) set,
+            # expecting to inherit the rest of the recipe from Straight.
 
-              # TODO: remove if https://github.com/NixOS/nix/issues/11012 is fixed.
-              shallow = false;
-            }
-            // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; };
-            src =
-              if experimentalFetchTree
-              then builtins.fetchTree (
-                if lib.hasPrefix "https://github.com/" url
-                then let
-                  tail = lib.removePrefix "https://github.com/" url;
-                  split = lib.splitString "/" tail;
-                  owner = lib.head split;
-                  repo = lib.removeSuffix ".git" (lib.elemAt split 1);
-                in {
-                  type = "github";
-                  inherit owner repo;
-                  rev = pin;
-                } else if lib.hasPrefix "https://git.sr.ht/" url
-                then let
-                  tail = lib.removePrefix "https://git.sr.ht/" url;
-                  split = lib.splitString "/" tail;
-                  owner = lib.head split;
-                  repo = lib.elemAt split 1;
-                in {
-                  type = "sourcehut";
-                  inherit owner repo;
-                  rev = pin;
-                } else ({
-                  type = "git";
-                } // fetchGitArgs))
-              else builtins.fetchGit fetchGitArgs;
-            # Run locally to avoid a network roundtrip.
-            reqfile = runCommandLocal "${name}-deps" {
-              inherit src;
-              emacs = lib.getExe emacs;
-              printDeps = ./build-helpers/print-deps.el;
-            } "$emacs -Q --batch --script $printDeps $src > $out";
-            reqjson = lib.importJSON reqfile;
-            # json-encode encodes the empty list as null (nil), not [].
-            reqlist = if reqjson == null then [ ] else reqjson;
-          in
-          if pin != null
-          then epkg.overrideAttrs {
+            # TODO: remove if https://github.com/NixOS/nix/issues/11012 is fixed.
+            shallow = false;
+          } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; };
+          src =
+            if experimentalFetchTree then
+              builtins.fetchTree (
+                if lib.hasPrefix "https://github.com/" url then
+                  let
+                    tail = lib.removePrefix "https://github.com/" url;
+                    split = lib.splitString "/" tail;
+                    owner = lib.head split;
+                    repo = lib.removeSuffix ".git" (lib.elemAt split 1);
+                  in
+                  {
+                    type = "github";
+                    inherit owner repo;
+                    rev = pin;
+                  }
+                else if lib.hasPrefix "https://git.sr.ht/" url then
+                  let
+                    tail = lib.removePrefix "https://git.sr.ht/" url;
+                    split = lib.splitString "/" tail;
+                    owner = lib.head split;
+                    repo = lib.elemAt split 1;
+                  in
+                  {
+                    type = "sourcehut";
+                    inherit owner repo;
+                    rev = pin;
+                  }
+                else
+                  (
+                    {
+                      type = "git";
+                    }
+                    // fetchGitArgs
+                  )
+              )
+            else
+              builtins.fetchGit fetchGitArgs;
+          # Run locally to avoid a network roundtrip.
+          reqfile = runCommandLocal "${name}-deps" {
+            inherit src;
+            emacs = lib.getExe emacs;
+            printDeps = ./build-helpers/print-deps.el;
+          } "$emacs -Q --batch --script $printDeps $src > $out";
+          reqjson = lib.importJSON reqfile;
+          # json-encode encodes the empty list as null (nil), not [].
+          reqlist = if reqjson == null then [ ] else reqjson;
+        in
+        if pin != null then
+          epkg.overrideAttrs {
             inherit src;
             version = snapshotVersion;
           }
-          else epkg;
-        # Hack: we call makePackage for everything (not just doomPackageSet), just to hit the
-        # repoToPin check. We cannot easily call it just for transitive dependencies, because we
-        # need makePackage to figure out what the dependencies (for packages not in esuper) are.
-        # But we do need some filtering (currently just "emacs" itself) to avoid infinite recursion
-        # while populating repoToPin.
-        upstreamWithPins = lib.mapAttrs
-          (n: p:
-            if lib.elem p [ esuper.emacs ]
-            then p
-            else makePackage n {})
-          esuper;
-        doomPackages = lib.mapAttrs makePackage doomPackageSet;
-        allPackages = upstreamWithPins // doomPackages;
-      in
-        allPackages
+        else
+          epkg;
+      # Hack: we call makePackage for everything (not just doomPackageSet), just to hit the
+      # repoToPin check. We cannot easily call it just for transitive dependencies, because we
+      # need makePackage to figure out what the dependencies (for packages not in esuper) are.
+      # But we do need some filtering (currently just "emacs" itself) to avoid infinite recursion
+      # while populating repoToPin.
+      upstreamWithPins = lib.mapAttrs (
+        n: p: if lib.elem p [ esuper.emacs ] then p else makePackage n { }
+      ) esuper;
+      doomPackages = lib.mapAttrs makePackage doomPackageSet;
+      allPackages = upstreamWithPins // doomPackages;
+    in
+    allPackages
   );
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
   # the set from step 2.
-  emacsWithPackages = doomEmacsPackages.emacsWithPackages
-    (epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)) ++ (extraPackages epkgs));
+  emacsWithPackages = doomEmacsPackages.emacsWithPackages (
+    epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)) ++ (extraPackages epkgs)
+  );
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
   # step 3 and packages.el from step 1.
@@ -343,7 +369,12 @@ let
     name = "doom-profile";
     buildCommandPath = ./build-helpers/build-doom-profile.sh;
 
-    inherit doomDir doomIntermediates doomSource runtimeShell;
+    inherit
+      doomDir
+      doomIntermediates
+      doomSource
+      runtimeShell
+      ;
     profileName = nonEmptyProfileName;
     noProfileHack = profileName == "";
     buildProfileLoader = ./build-helpers/build-profile-loader;
@@ -370,7 +401,13 @@ let
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
 
     # emacsWithPackages also accessed externally (for pushing to Cachix).
-    inherit binPath doomProfile doomLocalDir doomSource emacsWithPackages;
+    inherit
+      binPath
+      doomProfile
+      doomLocalDir
+      doomSource
+      emacsWithPackages
+      ;
     profileName = nonEmptyProfileName;
 
     nativeBuildInputs = [ makeBinaryWrapper ];

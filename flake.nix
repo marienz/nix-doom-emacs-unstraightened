@@ -31,98 +31,130 @@
     };
   };
 
-  outputs = { self, systems, doomemacs, nixpkgs, emacs-overlay, ... }: let
-    perSystemPackages = let
-      eachSystem = nixpkgs.lib.genAttrs (import systems);
-    in
-      f: eachSystem (system: f nixpkgs.legacyPackages.${system});
+  outputs =
+    {
+      self,
+      systems,
+      doomemacs,
+      nixpkgs,
+      emacs-overlay,
+      ...
+    }:
+    let
+      perSystemPackages =
+        let
+          eachSystem = nixpkgs.lib.genAttrs (import systems);
+        in
+        f: eachSystem (system: f nixpkgs.legacyPackages.${system});
 
-    doomFromPackages = pkgs: args: let
-      # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
-      #
-      # We need emacsPackagesFor from the overlay, but neither the overlay itself
-      # (it only uses "super", not "self") nor us actually needs anything overlaid
-      # on nixpkgs. So we can call the overlay and pass emacsPackagesFor through
-      # directly instead of having pkgs.callPackage do it.
-      inherit (emacs-overlay.overlays.package {} pkgs) emacsPackagesFor;
-      mergedArgs = args // {
-        inherit emacsPackagesFor;
-        doomSource = doomemacs;
-      };
-    in
-      pkgs.callPackages self mergedArgs;
-
-    # Convert a Nix expression to a `doom!` block suitable for init.el.
-    #
-    # Input: a nested attribute set.
-    # The keys of the first level are categories (like `lang`).
-    # The keys of the second level are module names (like `nix`).
-    # The values are lists of module flags, or `true` for no flags.
-    toInit = let
-      inherit (nixpkgs.lib) concatLines concatStringsSep isList mapAttrsToList toPretty;
-    in
-      attrs:
-      concatLines (
-        [ "(doom!" ]
-        ++ (mapAttrsToList (
-          cat: modules:
-          (concatLines (
-            [ (":" + cat) ]
-            ++ (mapAttrsToList (
-              mod: value:
-              if value == true then mod
-              else if isList value then "(${mod} ${concatStringsSep " " value})"
-              else abort "${toPretty value} not supported"
-            ))
-              modules
-          ))
-        ) attrs)
-        ++ [ ")" ]
-      );
-
-    in {
-      checks = perSystemPackages (pkgs: pkgs.callPackages ./checks.nix {
-        inherit toInit;
-        doomSource = doomemacs;
-        makeDoomPackages = doomFromPackages pkgs;
-      });
-      formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
-      packages = perSystemPackages (pkgs: {
-        doom-emacs = (doomFromPackages pkgs {
-          doomDir = ./doomdir;
-          doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-        }).doomEmacs;
-        doom-emacs-unset-profile = (doomFromPackages pkgs {
-          doomDir = ./doomdir;
-          doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-          profileName = "";
-        }).doomEmacs;
-        cachix-packages = let
-          doomDirs = pkgs.callPackages ./build-helpers/doomdirs.nix {
+      doomFromPackages =
+        pkgs: args:
+        let
+          # Hack to avoid pkgs.extend having to instantiate an additional nixpkgs.
+          #
+          # We need emacsPackagesFor from the overlay, but neither the overlay itself
+          # (it only uses "super", not "self") nor us actually needs anything overlaid
+          # on nixpkgs. So we can call the overlay and pass emacsPackagesFor through
+          # directly instead of having pkgs.callPackage do it.
+          inherit (emacs-overlay.overlays.package { } pkgs) emacsPackagesFor;
+          mergedArgs = args // {
+            inherit emacsPackagesFor;
             doomSource = doomemacs;
           };
-          inherit (nixpkgs) lib;
-          depBuilds = lib.mapCartesianProduct
-            ({doomDir, emacs}: (
-              lib.nameValuePair
-                "${emacs.name}-${doomDir.name}"
-                (doomFromPackages pkgs {
-                  doomDir = doomDir.value;
-                  emacs = emacs.value;
-                  doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-                  experimentalFetchTree = true;
-                }).doomEmacs.emacsWithPackages.deps))
-            {
-              doomDir = lib.attrsToList doomDirs;
-              # TODO: emacs29-gtk3 and emacs29-pgtk fail to build jupyter (segfault in zmq)
-              emacs = lib.attrsToList {
-                inherit (pkgs) emacs29 emacs29-nox;
-              };
-            };
         in
+        pkgs.callPackages self mergedArgs;
+
+      # Convert a Nix expression to a `doom!` block suitable for init.el.
+      #
+      # Input: a nested attribute set.
+      # The keys of the first level are categories (like `lang`).
+      # The keys of the second level are module names (like `nix`).
+      # The values are lists of module flags, or `true` for no flags.
+      toInit =
+        let
+          inherit (nixpkgs.lib)
+            concatLines
+            concatStringsSep
+            isList
+            mapAttrsToList
+            toPretty
+            ;
+        in
+        attrs:
+        concatLines (
+          [ "(doom!" ]
+          ++ (mapAttrsToList (
+            cat: modules:
+            (concatLines (
+              [ (":" + cat) ]
+              ++
+                (mapAttrsToList (
+                  mod: value:
+                  if value == true then
+                    mod
+                  else if isList value then
+                    "(${mod} ${concatStringsSep " " value})"
+                  else
+                    abort "${toPretty value} not supported"
+                ))
+                  modules
+            ))
+          ) attrs)
+          ++ [ ")" ]
+        );
+
+    in
+    {
+      checks = perSystemPackages (
+        pkgs:
+        pkgs.callPackages ./checks.nix {
+          inherit toInit;
+          doomSource = doomemacs;
+          makeDoomPackages = doomFromPackages pkgs;
+        }
+      );
+      formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
+      packages = perSystemPackages (pkgs: {
+        doom-emacs =
+          (doomFromPackages pkgs {
+            doomDir = ./doomdir;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+          }).doomEmacs;
+        doom-emacs-unset-profile =
+          (doomFromPackages pkgs {
+            doomDir = ./doomdir;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+            profileName = "";
+          }).doomEmacs;
+        cachix-packages =
+          let
+            doomDirs = pkgs.callPackages ./build-helpers/doomdirs.nix {
+              doomSource = doomemacs;
+            };
+            inherit (nixpkgs) lib;
+            depBuilds =
+              lib.mapCartesianProduct
+                (
+                  { doomDir, emacs }:
+                  (lib.nameValuePair "${emacs.name}-${doomDir.name}"
+                    (doomFromPackages pkgs {
+                      doomDir = doomDir.value;
+                      emacs = emacs.value;
+                      doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+                      experimentalFetchTree = true;
+                    }).doomEmacs.emacsWithPackages.deps
+                  )
+                )
+                {
+                  doomDir = lib.attrsToList doomDirs;
+                  # TODO: emacs29-gtk3 and emacs29-pgtk fail to build jupyter (segfault in zmq)
+                  emacs = lib.attrsToList {
+                    inherit (pkgs) emacs29 emacs29-nox;
+                  };
+                };
+          in
           pkgs.linkFarm "unstraightened-cachix-packages" (
-            { inherit doomemacs; }
-            // lib.listToAttrs depBuilds
+            { inherit doomemacs; } // lib.listToAttrs depBuilds
           );
       });
       overlays.default = final: prev: {

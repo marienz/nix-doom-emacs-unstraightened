@@ -46,8 +46,18 @@ let
   # starting with "eglot" or "flymake", disabling it and enabling a nonsensical flag is not really
   # an issue.
   allModulesMostFlags = writeTextDir "init.el" (
-    lib.replaceStrings [ " +eglot" " +flymake" ] [ "" "" ] (
-      lib.readFile "${allModulesAndFlags}/init.el"));
-in {
+    lib.replaceStrings
+      [
+        " +eglot"
+        " +flymake"
+      ]
+      [
+        ""
+        ""
+      ]
+      (lib.readFile "${allModulesAndFlags}/init.el")
+  );
+in
+{
   inherit allModules allModulesAndFlags allModulesMostFlags;
 }

@@ -63,7 +63,10 @@
       description = "build org-mode from emacs-straight repo for Doom";
     };
     buildInputs = [ ];
-    nativeBuildInputs = [ emacs makeWrapper ];
+    nativeBuildInputs = [
+      emacs
+      makeWrapper
+    ];
     # Finding ORGVERSION is a hack (based on the one in Doom).
     # TODO: set GITVERSION?
     # datadir makes oc-csl find etc/csl and ox-odt find etc/styles.
@@ -200,8 +203,10 @@
     let
       inherit (esuper.melpaStablePackages.tree-sitter-langs) version;
     in
-      esuper.tree-sitter-langs.overrideAttrs (old: {
-        postPatch = old.postPatch or "" + ''
+    esuper.tree-sitter-langs.overrideAttrs (old: {
+      postPatch =
+        old.postPatch or ""
+        + ''
           sed -i -e '/defconst tree-sitter-langs--bundle-version/ s/"[0-9.]*"/"${version}"/' \
             ./tree-sitter-langs-build.el
         '';
@@ -222,7 +227,10 @@
     meta = {
       description = "trivial build for doom-emacs";
     };
-    packageRequires = [ eself.projectile eself.helm ];
+    packageRequires = [
+      eself.projectile
+      eself.helm
+    ];
     recipe = writeText "auctex-recipe" ''
       (helm-taskrunner :fetcher github :repo "emacs-taskrunner/helm-taskrunner")
     '';
@@ -287,10 +295,12 @@
   });
   # Make it byte-compile (see auctex)
   company-auctex = esuper.company-auctex.overrideAttrs (attrs: {
-    preBuild = (attrs.preBuild or "") + ''
-      mkdir home
-      export HOME="$PWD/home"
-  '';
+    preBuild =
+      (attrs.preBuild or "")
+      + ''
+        mkdir home
+        export HOME="$PWD/home"
+      '';
   });
   # Make it byte-compile.
   #
