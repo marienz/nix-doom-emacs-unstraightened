@@ -86,6 +86,7 @@
         doomSource = doomemacs;
         makeDoomPackages = doomFromPackages pkgs;
       });
+      formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
       packages = perSystemPackages (pkgs: {
         doom-emacs = (doomFromPackages pkgs {
           doomDir = ./doomdir;
