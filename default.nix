@@ -33,6 +33,8 @@
     fd
     ripgrep
   ],
+  # Args to pass to `doom +org tangle`.
+  tangleArgs ? null,
 
   callPackage,
   callPackages,
@@ -47,12 +49,44 @@
   makeBinaryWrapper,
   stdenv,
   stdenvNoCC,
+  toInit,
+  writeTextDir,
 }:
 let
   inherit (lib) optionalAttrs optionalString;
   inherit (import ./fetch-overrides.nix) extraPins extraUrls;
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
+
+  tangleDoomDir = writeTextDir "init.el" (toInit {
+    lang.org = true;
+  });
+
+  # Preprocess DOOMDIR with `doom +org tangle` if requested.
+  doomDir' =
+    if tangleArgs != null then
+      runCommandLocal "tangled-doomdir"
+        {
+          inherit
+            tangleArgs
+            doomDir
+            doomSource
+            runtimeShell
+            ;
+          EMACS = lib.getExe emacs;
+          DOOMDIR = tangleDoomDir;
+          # Enable this to troubleshoot failures at this step.
+          #DEBUG = "1";
+        }
+        ''
+          mkdir $out doomlocaldir
+          export DOOMLOCALDIR=$PWD/doomlocaldir
+          cd $out
+          ln -s $doomDir/* ./
+          $runtimeShell $doomSource/bin/doom +org tangle $tangleArgs
+        ''
+    else
+      doomDir;
 
   # Step 1: determine which Emacs packages to pull in.
   #
@@ -69,7 +103,7 @@ let
     name = "doom-intermediates";
     inherit doomSource emacs;
     extraArgs = {
-      DOOMDIR = "${doomDir}";
+      DOOMDIR = "${doomDir'}";
     };
     script = ./build-helpers/dump;
     scriptArgs = "-o $out";
@@ -358,11 +392,11 @@ let
     buildCommandPath = ./build-helpers/build-doom-profile.sh;
 
     inherit
-      doomDir
       doomIntermediates
       doomSource
       runtimeShell
       ;
+    doomDir = doomDir';
     profileName = nonEmptyProfileName;
     noProfileHack = profileName == "";
     buildProfileLoader = ./build-helpers/build-profile-loader;

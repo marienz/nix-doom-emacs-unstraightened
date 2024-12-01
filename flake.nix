@@ -58,7 +58,7 @@
           # directly instead of having pkgs.callPackage do it.
           inherit (emacs-overlay.overlays.package { } pkgs) emacsPackagesFor;
           mergedArgs = args // {
-            inherit emacsPackagesFor;
+            inherit emacsPackagesFor toInit;
             doomSource = doomemacs;
           };
         in
@@ -125,6 +125,12 @@
             doomDir = ./doomdir;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
             profileName = "";
+          }).doomEmacs;
+        doom-emacs-tangle =
+          (doomFromPackages pkgs {
+            doomDir = ./doomdir;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+            tangleArgs = ".";
           }).doomEmacs;
         cachix-packages =
           let

@@ -129,6 +129,16 @@ in
         description = "Extra packages to add to Doom's $PATH.";
       };
 
+      tangleArgs = mkOption {
+        default = null;
+        example = ".";
+        type = types.nullOr types.str;
+        defaultText = literalExpression null;
+        description = ''
+          When set, run `doom +org tangle $tangleArgs` in `doomDir`.
+        '';
+      };
+
       # Home Manager-specific options.
       provideEmacs = mkOption {
         type = types.bool;
@@ -172,6 +182,7 @@ in
             experimentalFetchTree
             extraPackages
             extraBinPackages
+            tangleArgs
             ;
         };
       in

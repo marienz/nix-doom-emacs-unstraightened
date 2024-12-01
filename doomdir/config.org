@@ -1,0 +1,7 @@
+#+title: Config
+
+Example literate config, used by ~$nix build .#doom-emacs-tangle~.
+
+#+begin_src emacs-lisp :tangle init.el
+(doom! :lang org)
+#+end_src

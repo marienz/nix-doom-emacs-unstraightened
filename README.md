@@ -190,6 +190,20 @@ support use without flakes.
   efficient but considered experimental in Nix (subject to changes which might
   break fetches).
 
+- `tangleArgs`: When set, Unstraightened runs `doom +org tangle` in `doomDir`.
+  See `doom +org tangle --help` for the arguments you can use here, and see the
+  [Org-mode manual](https://orgmode.org/manual/Extracting-Source-Code.html) for
+  more information.
+
+> [!NOTE]
+> The `:config literate` module has no effect when using Unstraightened.
+> Use this instead.
+
+> [!NOTE]
+> Currently, this feature uses the version of Org-mode that comes with Emacs
+> when tangling, not the version installed by Doom. This limitation could be
+> lifted: file an issue if this limitation is a problem for you.
+
 There are a few other settings but they are not typically useful. See the
 source.
 
