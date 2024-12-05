@@ -44,9 +44,10 @@ Please report any issues.
 > inputs are automatically updated daily as long as tests pass. Updating
 > manually may update to an incompatible version of Doom or Emacs packages.
 
-3. Copy your Doom configuration into `doomdir` (overwriting what's there)
-4. Make sure all files are added (`git add doomdir`)
-5. Run `nix run .#doom-emacs`.
+3. `rm doomdir/*` (delete my example/test configuration)
+4. Copy your Doom configuration into `doomdir`
+5. Make sure all files are added (`git add doomdir`)
+6. Run `nix run .#doom-emacs`.
 
 If this does not work, the "with flakes" setup below is unlikely to work either.
 Please file an issue.
