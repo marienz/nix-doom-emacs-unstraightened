@@ -31,7 +31,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest # x86_64-linux
-          - macos-latest  # aarch64-darwin
+# See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42
+#          - macos-latest  # aarch64-darwin
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository

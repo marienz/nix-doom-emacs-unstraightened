@@ -11,10 +11,15 @@ implemented differently.
 
 [![CI](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml/badge.svg)](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml)
 
-Tested and working on Linux and macOS, with emacs-overlay and Doom inputs
-updated automatically. If you're reading this on Github, there should be a CI
-status badge above: if CI is passing, Unstraightened installs an up-to-date
-version of Doom Emacs and (almost) all module dependencies.
+Tested and working on Linux, with emacs-overlay and Doom inputs updated
+automatically. If you're reading this on Github, there should be a CI status
+badge above: if CI is passing, Unstraightened installs an up-to-date version of
+Doom Emacs and (almost) all module dependencies.
+
+MacOS is not covered by CI but was previously reported working. Please file an
+issue if it does not work for you (and please comment on
+https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42 if you know
+why CI is not working).
 
 You may encounter "Cannot find Git revision" errors on Nix versions newer than
 2.18.x (see #14). Try enabling `experimentalFetchTree` to work around this (see
