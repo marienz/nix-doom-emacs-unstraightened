@@ -92,38 +92,28 @@
       make install-etc install-info
     '';
   };
-  org-contrib = esuper.trivialBuild {
+  org-contrib = esuper.melpaBuild {
     pname = "org-contrib";
     version = "1";
     meta = {
       description = "build org-contrib from emacsmirror for Doom";
     };
     packageRequires = [ eself.org ];
-    sourceRoot = "source/lisp";
-    # Generate an autoload file picked up by generate-nix-autoloads in build-profile.
-    # nixpkgs used to do this for us, but stopped because it wasn't loading that file...
-    postInstall = ''
-      emacs --batch -l package --eval "(package-generate-autoloads \"org-contrib\" \"$LISPDIR\")"
-    '';
   };
-  sln-mode = esuper.trivialBuild {
+  sln-mode = esuper.melpaBuild {
     pname = "sln-mode";
     version = "1";
     meta = {
       description = "build sln-mode for doom with manual dependencies";
     };
-    # Straight uses a recipe from el-get that specifiecs the font-lock-ext
+    # Straight uses a recipe from el-get that specifies the font-lock-ext
     # dependency.
     buildInputs = [ eself.font-lock-ext ];
-    # Generate autoloads (see org-contrib for details)
-    postInstall = ''
-      emacs --batch -l package --eval "(package-generate-autoloads \"sln-mode\" \"$LISPDIR\")"
-    '';
   };
   # Straight checks for git's presence at import time.
   # We could probably get by with feeding it /bin/true or similar,
   # but it seems not worth the risk.
-  straight = esuper.trivialBuild {
+  straight = esuper.melpaBuild {
     pname = "straight";
     version = "1";
     meta = {
@@ -131,30 +121,17 @@
     };
     # Do not install files that shadow builtins and/or have undesirable side
     # effects if loaded.
-    postUnpack = ''
-      filteredSrc=$PWD/filteredSrc
-      mkdir $filteredSrc
-      cp $sourceRoot/straight*.el $filteredSrc
-      sourceRoot=$filteredSrc
-    '';
+    files = "(\"straight*.el\")";
     nativeBuildInputs = [ git ];
-    # Generate autoloads (see org-contrib for details)
-    postInstall = ''
-      emacs --batch -l package --eval "(package-generate-autoloads \"straight\" \"$LISPDIR\")"
-    '';
   };
   # Nix uses a Melpa recipe that assumes the upstream CMake repo layout.
   # Doom uses emacsmirror and sets :files (:defaults "*").
-  cmake-mode = esuper.trivialBuild {
+  cmake-mode = esuper.melpaBuild {
     pname = "cmake-mode";
     version = "1";
     meta = {
       description = "build cmake-mode from emacsmirror for Doom";
     };
-    # Generate autoloads (see org-contrib for details)
-    postInstall = ''
-      emacs --batch -l package --eval "(package-generate-autoloads \"cmake-mode\" \"$LISPDIR\")"
-    '';
   };
   # Doom uses a recipe with :files (:defaults "*"), which MELPA's package-build
   # rejects because it includes dotfiles
