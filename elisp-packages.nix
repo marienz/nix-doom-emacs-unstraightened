@@ -51,12 +51,19 @@
   };
   # Doom lets Straight provide org-autoloads.el as an alternative for
   # org-loaddefs.el, and manually generates org-version.el.
-  # I currently run Org's build system.
   #
-  # This does not hit the same dependency problem auctex does because org is a
-  # built-in package, and the package.el machinery assumes that satisfies the
-  # dependency (it is not aware of our shadowing it).
-  org = esuper.trivialBuild {
+  # I currently run Org's build system to generate org-version.el.
+  # But we need this org on load-path while byte-compiling packages that depend on it.
+  # We accomplish that by using a melpaBuild for everything else.
+  #
+  # If we let org install itself, it ends up in an "org" subdir of site-lisp that is not on
+  # load-path while byte-compiling dependent packages, causing those to pick up the built-in version
+  # of org (causing problems at runtime).
+  #
+  # This ends up writing both org-autoloads.el and org-loaddefs.el, which combined provide the same
+  # autoloads org-loaddefs.el has when using just Org's build system. I doubt all this is working as
+  # intended, but the end result seems to work...
+  org = esuper.melpaBuild {
     pname = "org";
     version = "1";
     meta = {
@@ -74,20 +81,15 @@
     # (Not sure if OpenDocument-schema-v1.3.rnc is misnamed or this file is not distributed...)
     configurePhase = ''
       echo "prefix = $out" > local.mk
-      echo "lispdir = $out/share/emacs/site-lisp/org" >> local.mk
       echo "datadir = $out/share/emacs/site-lisp/org/etc" >> local.mk
       echo "ORGVERSION = $(sed -ne 's/^;; Version: \([^\n-]\+\).*/\1/p' lisp/org.el)" >> local.mk
       make config
     '';
-    buildPhase = ''
-      runHook preBuild
-      make -j$NIX_BUILD_CORES
-      runHook postBuild
+    preBuild = ''
+      make autoloads
     '';
-    installPhase = ''
-      runHook preInstall
-      make install
-      runHook postInstall
+    postInstall = ''
+      make install-etc install-info
     '';
   };
   org-contrib = esuper.trivialBuild {
