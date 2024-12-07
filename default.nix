@@ -58,9 +58,11 @@ let
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
 
-  tangleDoomDir = writeTextDir "init.el" (toInit {
-    lang.org = true;
-  });
+  tangleDoomDir = writeTextDir "init.el" (
+    toInit lib {
+      lang.org = true;
+    }
+  );
 
   # Preprocess DOOMDIR with `doom +org tangle` if requested.
   doomDir' =

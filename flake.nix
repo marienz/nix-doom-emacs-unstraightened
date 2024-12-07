@@ -70,9 +70,9 @@
       # The keys of the first level are categories (like `lang`).
       # The keys of the second level are module names (like `nix`).
       # The values are lists of module flags, or `true` for no flags.
-      toInit =
+      toInit = lib:
         let
-          inherit (nixpkgs.lib)
+          inherit (lib)
             concatLines
             concatStringsSep
             isList
@@ -108,7 +108,7 @@
       checks = perSystemPackages (
         pkgs:
         pkgs.callPackages ./checks.nix {
-          inherit toInit;
+          toInit = toInit nixpkgs.lib;
           doomSource = doomemacs;
           makeDoomPackages = doomFromPackages pkgs;
         }
