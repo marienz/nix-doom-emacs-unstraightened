@@ -70,7 +70,8 @@
       # The keys of the first level are categories (like `lang`).
       # The keys of the second level are module names (like `nix`).
       # The values are lists of module flags, or `true` for no flags.
-      toInit = lib:
+      toInit =
+        lib:
         let
           inherit (lib)
             concatLines
