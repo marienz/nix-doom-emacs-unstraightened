@@ -247,7 +247,6 @@ let
                   # (leaving `version` unset until overrideAttrs below does not
                   # work).
                   version = snapshotVersion;
-                  commit = pin;
                   meta = {
                     description = "trivial build for doom-emacs";
                   };
@@ -357,6 +356,7 @@ let
           epkg.overrideAttrs {
             inherit src;
             version = snapshotVersion;
+            commit = pin;
           }
         else
           epkg;
