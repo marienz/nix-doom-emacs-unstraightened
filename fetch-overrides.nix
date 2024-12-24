@@ -37,6 +37,9 @@
     # Fetches from git.notmuchmail.org, which I currently cannot reach.
     # Use the github mirror instead.
     notmuch = "https://github.com/notmuch/notmuch";
+    # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
+    lean-mode = "https://github.com/leanprover/lean3-mode";
+    company-lean = "https://github.com/leanprover/lean3-mode";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
