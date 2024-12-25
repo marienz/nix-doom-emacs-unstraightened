@@ -49,4 +49,12 @@
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
   };
+
+  # :files passed in to melpa2nix (currently only if not already present in recipe).
+  extraFiles = {
+    # These build from the same repository. Without this, lean-mode does not build because
+    # we try to build company-lean without depending on company.
+    lean-mode = ''("lean-*.el")'';
+    company-lean = ''("company-lean.el")'';
+  };
 }

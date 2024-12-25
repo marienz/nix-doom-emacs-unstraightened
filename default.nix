@@ -54,7 +54,7 @@
 }:
 let
   inherit (lib) optionalAttrs optionalString;
-  inherit (import ./fetch-overrides.nix) extraPins extraUrls;
+  inherit (import ./fetch-overrides.nix) extraFiles extraPins extraUrls;
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
 
@@ -197,6 +197,7 @@ let
               in
               if repo != null then repoToPin.${repo} or null else null
             );
+          files = p.recipe.files or extraFiles.${name} or null;
           # We have to specialcase ELPA packages pinned by Doom: Straight mirrors /
           # repackages them. Doom's pins assume that mirror is used (so we have to
           # use it), and replacing the source in nixpkgs's derivation will not work
@@ -253,7 +254,7 @@ let
                   # Just enough to make melpa2nix work.
                   recipe = writeText "${name}-generated-recipe" ''
                     (${name} :fetcher github :repo "marienz/made-up"
-                     ${optionalString (p ? recipe.files) ":files ${p.recipe.files}"})'';
+                     ${optionalString (files != null) ":files ${files}"})'';
                   # TODO: refactor out the recursive call to makePackage.
                   # (Currently needed for dependencies on packages not in epkgs or doom.)
                   packageRequires = map (name: eself.${name} or (makePackage name { })) reqlist;
