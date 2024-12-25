@@ -344,10 +344,10 @@ let
               builtins.fetchGit fetchGitArgs;
           # Run locally to avoid a network roundtrip.
           reqfile = runCommandLocal "${name}-deps" {
-            inherit src;
+            inherit src name;
             emacs = lib.getExe emacs;
             printDeps = ./build-helpers/print-deps.el;
-          } "$emacs -Q --batch --script $printDeps $src > $out";
+          } "$emacs -Q --batch --script $printDeps $src $name > $out";
           reqjson = lib.importJSON reqfile;
           # json-encode encodes the empty list as null (nil), not [].
           reqlist = if reqjson == null then [ ] else reqjson;
