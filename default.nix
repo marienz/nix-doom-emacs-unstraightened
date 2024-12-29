@@ -378,7 +378,10 @@ let
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (
-    epkgs: (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet)) ++ (extraPackages epkgs)
+    epkgs:
+    (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet))
+    ++ (extraPackages epkgs)
+    ++ extraBinPackages
   );
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
@@ -418,7 +421,6 @@ let
   };
 
   # Step 6: write wrappers to start the whole thing.
-  binPath = lib.makeBinPath extraBinPackages;
 
   # makeBinaryWrapper pulls in a compiler, so don't force this one local.
   doomEmacs = stdenv.mkDerivation {
@@ -427,7 +429,6 @@ let
 
     # emacsWithPackages also accessed externally (for pushing to Cachix).
     inherit
-      binPath
       doomProfile
       doomLocalDir
       doomSource

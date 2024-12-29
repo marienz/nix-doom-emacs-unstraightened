@@ -18,25 +18,16 @@ profileArgs=(
     --set DOOMPROFILELOADFILE $doomProfile/loader/init
     --set DOOMPROFILE "$profileName"
 )
-common=()
-if [[ -n "$binPath" ]]; then
-    common+=(
-        --suffix PATH : "$binPath"
-    )
-fi
 
 makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
     "${profileArgs[@]}" \
-    "${common[@]}" \
     --set DOOMDIR $doomProfile/doomdir \
     --set-default DOOMLOCALDIR "$doomLocalDir" \
     --add-flags "--init-directory=$doomSource"
 makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
-    "${common[@]}" \
     --set EMACS $emacsWithPackages/bin/emacs \
     --set-default DOOMLOCALDIR "$doomLocalDir"
 makeWrapper $doomSource/bin/doom $out/bin/doom \
-    "${common[@]}" \
     --set EMACS $emacsWithPackages/bin/emacs \
     "${profileArgs[@]}" \
     --set DOOMDIR $doomProfile/doomdir \
