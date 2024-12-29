@@ -37,9 +37,13 @@ it. Just skip it entirely."
         (file-name-directory (directory-file-name doom-user-dir))))
 
 ;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
-;; Doom. Extend this to set our profile dir before it does so.
+;; Doom. Extend this to run the profile loader first: what Doom does here is
+;; similar enough to its normal startup it needs the same fixes.
+;;
+;; Note this assumes DOOMPROFILELOADFILE and DOOMPROFILE leak into child
+;; processes (the loader does nothing if DOOMPROFILE is unset).
 (setq-hook! +emacs-lisp--flycheck-non-package-mode
   flycheck-emacs-lisp-check-form
   (prin1-to-string `(progn
-                      (setq doom-profile-data-dir ,doom-profile-data-dir)
+                      (load (getenv "DOOMPROFILELOADFILE") nil 'nomessage)
                       ,(read flycheck-emacs-lisp-check-form))))
