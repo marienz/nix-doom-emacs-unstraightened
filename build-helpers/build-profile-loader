@@ -21,6 +21,7 @@
    (unset-profile ("-u") "Unset DOOMPROFILE at startup."))
   "Write Doom's profile loader."
   (let* ((profile-directory (expand-file-name "profile/" base-directory))
+         (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-profile-data-dir . ,profile-directory)
@@ -57,6 +58,6 @@ requested makes `doom doctor' work."
                               emacs-major-version emacs-minor-version))))
 )
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
-    (doom-profiles-write-load-file new-profiles)))
+    (doom-profiles-write-load-file new-profiles load-file)))
 
 (run! "build-profile-loader" (cdr (member "--" argv)))

@@ -25,13 +25,13 @@ export DOOMDIR=$out/doomdir
 
 # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
 export DOOMLOCALDIR="$PWD/doomlocaldir"
-export DOOMPROFILELOADFILE=$out/loader/init.elc
 $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
     ${noProfileHack:+-u} -n "$profileName" -b "$out"
 
 # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
 export HOME="$PWD/home"
 export DOOMPROFILE="$profileName";
+export DOOMPROFILELOADFILE=$out/loader/init
 $runtimeShell $doomSource/bin/doomscript $buildProfile \
     -i $initEl \
     -l $deps/share/emacs/site-lisp
