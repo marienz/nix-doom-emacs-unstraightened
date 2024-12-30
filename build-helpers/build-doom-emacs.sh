@@ -14,21 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-profileArgs=(
+commonArgs=(
     --set DOOMPROFILELOADFILE $doomProfile/loader/init
     --set DOOMPROFILE "$profileName"
+    --set-default DOOMLOCALDIR "$doomLocalDir"
+    --set DOOMDIR $doomProfile/doomdir
 )
 
 makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
-    "${profileArgs[@]}" \
-    --set DOOMDIR $doomProfile/doomdir \
-    --set-default DOOMLOCALDIR "$doomLocalDir" \
+    "${commonArgs[@]}" \
     --add-flags "--init-directory=$doomSource"
 makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
     --set EMACS $emacsWithPackages/bin/emacs \
-    --set-default DOOMLOCALDIR "$doomLocalDir"
+    "${commonArgs[@]}"
 makeWrapper $doomSource/bin/doom $out/bin/doom \
     --set EMACS $emacsWithPackages/bin/emacs \
-    "${profileArgs[@]}" \
-    --set DOOMDIR $doomProfile/doomdir \
-    --set-default DOOMLOCALDIR "$doomLocalDir"
+    "${commonArgs[@]}"
