@@ -234,9 +234,6 @@ let
                   If this is a custom `package!` entry in your packages.el, add a `:pin`.
                   If it is a `package!` in Doom, add an entry to Unstraightened's fetch-overrides.nix.
                 '';
-                # epkgs.*Build helpers take an attrset, they do not support
-                # mkDerivation's fixed-point evaluation (`finalAttrs`).
-                # If they did, the buildInputs stuff should use finalAttrs.src.
 
                 # This uses melpaBuild instead of trivialBuild to end up with
                 # something package.el understands as satisfying dependencies.
