@@ -420,7 +420,7 @@ let
     allowSubstitutes = false;
   };
 
-  # Step 6: write wrappers to start the whole thing.
+  # Step 5: write wrappers to start the whole thing.
 
   # makeBinaryWrapper pulls in a compiler, so don't force this one local.
   doomEmacs = stdenv.mkDerivation {
