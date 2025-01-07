@@ -24,12 +24,6 @@
     ob-ammonite = "https://github.com/emacsattic/ob-ammonite.git";
     ammonite-term-repl = "https://github.com/emacsattic/ammonite-term-repl.git";
     ob-clojure-literate = "https://github.com/emacsattic/ob-clojure-literate.git";
-    # In nixpkgs, but uses codeberg, for which nixpkgs uses fetchzip.
-    # TODO: consider parsing origEPkg.src.url instead.
-    tree-sitter-indent = "https://codeberg.org/FelipeLema/tree-sitter-indent.el.git";
-    undo-fu = "https://codeberg.org/ideasman42/emacs-undo-fu.git";
-    undo-fu-session = "https://codeberg.org/ideasman42/emacs-undo-fu-session.git";
-    consult-notmuch = "https://codeberg.org/jao/consult-notmuch.git";
     # sourcehut fetcher doesn't work for the same reason codeberg doesn't.
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
     # nixpkgs uses a release from nongnu ELPA.
