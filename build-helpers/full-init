@@ -49,17 +49,17 @@
       (let ((cat (car kp))
             (name (cdr kp)))
         (when name
-          (if-let ((flags?)
-                   (packages-path (doom-module-locate-path
-                                   kp doom-module-packages-file))
-                   (tree (with-temp-buffer
-                           (insert "(\n")
-                           (insert-file-contents packages-path)
-                           (goto-char (point-max))
-                           (insert ")\n")
-                           (goto-char (point-min))
-                           (read (current-buffer))))
-                   (flags (seq-uniq (walk-package-exp tree))))
+          (if-let* ((flags?)
+                    (packages-path (doom-module-locate-path
+                                    kp doom-module-packages-file))
+                    (tree (with-temp-buffer
+                            (insert "(\n")
+                            (insert-file-contents packages-path)
+                            (goto-char (point-max))
+                            (insert ")\n")
+                            (goto-char (point-min))
+                            (read (current-buffer))))
+                    (flags (seq-uniq (walk-package-exp tree))))
               (insert (format " %s %s\n" cat (cons name flags)))
             (insert (format " %s %s\n" cat name))))))
     (insert ")\n")
