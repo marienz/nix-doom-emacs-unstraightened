@@ -268,7 +268,7 @@ let
           # nixpkgs uses fetchZip for these, so epkg.src.gitRepoUrl is unset.
           # Derive the repo URL from the archive name, which will look like
           # https://codeberg.org/rwv/android-mode/archive/67f7c0d7d37605efc7f055b76d731556861c3eb9.tar.gz
-          codeberg = lib.strings.match "(https://codeberg.org/[^/]+/[^/]+)/.*" epkg.src.url;
+          codeberg = lib.strings.match "(https://codeberg.org/[^/]+/[^/]+)/.*" (epkg.src.url or "");
           url =
             if (p.recipe.host or "") == "github" && p ? recipe.repo then
               "https://github.com/${p.recipe.repo}"
