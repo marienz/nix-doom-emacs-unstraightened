@@ -33,7 +33,6 @@
     treesit-fold = "https://github.com/emacs-tree-sitter/treesit-fold.git";
     # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
     lean-mode = "https://github.com/leanprover/lean3-mode";
-    company-lean = "https://github.com/leanprover/lean3-mode";
     # Dropped from Melpa, see https://github.com/melpa/melpa/issues/9496 and
     # https://github.com/melpa/melpa/pull/9520
     helm-icons = "https://github.com/yyoncho/helm-icons";
@@ -57,9 +56,8 @@
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
   extraFiles = {
-    # These build from the same repository. Without this, lean-mode does not build because
-    # we try to build company-lean without depending on company.
+    # lean-mode and company-lean build from the same repository. Without this, lean-mode does not
+    # build because we try to build company-lean without depending on company.
     lean-mode = ''("lean-*.el")'';
-    company-lean = ''("company-lean.el")'';
   };
 }
