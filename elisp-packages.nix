@@ -163,6 +163,14 @@
       done
     '';
   };
+  # Contains an extension containing debug.el that should not be on load-path.
+  julia-snail = esuper.julia-snail.overrideAttrs (old: {
+    preBuild = (old.preBuild or "") + ''
+      for d in extensions/*; do
+        touch $d/.nosearch
+      done
+    '';
+  });
   tree-sitter-langs =
     # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
     # grammar bundle from github. It also contains a build system to build that bundle from
