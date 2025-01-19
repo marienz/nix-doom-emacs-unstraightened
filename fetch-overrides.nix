@@ -31,9 +31,6 @@
     # Fetches from git.notmuchmail.org, which I currently cannot reach.
     # Use the github mirror instead.
     notmuch = "https://github.com/notmuch/notmuch";
-    # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
-    lean-mode = "https://github.com/leanprover/lean3-mode";
-    company-lean = "https://github.com/leanprover/lean3-mode";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
@@ -49,9 +46,5 @@
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
   extraFiles = {
-    # These build from the same repository. Without this, lean-mode does not build because
-    # we try to build company-lean without depending on company.
-    lean-mode = ''("lean-*.el")'';
-    company-lean = ''("company-lean.el")'';
   };
 }
