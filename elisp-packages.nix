@@ -165,11 +165,25 @@
   };
   # Contains an extension containing debug.el that should not be on load-path.
   julia-snail = esuper.julia-snail.overrideAttrs (old: {
-    preBuild = (old.preBuild or "") + ''
-      for d in extensions/*; do
-        touch $d/.nosearch
-      done
-    '';
+    preBuild =
+      (old.preBuild or "")
+      + ''
+        for d in extensions/*; do
+          touch $d/.nosearch
+        done
+      '';
+  });
+  # TODO: refactor our dependency-extraction so we can apply it selectively to packages we don't
+  # generate the entire derivation for.
+  #
+  # TODO: remove this once Doom catches up.
+  #
+  # Upstream dropped the haskell-mode dependency
+  # (https://github.com/emacs-lsp/lsp-haskell/commit/f5214c6146b3163e83c0b03d27d1222cc319e1fd),
+  # and emacs-overlay picked that up, but we're pinned to a revision where the code still has the
+  # dependency. Force it back in for now.
+  lsp-haskell = esuper.lsp-haskell.overrideAttrs (old: {
+    packageRequires = old.packageRequires ++ [ eself.haskell-mode ];
   });
   tree-sitter-langs =
     # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
