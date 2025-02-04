@@ -185,6 +185,10 @@
   lsp-haskell = esuper.lsp-haskell.overrideAttrs (old: {
     packageRequires = old.packageRequires ++ [ eself.haskell-mode ];
   });
+  # Same problem: upstream dropped the dash dependency, but the version we're pinned to needs it.
+  magit-section = esuper.magit-section.overrideAttrs (old: {
+    packageRequires = old.packageRequires ++ [ eself.dash ];
+  });
   tree-sitter-langs =
     # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
     # grammar bundle from github. It also contains a build system to build that bundle from
