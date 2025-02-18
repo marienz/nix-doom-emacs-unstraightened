@@ -197,7 +197,7 @@ support use without flakes.
 
 > [!NOTE]
 > The `:config literate` module has no effect when using Unstraightened.
-> Use this instead.
+> Use `tangleArgs = "--all config.org"` instead.
 
 > [!NOTE]
 > Currently, this feature uses the version of Org-mode that comes with Emacs
