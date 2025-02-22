@@ -176,18 +176,13 @@
   # TODO: refactor our dependency-extraction so we can apply it selectively to packages we don't
   # generate the entire derivation for.
   #
-  # TODO: remove this once Doom catches up.
+  # nixpkgs deletes dapui.el because it is empty (only comments), triggering a compilation error.
+  # Upstream deleted the file in
+  # https://github.com/emacs-lsp/dap-mode/commit/438679755e880f2a662a63bc04da9e843257e248
   #
-  # Upstream dropped the haskell-mode dependency
-  # (https://github.com/emacs-lsp/lsp-haskell/commit/f5214c6146b3163e83c0b03d27d1222cc319e1fd),
-  # and emacs-overlay picked that up, but we're pinned to a revision where the code still has the
-  # dependency. Force it back in for now.
-  lsp-haskell = esuper.lsp-haskell.overrideAttrs (old: {
-    packageRequires = old.packageRequires ++ [ eself.haskell-mode ];
-  });
-  # Same problem: upstream dropped the dash dependency, but the version we're pinned to needs it.
-  magit-section = esuper.magit-section.overrideAttrs (old: {
-    packageRequires = old.packageRequires ++ [ eself.dash ];
+  # TODO: remove this once nixpkgs / emacs-overlay catches up.
+  dap-mode = esuper.dap-mode.overrideAttrs (old: {
+    preBuild = lib.replaceStrings ["rm --verbose dapui.el"] [""] old.preBuild;
   });
   tree-sitter-langs =
     # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
