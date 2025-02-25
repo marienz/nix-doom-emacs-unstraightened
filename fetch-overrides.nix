@@ -42,6 +42,9 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
+
+    # TODO: remove once https://github.com/purcell/package-lint/issues/285 is addressed.
+    package-lint = "21edc6d0d0eadd2d0a537f422fb9b7b8a3ae6991";
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
