@@ -32,7 +32,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest # x86_64-linux
-        build:
+        emacs:
           - emacs30
           # - emacs30-nox  # TODO: re-enable after #55 is addressed
           - emacs30-gtk3
