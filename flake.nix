@@ -156,7 +156,7 @@
                   doomDir = lib.attrsToList doomDirs;
                   # TODO: emacs29-gtk3 and emacs29-pgtk fail to build jupyter (segfault in zmq)
                   emacs = lib.attrsToList {
-                    inherit (pkgs) emacs29 emacs29-nox;
+                    inherit (pkgs) emacs30 emacs30-nox;
                   };
                 };
           in
