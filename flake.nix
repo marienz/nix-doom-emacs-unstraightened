@@ -115,55 +115,67 @@
         }
       );
       formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
-      packages = perSystemPackages (pkgs: {
-        doom-emacs =
-          (doomFromPackages pkgs {
-            doomDir = ./doomdir;
-            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-          }).doomEmacs;
-        doom-emacs-unset-profile =
-          (doomFromPackages pkgs {
-            doomDir = ./doomdir;
-            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-            profileName = "";
-          }).doomEmacs;
-        doom-emacs-tangle =
-          (doomFromPackages pkgs {
-            doomDir = ./doomdir;
-            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-            tangleArgs = ".";
-          }).doomEmacs;
-        cachix-packages =
+      packages = perSystemPackages (
+        pkgs:
+        {
+          doom-emacs =
+            (doomFromPackages pkgs {
+              doomDir = ./doomdir;
+              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+            }).doomEmacs;
+          doom-emacs-unset-profile =
+            (doomFromPackages pkgs {
+              doomDir = ./doomdir;
+              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+              profileName = "";
+            }).doomEmacs;
+          doom-emacs-tangle =
+            (doomFromPackages pkgs {
+              doomDir = ./doomdir;
+              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+              tangleArgs = ".";
+            }).doomEmacs;
+        }
+        // (
           let
-            doomDirs = pkgs.callPackages ./build-helpers/doomdirs.nix {
-              doomSource = doomemacs;
-            };
             inherit (nixpkgs) lib;
             depBuilds =
-              lib.mapCartesianProduct
+              emacs:
+              lib.mapAttrs
                 (
-                  { doomDir, emacs }:
-                  (lib.nameValuePair "${emacs.name}-${doomDir.name}"
-                    (doomFromPackages pkgs {
-                      doomDir = doomDir.value;
-                      emacs = emacs.value;
-                      doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-                      experimentalFetchTree = true;
-                    }).doomEmacs.emacsWithPackages.deps
-                  )
+                  name: doomDir:
+                  (doomFromPackages pkgs {
+                    inherit doomDir emacs;
+                    doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+                    experimentalFetchTree = true;
+                  }).doomEmacs.emacsWithPackages.deps
                 )
-                {
-                  doomDir = lib.attrsToList doomDirs;
-                  # TODO: emacs29-gtk3 and emacs29-pgtk fail to build jupyter (segfault in zmq)
-                  emacs = lib.attrsToList {
-                    inherit (pkgs) emacs30 emacs30-nox;
-                  };
-                };
+                (
+                  pkgs.callPackages ./build-helpers/doomdirs.nix {
+                    inherit emacs;
+                    doomSource = doomemacs;
+                  }
+                );
           in
-          pkgs.linkFarm "unstraightened-cachix-packages" (
-            { inherit doomemacs; } // lib.listToAttrs depBuilds
-          );
-      });
+          lib.listToAttrs (
+            map
+              (
+                name:
+                let
+                  p = pkgs.linkFarm "cachix-${name}" (depBuilds pkgs.${name});
+                in
+                lib.nameValuePair p.name p
+              )
+              # Keep in sync with .github/workflows/cachix.yml
+              [
+                "emacs30"
+                # "emacs30-nox"  # TODO: re-enable after #55 is addressed
+                "emacs30-gtk3"
+                "emacs30-pgtk"
+              ]
+          )
+        )
+      );
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
         emacsWithDoom = args: (doomFromPackages final args).emacsWithDoom;
