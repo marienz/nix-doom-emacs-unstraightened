@@ -40,11 +40,12 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - name: Enable Magic Nix Cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
+        uses: cachix/install-nix-action@v30
         with:
-          use-flakehub: false
+          github_access_token: '${{ secrets.GITHUB_TOKEN }}'
+          extra_nix_config: |
+            trusted-public-keys = doom-emacs-unstraightened.cachix.org-1:O5oOlRPnmQEvVaFyuMTmthCEooHbrg54WgSLR07tmg4= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://doom-emacs-unstraightened.cachix.org/ https://cache.nixos.org/
       - name: Cache downloads
         uses: ./.github/actions/cache-downloads
       - name: Check flake.lock
