@@ -46,6 +46,8 @@ jobs:
           extra_nix_config: |
             trusted-public-keys = doom-emacs-unstraightened.cachix.org-1:O5oOlRPnmQEvVaFyuMTmthCEooHbrg54WgSLR07tmg4= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
             substituters = https://doom-emacs-unstraightened.cachix.org/ https://cache.nixos.org/
+            # Increase tarball-ttl to work around https://github.com/NixOS/nix/issues/10773
+            tarball-ttl = 60 * 60 * 24 * 365; # 1 year
       - name: Cache downloads
         uses: ./.github/actions/cache-downloads
       - name: Check flake.lock
