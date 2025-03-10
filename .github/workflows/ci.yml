@@ -33,6 +33,8 @@ jobs:
     uses: ./.github/workflows/cachix.yml
     with:
       ref: flake-update
+    secrets:
+      CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
     needs: [flake-update]
   push:
     permissions:
