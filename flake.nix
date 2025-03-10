@@ -169,7 +169,7 @@
               # Keep in sync with .github/workflows/cachix.yml
               [
                 "emacs30"
-                # "emacs30-nox"  # TODO: re-enable after #55 is addressed
+                "emacs30-nox"
                 "emacs30-gtk3"
                 "emacs30-pgtk"
               ]
