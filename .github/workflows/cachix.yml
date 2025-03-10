@@ -37,6 +37,7 @@ jobs:
           - emacs30-nox
           - emacs30-gtk3
           - emacs30-pgtk
+          - emacs-without-nativecomp
 # See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42
 #          - macos-latest  # aarch64-darwin
     runs-on: ${{ matrix.os }}

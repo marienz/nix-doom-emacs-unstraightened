@@ -156,24 +156,25 @@
                     doomSource = doomemacs;
                   }
                 );
-          in
-          lib.listToAttrs (
-            map
-              (
-                name:
-                let
-                  p = pkgs.linkFarm "cachix-${name}" (depBuilds pkgs.${name});
-                in
-                lib.nameValuePair p.name p
-              )
+            emacsen =
               # Keep in sync with .github/workflows/cachix.yml
-              [
+              (lib.genAttrs [
                 "emacs30"
                 "emacs30-nox"
                 "emacs30-gtk3"
                 "emacs30-pgtk"
-              ]
-          )
+              ] (name: pkgs.${name}))
+              // {
+                emacs-without-nativecomp = pkgs.emacs.override { withNativeCompilation = false; };
+              };
+          in
+          lib.mapAttrs' (
+            name: emacs:
+            let
+              p = pkgs.linkFarm "cachix-${name}" (depBuilds emacs);
+            in
+            lib.nameValuePair p.name p
+          ) emacsen
         )
       );
       overlays.default = final: prev: {
