@@ -25,6 +25,10 @@ on:
         description: 'Ref/branch to check'
         required: false
         type: string
+    secrets:
+      CACHIX_AUTH_TOKEN:
+        description: 'auth token for writing to cachix (when called from CI)'
+        required: true
 
 jobs:
   build:
