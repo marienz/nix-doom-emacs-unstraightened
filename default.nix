@@ -303,9 +303,12 @@ let
             # Note Doom does have packages with pin + branch (or nonrecursive) set,
             # expecting to inherit the rest of the recipe from Straight.
 
+            # Always specify a ref to work around https://github.com/NixOS/nix/issues/10773
+            ref = p.recipe.branch or "HEAD";
+
             # TODO: remove if https://github.com/NixOS/nix/issues/11012 is fixed.
             shallow = false;
-          } // optionalAttrs (p ? recipe.branch) { ref = p.recipe.branch; };
+          };
           src =
             if experimentalFetchTree then
               builtins.fetchTree (
