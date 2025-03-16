@@ -23,12 +23,15 @@
   (let* ((profile-directory (expand-file-name "profile/" base-directory))
          (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
-                          (user-emacs-directory . ,doom-emacs-dir)
-                          (doom-profile-data-dir . ,profile-directory)
                           (_ :eval
 ;; HACK: install advice of doom-profile-init-file from the profile loader,
 ;; because we do not gain control between here and Doom using this to find the
 ;; profile init file (from which our own init.el is loaded).
+(defvar doom-profile-data-dir)
+(defvar doom-profile-dir)
+;; Having to specify this seems like a bug(?)
+(declare-function doom-profile-init-file@unstraightened "init")
+(declare-function doom-profile-key "doom-lib")
 (define-advice doom-profile-init-file (:override (profile) unstraightened)
   "Return unstraightened's profile init file.
 
@@ -57,6 +60,8 @@ requested makes `doom doctor' work."
                       (format "init.%d.%d.el"
                               emacs-major-version emacs-minor-version))))
 )
+                          (user-emacs-directory . ,doom-emacs-dir)
+                          (doom-profile-data-dir . ,profile-directory)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-write-load-file new-profiles load-file)))
 
