@@ -27,13 +27,13 @@ runs:
           echo "restore=$(date +'%Y-%m-')"
         } >> "$GITHUB_OUTPUT"
     - name: Cache git checkouts
-      uses: actions/cache@v4
+      uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
       with:
         path: ~/.cache/nix/gitv3
         key: nix-gitv3-cache-${{ steps.cache-keys.outputs.key }}
         restore-keys: nix-gitv3-cache-${{ steps.cache-keys.outputs.restore }}
     - name: Cache tarballs
-      uses: actions/cache@v4
+      uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
       with:
         path: ~/.cache/nix/tarball-cache
         key: nix-tarball-cache-${{ steps.cache-keys.outputs.key }}
