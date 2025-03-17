@@ -83,7 +83,7 @@ Unstraightened's home-manager module in `flake.nix`:
 outputs = inputs @ { nixpkgs, home-manager, ... }: {
   homeConfigurations."username" = home-manager.lib.homeManagerConfiguration {
     modules = [
-      inputs.nix-doom-emacs-unstraightened.hmModule
+      inputs.nix-doom-emacs-unstraightened.homeModule
       ./home.nix
     ];
     extraSpecialArgs = { inherit inputs; };

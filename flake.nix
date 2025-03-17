@@ -104,6 +104,9 @@
           ++ [ ")" ]
         );
 
+      homeModule = import ./home-manager.nix {
+        inherit doomFromPackages;
+      };
     in
     {
       checks = perSystemPackages (
@@ -181,8 +184,9 @@
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
         emacsWithDoom = args: (doomFromPackages final args).emacsWithDoom;
       };
-      hmModule = import ./home-manager.nix {
-        inherit doomFromPackages;
-      };
+      inherit homeModule;
+      # Original name used in our documentation.
+      # `nix flake check` (as of Nix 2.24) prefers homeModule, so we provide both.
+      hmModule = homeModule;
     };
 }
