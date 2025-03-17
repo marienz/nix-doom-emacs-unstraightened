@@ -54,9 +54,6 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: '${{ secrets.GITHUB_TOKEN }}'
-          extra_nix_config: |
-            # Increase tarball-ttl to work around https://github.com/NixOS/nix/issues/10773
-            tarball-ttl = 31536000 # 1 year
       - name: Enable Cachix
         uses: cachix/cachix-action@v16
         with:
