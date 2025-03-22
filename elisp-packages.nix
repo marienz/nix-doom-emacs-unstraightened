@@ -180,9 +180,12 @@
   # Upstream deleted the file in
   # https://github.com/emacs-lsp/dap-mode/commit/438679755e880f2a662a63bc04da9e843257e248
   #
-  # TODO: remove this once nixpkgs / emacs-overlay catches up.
+  # TODO: remove this if nixpkgs drops support for dap-mode that needed this.
+  #
+  # nixpkgs applies the fix conditionally, but since we set our version to "9999snapshot" we
+  # unintentionally get counted as an old version.
   dap-mode = esuper.dap-mode.overrideAttrs (old: {
-    preBuild = lib.replaceStrings ["rm --verbose dapui.el"] [""] old.preBuild;
+    preBuild = lib.replaceStrings [ "rm --verbose dapui.el" ] [ "" ] old.preBuild;
   });
   tree-sitter-langs =
     # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
