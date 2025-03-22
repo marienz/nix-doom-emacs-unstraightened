@@ -45,9 +45,6 @@
     '';
     # TODO: set this properly (melpa2nix requires it).
     commit = "unset";
-    recipe = writeText "auctex-recipe" ''
-      (auctex :fetcher github :repo "emacsmirror/auctex")
-    '';
   };
   # Doom lets Straight provide org-autoloads.el as an alternative for
   # org-loaddefs.el, and manually generates org-version.el.
@@ -149,10 +146,7 @@
     };
     # The directories we want to match must be mode names: assume those are
     # sensibly named (they currently are).
-    recipe = writeText "doom-snippets-recipe" ''
-      (doom-snippets :fetcher github :repo "doomemacs/snippets"
-                     :files (:defaults "*-mode"))
-    '';
+    files = ''(:defaults "*-mode")'';
     packageRequires = [ eself.yasnippet ];
     # Stop all snippets from ending up on load-path via
     # normal-top-level-add-subdirs-to-load-path.
@@ -234,9 +228,6 @@
       description = "trivial build for doom-emacs";
     };
     packageRequires = [ eself.mu4e ];
-    recipe = writeText "mu4e-recipe" ''
-      (mu4e-compat :fetcher github :repo "tecosaur/mu4e-compat")
-    '';
   };
   # TODO: attempt to fix sly-stepper properly.
   # sly-stepper `require`s `sly-stickers`. That lives in sly's contribs subdirectory: it looks like
@@ -250,9 +241,6 @@
       description = "trivial build for doom-emacs";
     };
     packageRequires = [ eself.sly ];
-    recipe = writeText "sly-stepper-recipe" ''
-      (sly-stepper :fetcher github :repo "joaotavora/sly-stepper")
-    '';
     ignoreCompilationError = true;
   };
   org-noter = esuper.org-noter.overrideAttrs (attrs: {
