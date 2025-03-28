@@ -28,9 +28,6 @@
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
-    # Fetches from git.notmuchmail.org, which I currently cannot reach.
-    # Use the github mirror instead.
-    notmuch = "https://github.com/notmuch/notmuch";
     # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
     lean-mode = "https://github.com/leanprover/lean3-mode";
     company-lean = "https://github.com/leanprover/lean3-mode";
