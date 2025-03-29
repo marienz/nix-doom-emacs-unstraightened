@@ -21,6 +21,7 @@ on:
 
 jobs:
   flake-update:
+    if: github.repository == 'marienz/nix-doom-emacs-unstraightened'
     permissions:
       contents: write
     uses: ./.github/workflows/flake-update.yml
