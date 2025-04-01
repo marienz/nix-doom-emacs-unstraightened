@@ -1,0 +1,73 @@
+From db69113798304e68d2f01955eaa51a4d95b0fc44 Mon Sep 17 00:00:00 2001
+From: Jonas Bernoulli <jonas@bernoul.li>
+Date: Sat, 19 Aug 2017 17:50:00 +0200
+Subject: [PATCH] [PATCH] Add library semi.el whose name matches that of the
+ package semi
+
+A package should always contain a library with the same name.  One
+benefit of that is that Melpa can then extract the package description
+from the library commentary.
+
+Remove "semi-pkg.el".  The only additional information it contains is a
+version string, which has not ever been bumped since it was first added
+in 2014.
+
+[Emacsmirror] This commit is being rebased onto upstream.
+---
+ semi-pkg.el |  5 -----
+ semi.el     | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+), 5 deletions(-)
+ delete mode 100644 semi-pkg.el
+ create mode 100644 semi.el
+
+diff --git a/semi-pkg.el b/semi-pkg.el
+deleted file mode 100644
+index 00a65d2a..00000000
+--- a/semi-pkg.el
++++ /dev/null
+@@ -1,5 +0,0 @@
+-(define-package "semi" "1.14.7"
+-  "A library to provide MIME features."
+-  '((emacs "24.5")
+-    (apel "10.8")
+-    (flim "1.14.9")))
+diff --git a/semi.el b/semi.el
+new file mode 100644
+index 00000000..4002879d
+--- /dev/null
++++ b/semi.el
+@@ -0,0 +1,34 @@
++;;; semi.el --- MIME features
++
++;; Copyright (C) 1996-2024  Free Software Foundation, Inc.
++
++;; Author: MORIOKA Tomohiko <tomo@m17n.org>
++;; Keywords: MIME, multimedia, mail, news
++;; Package-Requires: ((emacs "24.5") (apel "0") (flim "0"))
++
++;; This file is part of SEMI (Setting for Emacs MIME Interfaces).
++
++;; This program is free software; you can redistribute it and/or
++;; modify it under the terms of the GNU General Public License as
++;; published by the Free Software Foundation; either version 2, or
++;; (at your option) any later version.
++
++;; This program is distributed in the hope that it will be useful,
++;; but WITHOUT ANY WARRANTY; without even the implied warranty of
++;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;; GNU General Public License for more details.
++
++;; You should have received a copy of the GNU General Public License
++;; along with GNU Emacs; see the file COPYING.  If not, write to the
++;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++;; Boston, MA 02110-1301, USA.
++
++;;; Commentary:
++
++;; SEMI (Setting for Emacs MIME Interfaces) provides MIME features.
++
++;;; Code:
++
++(provide 'semi)
++
++;;; semi.el ends here

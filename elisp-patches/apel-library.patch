@@ -1,0 +1,70 @@
+From 0ce8ed01680285a549468e1813c5f30c0651273a Mon Sep 17 00:00:00 2001
+From: Jonas Bernoulli <jonas@bernoul.li>
+Date: Sat, 19 Aug 2017 17:41:00 +0200
+Subject: [PATCH] [PATCH] Add library apel.el whose name matches that of the
+ package apel
+
+A package should always contain a library with the same name.  One
+benefit of that is that Melpa can then extract the package description
+from the library commentary.
+
+Remove "apel-pkg.el".  The only additional information it contains is a
+version string, which has not ever been bumped since it was first added
+in 2014.
+
+[Emacsmirror] This commit is being rebased onto upstream.
+---
+ apel-pkg.el |  3 ---
+ apel.el     | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+), 3 deletions(-)
+ delete mode 100644 apel-pkg.el
+ create mode 100644 apel.el
+
+diff --git a/apel-pkg.el b/apel-pkg.el
+deleted file mode 100644
+index 628ad29..0000000
+--- a/apel-pkg.el
++++ /dev/null
+@@ -1,3 +0,0 @@
+-(define-package "apel" "10.8"
+-  "A Portable Emacs Library provides support for portable Emacs Lisp programs"
+-  '((emacs "24.5")))
+diff --git a/apel.el b/apel.el
+new file mode 100644
+index 0000000..f2fbb14
+--- /dev/null
++++ b/apel.el
+@@ -0,0 +1,33 @@
++;;; apel.el --- Support for portable Emacs Lisp programs
++
++;; Copyright (C) 1996-2022  Free Software Foundation, Inc.
++
++;; Package-Requires: ((emacs "24.5"))
++
++;; This file is part of APEL (A Portable Emacs Library).
++
++;; This program is free software; you can redistribute it and/or
++;; modify it under the terms of the GNU General Public License as
++;; published by the Free Software Foundation; either version 2, or
++;; (at your option) any later version.
++
++;; This program is distributed in the hope that it will be useful,
++;; but WITHOUT ANY WARRANTY; without even the implied warranty of
++;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++;; GNU General Public License for more details.
++
++;; You should have received a copy of the GNU General Public License
++;; along with GNU Emacs; see the file COPYING.  If not, write to the
++;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++;; Boston, MA 02110-1301, USA.
++
++;;; Commentary:
++
++;; APEL (A Portable Emacs Library) provides support for portable Emacs
++;; Lisp programs.
++
++;;; Code:
++
++(provide 'apel)
++
++;;; apel.el ends here

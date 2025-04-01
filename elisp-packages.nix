@@ -250,6 +250,28 @@
     # Nixpkgs conditionally patches an older version, which our "9999snapshot" version breaks.
     patches = [ ];
   });
+  # Newer nixpkgs uses a melpa-build that requires a library with the same name of the package name.
+  # Several wanderlust-related packages do not. emacsmirror fixed this: apply their fix.
+  apel = esuper.apel.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/apel-library.patch
+    ];
+  });
+  flim = esuper.flim.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/flim-library.patch
+    ];
+  });
+  semi = esuper.semi.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/semi-library.patch
+    ];
+  });
+  wanderlust = esuper.wanderlust.overrideAttrs (attrs: {
+    patches = (attrs.patches or [ ]) ++ [
+      ./elisp-patches/wanderlust-library.patch
+    ];
+  });
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
