@@ -214,12 +214,6 @@
             ./tree-sitter-langs-build.el
         '';
     });
-  # Fix /build/ leaking into byte-compiled files (patch accepted upstream).
-  phpactor = esuper.phpactor.overrideAttrs (attrs: {
-    patches = (attrs.patches or [ ]) ++ [
-      ./elisp-patches/0001-Do-not-call-locate-user-emacs-file-when-compiling.patch
-    ];
-  });
   # mu4e-compat depends on mu4e, which (if I understand correctly) cannot be on melpa because it is
   # bundled with mu, and therefore mu4e-compat cannot have the dependency in its package-requires.
   # But it does not byte-compile without mu4e present. Add the dependency.
