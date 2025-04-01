@@ -225,7 +225,7 @@
   # But it does not byte-compile without mu4e present. Add the dependency.
   mu4e-compat = esuper.melpaBuild {
     pname = "mu4e-compat";
-    version = "9999snapshot";
+    version = "9999snapshot1";
     commit = "unset";
     meta = {
       description = "trivial build for doom-emacs";
@@ -238,7 +238,7 @@
   # But at byte compile time that subdirectory is not on the load path, breaking byte compilation.
   sly-stepper = esuper.melpaBuild {
     pname = "sly-stepper";
-    version = "9999snapshot";
+    version = "9999snapshot1";
     commit = "unset";
     meta = {
       description = "trivial build for doom-emacs";
@@ -258,7 +258,7 @@
   # then makes org-re-reveal use it as data.
   revealjs = stdenvNoCC.mkDerivation {
     pname = "revealjs";
-    version = "9999snapshot";
+    version = "9999snapshot1";
     buildPhase = ''
       siteDir=$out/share/emacs/site-lisp/revealjs
       mkdir -p $siteDir

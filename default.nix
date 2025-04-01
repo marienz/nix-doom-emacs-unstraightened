@@ -171,7 +171,11 @@ let
       # the code says it should). Additionally, `(package-version-join
       # (version-to-list v))` must roundtrip to avoid elpa2nix failing with
       # "Package does not untar cleanly".
-      snapshotVersion = "9999snapshot";
+      #
+      # Additionally, we currently need this version to be recognized by
+      # https://github.com/NixOS/nixpkgs/blob/26b2bef8b3c73a0931af73d902af2d806588f6bb/pkgs/applications/editors/emacs/build-support/elpa2nix.el#L4-L12
+      # That means we need a digit after "snapshot".
+      snapshotVersion = "9999snapshot1";
 
       makePackage =
         name: p:

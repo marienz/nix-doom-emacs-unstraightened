@@ -49,7 +49,7 @@
                    (package--prepare-dependencies
                     (package-read-from-string
                      (string-join require-lines " ")))))))
-       (desc (package-desc-from-define name "9999snapshot" nil reqs))
+       (desc (package-desc-from-define name "9999snapshot1" nil reqs))
        (parsed-reqs (package-desc-reqs desc))
        (filtered-reqs (seq-remove (lambda (p) (apply #'package-built-in-p p))
                                   parsed-reqs))
