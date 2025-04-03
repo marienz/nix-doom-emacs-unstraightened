@@ -28,10 +28,6 @@
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
-    # May move to nongnu ELPA (see https://github.com/melpa/melpa/pull/9366), but Doom's last
-    # pin is still from the original GitHub repo, and fetching its pin from nongnu ELPA is failing.
-    # Rather than figuring out why that fetch fails, fall back to the previous repo for now.
-    ws-butler = "https://github.com/lewang/ws-butler";
     # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
     lean-mode = "https://github.com/leanprover/lean3-mode";
     company-lean = "https://github.com/leanprover/lean3-mode";
