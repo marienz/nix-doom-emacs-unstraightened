@@ -20,6 +20,7 @@
   lib,
   makeWrapper,
   stdenvNoCC,
+  writableTmpDirAsHomeHook,
   writeText,
 }:
 {
@@ -39,10 +40,9 @@
     # Most of auctex fails to byte-compile unless we do this.
     # TODO: figure out why this is necessary (there may be a better
     # solution).
-    preBuild = ''
-      mkdir home
-      export HOME="$PWD/home"
-    '';
+    nativeBuildInputs = [
+      writableTmpDirAsHomeHook
+    ];
     # TODO: set this properly (melpa2nix requires it).
     commit = "unset";
   };
@@ -287,12 +287,9 @@
   });
   # Make it byte-compile (see auctex)
   company-auctex = esuper.company-auctex.overrideAttrs (attrs: {
-    preBuild =
-      (attrs.preBuild or "")
-      + ''
-        mkdir home
-        export HOME="$PWD/home"
-      '';
+    nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [
+      writableTmpDirAsHomeHook
+    ];
   });
   # This also needs a real $HOME. nixpkgs actually provides one but it's an Elpa package...
   # That also means esuper.auctex-cont-latexmk doesn't work here.
@@ -300,10 +297,9 @@
     pname = "auctex-cont-latexmk";
     version = "9999snapshot1";
     packageRequires = [ eself.auctex ];
-    preBuild = ''
-      mkdir home
-      export HOME="$PWD/home"
-    '';
+    nativeBuildInputs = [
+      writableTmpDirAsHomeHook
+    ];
   };
   # Make it byte-compile.
   #
