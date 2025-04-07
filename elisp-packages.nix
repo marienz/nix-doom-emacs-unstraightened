@@ -294,6 +294,16 @@
         export HOME="$PWD/home"
       '';
   });
+  # This also needs a real $HOME. nixpkgs actually provides one but it's an Elpa package...
+  # That also means esuper.auctex-cont-latexmk doesn't work here.
+  auctex-cont-latexmk = esuper.melpaBuild {
+    pname = "auctex-cont-latexmk";
+    version = "9999snapshot1";
+    preBuild = ''
+      mkdir home
+      export HOME="$PWD/home"
+    '';
+  };
   # Make it byte-compile.
   #
   # TODO ask upstream about missing evil dependency?
