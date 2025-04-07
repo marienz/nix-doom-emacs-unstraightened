@@ -299,6 +299,7 @@
   auctex-cont-latexmk = esuper.melpaBuild {
     pname = "auctex-cont-latexmk";
     version = "9999snapshot1";
+    packageRequires = [ eself.auctex ];
     preBuild = ''
       mkdir home
       export HOME="$PWD/home"
