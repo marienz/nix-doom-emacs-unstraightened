@@ -43,8 +43,6 @@
     nativeBuildInputs = [
       writableTmpDirAsHomeHook
     ];
-    # TODO: set this properly (melpa2nix requires it).
-    commit = "unset";
   };
   # Doom lets Straight provide org-autoloads.el as an alternative for
   # org-loaddefs.el, and manually generates org-version.el.
@@ -139,8 +137,6 @@
   doom-snippets = esuper.melpaBuild {
     pname = "doom-snippets";
     version = "1";
-    # melpa2nix requires that we set this. TODO: set correctly.
-    commit = "unset";
     meta = {
       description = "trivial build of doom-snippets";
     };
@@ -220,7 +216,6 @@
   mu4e-compat = esuper.melpaBuild {
     pname = "mu4e-compat";
     version = "9999snapshot1";
-    commit = "unset";
     meta = {
       description = "trivial build for doom-emacs";
     };
@@ -233,7 +228,6 @@
   sly-stepper = esuper.melpaBuild {
     pname = "sly-stepper";
     version = "9999snapshot1";
-    commit = "unset";
     meta = {
       description = "trivial build for doom-emacs";
     };
