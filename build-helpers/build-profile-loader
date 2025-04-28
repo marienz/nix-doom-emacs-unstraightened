@@ -63,6 +63,20 @@ requested makes `doom doctor' work."
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-profile-data-dir . ,profile-directory)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
-    (doom-profiles-write-load-file new-profiles load-file)))
+    (doom-profiles-write-load-file new-profiles load-file)
+    ;; HACK: Disable native compilation to avoid a recompilation loop.
+    ;;
+    ;; When early-init.el loads this Emacs looks for the .eln file in its native
+    ;; location, triggering async native compilation if it is missing there, but
+    ;; async native compilation then writes it to its eln cache in
+    ;; doom-profile-cache-dir, where it is never found.
+    ;;
+    ;; We trigger native-comp by having a function in the profile loader: that's
+    ;; sufficiently unusual I won't try to get this changed in Doom proper
+    ;; before 3.0.
+    (find-file load-file)
+    (add-file-local-variable-prop-line 'no-native-compile t)
+    (save-buffer)
+    (byte-compile-file load-file)))
 
 (run! "build-profile-loader" (cdr (member "--" argv)))
