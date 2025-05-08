@@ -46,8 +46,7 @@
 ")
     (doom-modules-initialize)
     (dolist (kp (doom-module-list 'all))
-      (let ((cat (car kp))
-            (name (cdr kp)))
+      (pcase-let ((`(,cat . ,name) kp))
         (when name
           (if-let* ((flags?)
                     (packages-path (doom-module-locate-path
