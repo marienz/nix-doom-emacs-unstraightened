@@ -20,18 +20,23 @@
   writeTextDir,
 }:
 let
+  # TODO: re-enable :tools upload
+  #
+  # It pulls in a package whose upstream disappeared, see
+  # https://github.com/marienz/nix-doom-emacs-unstraightened/issues/66)
+  commonArgs = "-o $out -s '(:tools upload)'";
   allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;
-    scriptArgs = "-o $out";
+    scriptArgs = commonArgs;
   };
 
   allModulesAndReallyAllFlags = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;
-    scriptArgs = "--flags -o $out";
+    scriptArgs = "--flags " + commonArgs;
   };
 
   # HACK: drop roam v1. See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/39
