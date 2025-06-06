@@ -388,6 +388,27 @@ If this is not sufficient, please file an issue.
 
 Add `(package! foo :recipe ...)` to `packages.el`.
 
+If there is a derivation in emacs-overlay or nixpkgs, it will use the same dependencies as the deriviation (which won't
+always work if you pin to a sufficiently different version). If not, the dependencies are autodetected them from headers
+in the package.
+
+If the detected dependencies aren't sufficient, you'll have to add the package in Nix directly, with `extraPackages`.
+
+```nix
+              extraPackages = (
+                epkgs: [
+                  (epkgs.melpaBuild {
+                    pname = <package-name>;
+                    version = "9999snapshot1";
+                    packageRequires = [ <dependencies> ];
+                    src = builtins.fetchTree {...};
+                  })
+                ]
+              );
+```
+
+See also [#70](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/70).
+
 If this is not sufficient, file an issue explaining what you're trying to do.
 
 ### What's wrong with `straight.el`?
