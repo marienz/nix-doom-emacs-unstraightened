@@ -1,4 +1,4 @@
-From 68ab3e1c4712cab10a3826e443755a93a1c143d3 Mon Sep 17 00:00:00 2001
+From b1165d7dbc8d001024254d8d26bc740022f4d2a8 Mon Sep 17 00:00:00 2001
 From: Jonas Bernoulli <jonas@bernoul.li>
 Date: Sat, 19 Aug 2017 17:44:00 +0200
 Subject: [PATCH] [PATCH] Add library flim.el whose name matches that of the
@@ -14,23 +14,24 @@ in 2014.
 
 [Emacsmirror] This commit is being rebased onto upstream.
 ---
- flim-pkg.el |  5 -----
+ flim-pkg.el |  6 ------
  flim.el     | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+), 5 deletions(-)
+ 2 files changed, 34 insertions(+), 6 deletions(-)
  delete mode 100644 flim-pkg.el
  create mode 100644 flim.el
 
 diff --git a/flim-pkg.el b/flim-pkg.el
 deleted file mode 100644
-index 73f19a9..0000000
+index 0c90ee8..0000000
 --- a/flim-pkg.el
 +++ /dev/null
-@@ -1,5 +0,0 @@
+@@ -1,6 +0,0 @@
 -(define-package "flim" "1.14.9"
 -  "A library to provide basic features about message representation or encoding."
 -  '((emacs "24.5")
 -    (apel "10.8")
--    (oauth2 "0.11")))
+-    (oauth2 "0.11"))
+-  :maintainers '(("Kazuhiro Ito" . "kzhr@d1.dion.ne.jp")))
 diff --git a/flim.el b/flim.el
 new file mode 100644
 index 0000000..cb64f7a

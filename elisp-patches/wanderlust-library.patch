@@ -1,4 +1,4 @@
-From 840bb4b137a2e35cb30f4b78437b11b852ef6389 Mon Sep 17 00:00:00 2001
+From a04a5baa7f488ef90bd906ebfaba7979d447ea76 Mon Sep 17 00:00:00 2001
 From: Jonas Bernoulli <jonas@bernoul.li>
 Date: Sat, 19 Aug 2017 17:51:00 +0200
 Subject: [PATCH] [PATCH] Add library wanderlust.el whose name matches that of
@@ -14,24 +14,25 @@ added in 2014.
 
 [Emacsmirror] This commit is being rebased onto upstream.
 ---
- wanderlust-pkg.el |  6 ------
+ wanderlust-pkg.el |  7 -------
  wl/wanderlust.el  | 38 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 38 insertions(+), 6 deletions(-)
+ 2 files changed, 38 insertions(+), 7 deletions(-)
  delete mode 100644 wanderlust-pkg.el
  create mode 100644 wl/wanderlust.el
 
 diff --git a/wanderlust-pkg.el b/wanderlust-pkg.el
 deleted file mode 100644
-index 7d7361f39..000000000
+index 093998a66..000000000
 --- a/wanderlust-pkg.el
 +++ /dev/null
-@@ -1,6 +0,0 @@
+@@ -1,7 +0,0 @@
 -(define-package "wanderlust" "2.15.9"
 -  "Yet Another Message Interface on Emacsen"
 -  '((emacs "24.5")
 -    (apel "10.8")
 -    (flim "1.14.9")
--    (semi "1.14.7")))
+-    (semi "1.14.7"))
+-  :maintainers '(("Kazuhiro Ito" . "kzhr@d1.dion.ne.jp")))
 diff --git a/wl/wanderlust.el b/wl/wanderlust.el
 new file mode 100644
 index 000000000..055498505

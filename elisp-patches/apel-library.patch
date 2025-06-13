@@ -1,4 +1,4 @@
-From 0ce8ed01680285a549468e1813c5f30c0651273a Mon Sep 17 00:00:00 2001
+From 54204ee25128875d77720746e1f8d47c76fef6eb Mon Sep 17 00:00:00 2001
 From: Jonas Bernoulli <jonas@bernoul.li>
 Date: Sat, 19 Aug 2017 17:41:00 +0200
 Subject: [PATCH] [PATCH] Add library apel.el whose name matches that of the
@@ -14,21 +14,22 @@ in 2014.
 
 [Emacsmirror] This commit is being rebased onto upstream.
 ---
- apel-pkg.el |  3 ---
+ apel-pkg.el |  4 ----
  apel.el     | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 33 insertions(+), 3 deletions(-)
+ 2 files changed, 33 insertions(+), 4 deletions(-)
  delete mode 100644 apel-pkg.el
  create mode 100644 apel.el
 
 diff --git a/apel-pkg.el b/apel-pkg.el
 deleted file mode 100644
-index 628ad29..0000000
+index 0229b36..0000000
 --- a/apel-pkg.el
 +++ /dev/null
-@@ -1,3 +0,0 @@
+@@ -1,4 +0,0 @@
 -(define-package "apel" "10.8"
 -  "A Portable Emacs Library provides support for portable Emacs Lisp programs"
--  '((emacs "24.5")))
+-  '((emacs "24.5"))
+-  :maintainers '(("Kazuhiro Ito" . "kzhr@d1.dion.ne.jp")))
 diff --git a/apel.el b/apel.el
 new file mode 100644
 index 0000000..f2fbb14

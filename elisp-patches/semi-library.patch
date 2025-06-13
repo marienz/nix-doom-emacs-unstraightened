@@ -1,4 +1,4 @@
-From db69113798304e68d2f01955eaa51a4d95b0fc44 Mon Sep 17 00:00:00 2001
+From af70ef0df032fd74a28f41bf1eeb2d207f96e9d9 Mon Sep 17 00:00:00 2001
 From: Jonas Bernoulli <jonas@bernoul.li>
 Date: Sat, 19 Aug 2017 17:50:00 +0200
 Subject: [PATCH] [PATCH] Add library semi.el whose name matches that of the
@@ -14,23 +14,24 @@ in 2014.
 
 [Emacsmirror] This commit is being rebased onto upstream.
 ---
- semi-pkg.el |  5 -----
+ semi-pkg.el |  6 ------
  semi.el     | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+), 5 deletions(-)
+ 2 files changed, 34 insertions(+), 6 deletions(-)
  delete mode 100644 semi-pkg.el
  create mode 100644 semi.el
 
 diff --git a/semi-pkg.el b/semi-pkg.el
 deleted file mode 100644
-index 00a65d2a..00000000
+index f4a6e72e..00000000
 --- a/semi-pkg.el
 +++ /dev/null
-@@ -1,5 +0,0 @@
+@@ -1,6 +0,0 @@
 -(define-package "semi" "1.14.7"
 -  "A library to provide MIME features."
 -  '((emacs "24.5")
 -    (apel "10.8")
--    (flim "1.14.9")))
+-    (flim "1.14.9"))
+-  :maintainers '(("Kazuhiro Ito" . "kzhr@d1.dion.ne.jp")))
 diff --git a/semi.el b/semi.el
 new file mode 100644
 index 00000000..4002879d
