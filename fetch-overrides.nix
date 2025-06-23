@@ -39,6 +39,8 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
+    # Temporary pin to work around https://github.com/doomemacs/doomemacs/issues/8421
+    ghub = "97a07691efad6fc16bc000a35be80d4f8dae251a";
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
