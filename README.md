@@ -350,7 +350,7 @@ Safe to ignore, for the same reason as the previous warning.
 ### tree-sitter error on initialization with `file-error "Opening output file" "Read-only file system"`
 The ABI loaded for some grammars from nixpkgs is too new (14) compared to what vanilla Doom Emacs receives (13).
 This results in tree-sitter and some particular grammars to be incompatible.
-This issue is currently confirmed to affect golang.
+This issue is currently confirmed to affect Go.
 
 See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
 
