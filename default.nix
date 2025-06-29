@@ -300,7 +300,7 @@ let
             allRefs = true;
             # Skip submodules by default because they seem to be hitting
             # https://github.com/NixOS/nix/issues/10773 (or a similar caching issue) and for
-            # parity between fetchTree's github fetcher and fetchGit (Github's exports don't
+            # parity between fetchTree's github fetcher and fetchGit (GitHub's exports don't
             # seem to contain submodules).
             submodules = !(p.recipe.nonrecursive or true);
             # TODO: pull ref from derivation.src when not pulling it from p.recipe?

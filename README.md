@@ -12,18 +12,18 @@ implemented differently.
 [![CI](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml/badge.svg)](https://github.com/marienz/nix-doom-emacs-unstraightened/actions/workflows/ci.yml)
 
 Tested and working on Linux, with emacs-overlay and Doom inputs updated
-automatically. If you're reading this on Github, there should be a CI status
+automatically. If you're reading this on GitHub, there should be a CI status
 badge above: if CI is passing, Unstraightened installs an up-to-date version of
 Doom Emacs and (almost) all module dependencies.
 
-MacOS is not covered by CI but was previously reported working. Please file an
+macOS is not covered by CI but was previously reported working. Please file an
 issue if it does not work for you (and please comment on
 https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42 if you know
 why CI is not working).
 
 You may encounter "Cannot find Git revision" errors on Nix versions newer than
-2.18.x (see #14). Try enabling `experimentalFetchTree` to work around this (see
-below).
+2.18.x (see [#14](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/14)).
+Try enabling `experimentalFetchTree` to work around this (see below).
 
 `org +roam` does not work. Use `org +roam2` instead, or file an issue.
 
@@ -77,7 +77,7 @@ inputs = {
 #### Home Manager
 
 If you use [Home Manager](https://github.com/nix-community/home-manager), add
-Unstraightened's home-manager module in `flake.nix`:
+Unstraightened's Home Manager module in `flake.nix`:
 
 ``` nix
 outputs = inputs @ { nixpkgs, home-manager, ... }: {
@@ -109,7 +109,7 @@ if you want a vanilla Emacs daemon instead.
 
 > [!WARNING]
 > Using the overlay described below with `programs.emacs.package` will not work
-> correctly (see [HACKING.md] for details).
+> correctly (see [HACKING](./HACKING.md) for details).
 
 #### Overlay
 
@@ -120,7 +120,7 @@ module, add Unstraightened's overlay. Typically that means adding:
 nixpkgs.overlays = [ inputs.nix-doom-emacs-unstraightened.overlays.default ];
 ```
 
-to a home-manager or NixOS module.
+to a Home Manager or NixOS module.
 
 The overlay adds two packages:
 
@@ -170,10 +170,8 @@ support use without flakes.
 > used with vanilla Doom will not result in Unstraightened finding your files.
 > See below.
 
-- `emacs`: Emacs package to use. Defaults to `pkgs.emacs`. Must be at least
-  Emacs 29. Use this to select different Emacs variants like
-  `pkgs.emacs29-pgtk`. Required in Nixpkgs < 24.05, where `pkgs.emacs` is Emacs
-  28.
+- `emacs`: Emacs package to use. Defaults to `pkgs.emacs`.
+  Use this to select different Emacs variants like `pkgs.emacs-pgtk`.
 
 - `doomSource`: Doom source tree. Defaults to a flake input: overriding that
   input is probably easier than passing this.
@@ -207,7 +205,7 @@ support use without flakes.
 There are a few other settings but they are not typically useful. See the
 source.
 
-The home-manager module supports the same options, as well as:
+The Home Manager module supports the same options, as well as:
 
 - `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
@@ -245,7 +243,7 @@ The home-manager module supports the same options, as well as:
 
   (Doom also stores some things in per-profile subdirectories below the above
   directories: the default profile name used by Unstraightened is `nix`,
-  resulting in paths like ~/.cache/doom/nix. All of these also respect the usual
+  resulting in paths like `~/.cache/doom/nix`. All of these also respect the usual
   `XDG_*_DIR` environment variables.)
 
   When migrating from "normal" Doom, you may need to move some files around.
@@ -308,7 +306,7 @@ I am open to suggestions for how this should work:
 - If we set `custom-file` to a writable location, that fixes saving but breaks
   loading. If the user copies their custom-file out of their DOOMDIR to this
   location once, they are not alerted to changes they may want to copy back.
-- If we try to use home-manager, I would expect to hit the same problems
+- If we try to use Home Manager, I would expect to hit the same problems
   and/or collisions on activation, but I have not experimented with this.
 
 ### Flag-controlled packages may be broken
@@ -331,7 +329,7 @@ I may end up approximating this by checking in a hardcoded `init.el` with all
 > Checking for stale elc files...
 x There was an unexpected runtime error
   Message: File is missing
-  Details: ("Opening directory" "No such file or directory" "/home/marienz/.local/share/nix-doom-unstraightened/straight/build-29.3")
+  Details: ("Opening directory" "No such file or directory" "/home/marienz/.local/share/nix-doom/straight/build-30.1")
 
 ```
 
@@ -352,7 +350,7 @@ Safe to ignore, for the same reason as the previous warning.
 ### tree-sitter error on initialization with `file-error "Opening output file" "Read-only file system"`
 The ABI loaded for some grammars from nixpkgs is too new (14) compared to what vanilla Doom Emacs receives (13).
 This results in tree-sitter and some particular grammars to be incompatible.
-This issue is currently confirmed to affect golang.
+This issue is currently confirmed to affect Go.
 
 See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
 
@@ -367,7 +365,7 @@ As a workaround the following is possible:
 to gracefully include activation of tree-sitter specific modes of a programming language, 
 depending on if a particular grammer is installed or not.
 - Include Emacs package `treesit-grammars.with-all-grammars` from nixpkgs,
-e.g. use the home-manager option `extraPackages` like so:
+e.g. use the Home Manager option `extraPackages` like so:
 `extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
 
 As a result tree-sitter (built-in to Emacs) will be compatible with the current ABI for grammars included in nixpkgs.
@@ -378,10 +376,10 @@ As a result tree-sitter (built-in to Emacs) will be compatible with the current 
 
 Add `(package! foo)` to `packages.el`.
 
-Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
-not work.
+Do not wrap emacsWithDoom in emacsWithPackages. See [HACKING](./HACKING.md) for
+why this will not work.
 
-The home-manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
+The Home Manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
 If this is not sufficient, please file an issue. 
 
 ### How do I add packages not in Emacs overlay?
