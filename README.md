@@ -243,7 +243,7 @@ The Home Manager module supports the same options, as well as:
 
   (Doom also stores some things in per-profile subdirectories below the above
   directories: the default profile name used by Unstraightened is `nix`,
-  resulting in paths like ~/.cache/doom/nix. All of these also respect the usual
+  resulting in paths like `~/.cache/doom/nix`. All of these also respect the usual
   `XDG_*_DIR` environment variables.)
 
   When migrating from "normal" Doom, you may need to move some files around.
