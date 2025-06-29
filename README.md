@@ -77,7 +77,7 @@ inputs = {
 #### Home Manager
 
 If you use [Home Manager](https://github.com/nix-community/home-manager), add
-Unstraightened's home-manager module in `flake.nix`:
+Unstraightened's Home Manager module in `flake.nix`:
 
 ``` nix
 outputs = inputs @ { nixpkgs, home-manager, ... }: {
@@ -120,7 +120,7 @@ module, add Unstraightened's overlay. Typically that means adding:
 nixpkgs.overlays = [ inputs.nix-doom-emacs-unstraightened.overlays.default ];
 ```
 
-to a home-manager or NixOS module.
+to a Home Manager or NixOS module.
 
 The overlay adds two packages:
 
@@ -207,7 +207,7 @@ support use without flakes.
 There are a few other settings but they are not typically useful. See the
 source.
 
-The home-manager module supports the same options, as well as:
+The Home Manager module supports the same options, as well as:
 
 - `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
@@ -308,7 +308,7 @@ I am open to suggestions for how this should work:
 - If we set `custom-file` to a writable location, that fixes saving but breaks
   loading. If the user copies their custom-file out of their DOOMDIR to this
   location once, they are not alerted to changes they may want to copy back.
-- If we try to use home-manager, I would expect to hit the same problems
+- If we try to use Home Manager, I would expect to hit the same problems
   and/or collisions on activation, but I have not experimented with this.
 
 ### Flag-controlled packages may be broken
@@ -367,7 +367,7 @@ As a workaround the following is possible:
 to gracefully include activation of tree-sitter specific modes of a programming language, 
 depending on if a particular grammer is installed or not.
 - Include Emacs package `treesit-grammars.with-all-grammars` from nixpkgs,
-e.g. use the home-manager option `extraPackages` like so:
+e.g. use the Home Manager option `extraPackages` like so:
 `extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
 
 As a result tree-sitter (built-in to Emacs) will be compatible with the current ABI for grammars included in nixpkgs.
@@ -381,7 +381,7 @@ Add `(package! foo)` to `packages.el`.
 Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
 not work.
 
-The home-manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
+The Home Manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
 If this is not sufficient, please file an issue. 
 
 ### How do I add packages not in Emacs overlay?
