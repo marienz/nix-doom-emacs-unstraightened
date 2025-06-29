@@ -16,7 +16,7 @@ automatically. If you're reading this on Github, there should be a CI status
 badge above: if CI is passing, Unstraightened installs an up-to-date version of
 Doom Emacs and (almost) all module dependencies.
 
-MacOS is not covered by CI but was previously reported working. Please file an
+macOS is not covered by CI but was previously reported working. Please file an
 issue if it does not work for you (and please comment on
 https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42 if you know
 why CI is not working).
