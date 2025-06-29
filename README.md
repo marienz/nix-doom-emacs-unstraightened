@@ -329,7 +329,7 @@ I may end up approximating this by checking in a hardcoded `init.el` with all
 > Checking for stale elc files...
 x There was an unexpected runtime error
   Message: File is missing
-  Details: ("Opening directory" "No such file or directory" "/home/marienz/.local/share/nix-doom-unstraightened/straight/build-29.3")
+  Details: ("Opening directory" "No such file or directory" "/home/marienz/.local/share/nix-doom/straight/build-30.1")
 
 ```
 
