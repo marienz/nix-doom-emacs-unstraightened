@@ -170,10 +170,8 @@ support use without flakes.
 > used with vanilla Doom will not result in Unstraightened finding your files.
 > See below.
 
-- `emacs`: Emacs package to use. Defaults to `pkgs.emacs`. Must be at least
-  Emacs 29. Use this to select different Emacs variants like
-  `pkgs.emacs29-pgtk`. Required in Nixpkgs < 24.05, where `pkgs.emacs` is Emacs
-  28.
+- `emacs`: Emacs package to use. Defaults to `pkgs.emacs`.
+  Use this to select different Emacs variants like `pkgs.emacs-pgtk`.
 
 - `doomSource`: Doom source tree. Defaults to a flake input: overriding that
   input is probably easier than passing this.
