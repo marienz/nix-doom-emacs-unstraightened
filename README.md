@@ -109,7 +109,7 @@ if you want a vanilla Emacs daemon instead.
 
 > [!WARNING]
 > Using the overlay described below with `programs.emacs.package` will not work
-> correctly (see [HACKING.md] for details).
+> correctly (see [HACKING](./HACKING.md) for details).
 
 #### Overlay
 
@@ -376,8 +376,8 @@ As a result tree-sitter (built-in to Emacs) will be compatible with the current 
 
 Add `(package! foo)` to `packages.el`.
 
-Do not wrap emacsWithDoom in emacsWithPackages. See HACKING.md for why this will
-not work.
+Do not wrap emacsWithDoom in emacsWithPackages. See [HACKING](./HACKING.md) for
+why this will not work.
 
 The Home Manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
 If this is not sufficient, please file an issue. 
