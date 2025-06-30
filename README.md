@@ -46,7 +46,7 @@ Please report any issues.
 
 3. `rm doomdir/*` (delete my example/test configuration)
 4. Copy your Doom configuration into `doomdir`
-5. Make sure all files are added (`git add doomdir`)
+5. Make sure all files are added to the Git index (`git add doomdir`)
 6. Run `nix run .#doom-emacs`.
 
 If this does not work, the "with flakes" setup below is unlikely to work either.
