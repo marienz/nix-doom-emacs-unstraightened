@@ -31,6 +31,9 @@
     # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
     lean-mode = "https://github.com/leanprover/lean3-mode";
     company-lean = "https://github.com/leanprover/lean3-mode";
+    # Dropped from Melpa, see https://github.com/melpa/melpa/issues/9496 and
+    # https://github.com/melpa/melpa/pull/9520
+    helm-icons = "https://github.com/yyoncho/helm-icons";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
