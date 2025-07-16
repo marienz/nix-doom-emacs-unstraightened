@@ -34,6 +34,7 @@
     # Dropped from Melpa, see https://github.com/melpa/melpa/issues/9496 and
     # https://github.com/melpa/melpa/pull/9520
     helm-icons = "https://github.com/yyoncho/helm-icons";
+    helm-posframe = "https://github.com/tumashu/helm-posframe";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
