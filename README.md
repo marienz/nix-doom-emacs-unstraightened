@@ -347,28 +347,20 @@ Unstraightened uses `--init-directory`, as the doctor recommends.
 
 Safe to ignore, for the same reason as the previous warning.
 
-### tree-sitter error on initialization with `file-error "Opening output file" "Read-only file system"`
-The ABI loaded for some grammars from nixpkgs is too new (14) compared to what vanilla Doom Emacs receives (13).
-This results in tree-sitter and some particular grammars to be incompatible.
-This issue is currently confirmed to affect Go.
+### tree-sitter grammars are not installed automatically
 
-See issue [#7](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/7) for a more detailed explanation.
+Install them manually by setting
 
-Considering that Doom Emacs will likely use the Emacs 29+ built-in tree-sitter at some point at least as an opt-in 
-(see related [Doom Emacs issue](https://github.com/doomemacs/doomemacs/issues/7623)) 
-this particular issue for Unstraightened is unlikely to get solved.
+``` nix
+  extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];
+```
 
-As a workaround the following is possible:
-- Temporarily disable Doom Emacs from handling tree-sitter in `init.el`.
-- Define your nix Emacs package to be compiled with native tree-sitter support.
-- Use package [treesit-auto](https://github.com/renzmann/treesit-auto) (e.g. it to `packages.el`) 
-to gracefully include activation of tree-sitter specific modes of a programming language, 
-depending on if a particular grammer is installed or not.
-- Include Emacs package `treesit-grammars.with-all-grammars` from nixpkgs,
-e.g. use the Home Manager option `extraPackages` like so:
-`extraPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];`.
+(Or specify just the grammars you need by following the [example in
+nixpkgs](https://github.com/NixOS/nixpkgs/blob/46cef0d5c1df9604fd53eebdaf69f31b74c13419/pkgs/applications/editors/emacs/elisp-packages/manual-packages/treesit-grammars/package.nix#L15),
+but these are tiny so installing all of them is usually fine.)
 
-As a result tree-sitter (built-in to Emacs) will be compatible with the current ABI for grammars included in nixpkgs.
+This may be automated in the future (see [this
+issue](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/82)).
 
 ## Frequently Anticipated Questions
 
