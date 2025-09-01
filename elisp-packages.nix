@@ -304,6 +304,20 @@
     buildInputs = attrs.buildInputs ++ [ eself.evil ];
   });
 
+  janet-ts-mode = esuper.melpaBuild {
+    pname = "janet-ts-mode";
+    version = "9999snapshot1";
+    meta = {
+      description = "trivial build for doom-emacs";
+    };
+    # TODO: Attempts to use libtree-sitter-janet-simple at build time.
+    # This is not sufficient to fix it:
+    # packageRequires = [
+    #   (esuper.treesit-grammars.with-grammars (p: [ p.tree-sitter-janet-simple ]))
+    # ];
+    ignoreCompilationError = true;
+  };
+
   # Other files that fail to byte-compile:
   # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
   # - stylus-mode, missing dependency on sws-mode(?)
