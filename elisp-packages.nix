@@ -183,33 +183,6 @@
   dap-mode = esuper.dap-mode.overrideAttrs (old: {
     preBuild = lib.replaceStrings [ "rm --verbose dapui.el" ] [ "" ] old.preBuild;
   });
-  tree-sitter-langs =
-    # Normally (outside nixpkgs), this package's tree-sitter-langs-build pulls a pre-compiled
-    # grammar bundle from github. It also contains a build system to build that bundle from
-    # submodules.
-    #
-    # Normally (inside nixpkgs), nixpkgs substitutes its own bundle for upstream's. It puts
-    # upstream's version number (from melpa stable) in that bundle, which tree-sitter-langs compares
-    # against its version number hardcoded as tree-sitter-langs--bundle-version.
-    #
-    # If Doom pins this package (which it does), that affects tree-sitter-langs--bundle-version but
-    # not the version in the grammar bundle nixpkgs created. This causes tree-sitter-langs-build to
-    # attempt to download its bundle and overwrite the nixpkgs one. This fails (with a download
-    # error at build time and an attempt to write into the Nix store at runtime).
-    #
-    # Since the bundle version already does not match upstream's version anyway, take the easy way
-    # out: patch that version number to match what nixpkgs put in the grammar bundle.
-    let
-      inherit (esuper.melpaStablePackages.tree-sitter-langs) version;
-    in
-    esuper.tree-sitter-langs.overrideAttrs (old: {
-      postPatch =
-        old.postPatch or ""
-        + ''
-          sed -i -e '/defconst tree-sitter-langs--bundle-version/ s/"[0-9.]*"/"${version}"/' \
-            ./tree-sitter-langs-build.el
-        '';
-    });
   # mu4e-compat depends on mu4e, which (if I understand correctly) cannot be on melpa because it is
   # bundled with mu, and therefore mu4e-compat cannot have the dependency in its package-requires.
   # But it does not byte-compile without mu4e present. Add the dependency.
