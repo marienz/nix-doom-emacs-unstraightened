@@ -26,6 +26,7 @@
     ob-clojure-literate = "https://github.com/emacsattic/ob-clojure-literate.git";
     # sourcehut fetcher doesn't work for the same reason codeberg doesn't.
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
+    graphql-ts-mode = "https://git.sr.ht/~joram/graphql-ts-mode";
     minitest = "https://git.sr.ht/~shoshin/minitest-emacs";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
