@@ -30,6 +30,7 @@
     minitest = "https://git.sr.ht/~shoshin/minitest-emacs";
     # nixpkgs uses a release from nongnu ELPA.
     corfu-terminal = "https://codeberg.org/akib/emacs-corfu-terminal";
+    haskell-ts-mode = "https://codeberg.org/pranshu/haskell-ts-mode";
     treesit-fold = "https://github.com/emacs-tree-sitter/treesit-fold.git";
     # Dropped from Melpa, see https://github.com/melpa/melpa/pull/8106#issuecomment-2425152728
     lean-mode = "https://github.com/leanprover/lean3-mode";
