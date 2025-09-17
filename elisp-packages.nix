@@ -181,7 +181,9 @@
   # nixpkgs applies the fix conditionally, but since we set our version to "9999snapshot" we
   # unintentionally get counted as an old version.
   dap-mode = esuper.dap-mode.overrideAttrs (old: {
-    preBuild = lib.replaceStrings [ "rm --verbose dapui.el" ] [ "" ] old.preBuild;
+    preBuild = ''
+      export LSP_USE_PLISTS=1
+    '' + (lib.replaceStrings [ "rm --verbose dapui.el" ] [ "" ] old.preBuild);
   });
   # mu4e-compat depends on mu4e, which (if I understand correctly) cannot be on melpa because it is
   # bundled with mu, and therefore mu4e-compat cannot have the dependency in its package-requires.
@@ -290,6 +292,17 @@
     # ];
     ignoreCompilationError = true;
   };
+
+  lsp-mode = esuper.lsp-mode.overrideAttrs (attrs: {
+    preBuild = ''
+      export LSP_USE_PLISTS=1
+    '' + (attrs.preBuild or "");
+  });
+  lsp-ui = esuper.lsp-ui.overrideAttrs (attrs: {
+    preBuild = ''
+      export LSP_USE_PLISTS=1
+    '' + (attrs.preBuild or "");
+  });
 
   # Other files that fail to byte-compile:
   # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.

@@ -28,6 +28,16 @@
  'doom-profile-generators
  '("00-unstraightened-init.auto.el" generate-unstraightened-init-load unstraightened--startup-init))
 
+;; HACK: Ensure lsp-mode is built with lsp-use-plists on, but also that
+;;   `lsp-use-plists' isn't set *before* the package is rebuilt (which would
+;;   break things).
+(defvar lsp-use-plists t)
+(when lsp-use-plists
+  (setenv "LSP_USE_PLISTS" "1")  ; ensure the setting propagates to child processes
+  (add-to-list 'doom-profile-generators
+               (list "01-envvars.auto.el"
+                     (fn! `((setenv "LSP_USE_PLISTS" "1"))))))
+
 (defun generate-nix-autoloads ()
   "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
   `((defun unstraightened--startup-nix-autoloads ()
