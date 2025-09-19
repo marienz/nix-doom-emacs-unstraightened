@@ -169,20 +169,6 @@
   rustic = esuper.rustic.overrideAttrs (old: {
     packageRequires = old.packageRequires ++ [ eself.flycheck ];
   });
-  # TODO: refactor our dependency-extraction so we can apply it selectively to packages we don't
-  # generate the entire derivation for.
-  #
-  # nixpkgs deletes dapui.el because it is empty (only comments), triggering a compilation error.
-  # Upstream deleted the file in
-  # https://github.com/emacs-lsp/dap-mode/commit/438679755e880f2a662a63bc04da9e843257e248
-  #
-  # TODO: remove this if nixpkgs drops support for dap-mode that needed this.
-  #
-  # nixpkgs applies the fix conditionally, but since we set our version to "9999snapshot" we
-  # unintentionally get counted as an old version.
-  dap-mode = esuper.dap-mode.overrideAttrs (old: {
-    preBuild = lib.replaceStrings [ "rm --verbose dapui.el" ] [ "" ] old.preBuild;
-  });
   # mu4e-compat depends on mu4e, which (if I understand correctly) cannot be on melpa because it is
   # bundled with mu, and therefore mu4e-compat cannot have the dependency in its package-requires.
   # But it does not byte-compile without mu4e present. Add the dependency.
