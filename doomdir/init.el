@@ -44,5 +44,8 @@
        emacs-lisp
        (nix +lsp)
 
+       :tools
+       (lsp +eglot)
+
        :config
        (default +bindings +smartparens))
