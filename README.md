@@ -391,7 +391,7 @@ If the detected dependencies aren't sufficient, you'll have to add the package i
                     pname = <package-name>;
                     version = "9999snapshot1";
                     packageRequires = [ <dependencies> ];
-                    src = builtins.fetchTree {...};
+                    src = fetchTree {...};
                   })
                 ]
               );
