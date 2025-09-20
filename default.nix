@@ -292,7 +292,7 @@ let
                     throw "${name}: cannot derive url from recipe ${recipe}"
                   )
               );
-          # Use builtins.fetchGit instead of nixpkgs's fetchFromGitHub because
+          # Use the fetchGit primop instead of nixpkgs's fetchFromGitHub because
           # fetchGit allows fetching a specific git commit without a hash.
           fetchGitArgs = {
             inherit url;
@@ -315,7 +315,7 @@ let
           };
           src =
             if experimentalFetchTree then
-              builtins.fetchTree (
+              fetchTree (
                 if lib.hasPrefix "https://github.com/" url then
                   let
                     tail = lib.removePrefix "https://github.com/" url;
@@ -349,7 +349,7 @@ let
                   )
               )
             else
-              builtins.fetchGit fetchGitArgs;
+              fetchGit fetchGitArgs;
           # Run locally to avoid a network roundtrip.
           reqfile = runCommandLocal "${name}-deps" {
             inherit src name;
@@ -386,7 +386,7 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (
     epkgs:
-    (map (p: epkgs.${p}) (builtins.attrNames doomPackageSet))
+    (map (p: epkgs.${p}) (lib.attrNames doomPackageSet))
     ++ (extraPackages epkgs)
     ++ extraBinPackages
   );
