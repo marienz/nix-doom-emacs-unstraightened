@@ -53,7 +53,6 @@
   writeTextDir,
 }:
 let
-  inherit (lib) optionalAttrs optionalString;
   inherit (import ./fetch-overrides.nix) extraFiles extraPins extraUrls;
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
