@@ -154,6 +154,18 @@ in
         '';
       };
 
+      lspUsePlists = mkOption {
+        default = true;
+        example = false;
+        type = types.bool;
+        description = ''
+          Build lsp-mode (and packages using it) with LSP_USE_PLISTS set.
+
+          This may improve performance (see
+          https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization).
+        '';
+      };
+
       # Home Manager-specific options.
       provideEmacs = mkOption {
         type = types.bool;
@@ -199,6 +211,7 @@ in
             extraBinPackages
             tangleArgs
             emacsPackageOverrides
+            lspUsePlists
             ;
         };
       in
