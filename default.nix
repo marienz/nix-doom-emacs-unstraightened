@@ -37,6 +37,8 @@
   tangleArgs ? null,
   # Passed to overrideScope (see https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config).
   emacsPackageOverrides ? (eself: esuper: { }),
+  # True to build lsp-mode and dependant packages with LSP_USE_PLISTS set.
+  lspUsePlists ? true,
 
   callPackage,
   callPackages,
@@ -386,6 +388,33 @@ let
       allPackages
     )
     (eself: esuper: callPackages ./elisp-packages-late.nix { inherit esuper eself; })
+    (
+      eself: esuper:
+      let
+        manglePackage =
+          name: pkg:
+          let
+            isLspModeOrDependant =
+              # This causes infinite recursion, and I have not wrapped my head around why yet:
+              # (name == "lsp-mode") || lib.elem esuper.lsp-mode pkg.packageRequires;
+              # So check by package name.
+              (name == "lsp-mode")
+              || (lib.elem "lsp-mode" (map (p: p.ename or "not-a-package") (pkg.packageRequires or [ ])));
+          in
+          pkg.overrideAttrs (
+            lib.optionalAttrs isLspModeOrDependant {
+              preBuild = (pkg.preBuild or "") + ''
+                export LSP_USE_PLISTS=1
+              '';
+            }
+          );
+        # TODO: very similar map to the upstreamWithPins one. Rework makePackage signature for reuse?
+        result = lib.mapAttrs (
+          name: pkg: if (!lib.isDerivation pkg) || pkg == esuper.emacs then pkg else (manglePackage name pkg)
+        ) esuper;
+      in
+      result
+    )
     emacsPackageOverrides
   ];
 
@@ -445,6 +474,7 @@ let
       doomLocalDir
       doomSource
       emacsWithPackages
+      lspUsePlists
       ;
     profileName = nonEmptyProfileName;
 
