@@ -155,13 +155,11 @@
   };
   # Contains an extension containing debug.el that should not be on load-path.
   julia-snail = esuper.julia-snail.overrideAttrs (old: {
-    preBuild =
-      (old.preBuild or "")
-      + ''
-        for d in extensions/*; do
-          touch $d/.nosearch
-        done
-      '';
+    preBuild = (old.preBuild or "") + ''
+      for d in extensions/*; do
+        touch $d/.nosearch
+      done
+    '';
   });
   # Rustic dropped its hard flycheck dependency upstream, but Doom is pinned to a revision
   # that still has it, causing errors at nativecomp time.

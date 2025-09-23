@@ -261,12 +261,10 @@ let
                     # We only depend on this during evaluation. Force a dependency so it does not
                     # get garbage-collected, which slows down subsequent evaluation.
                     inherit reqfile;
-                    postInstall =
-                      (prev.postInstall or "")
-                      + ''
-                        mkdir -p $out/nix-support
-                        ln -s $reqfile $out/nix-support/unstraightened-dependencies.json
-                      '';
+                    postInstall = (prev.postInstall or "") + ''
+                      mkdir -p $out/nix-support
+                      ln -s $reqfile $out/nix-support/unstraightened-dependencies.json
+                    '';
                   })
               );
           # nixpkgs uses fetchZip for these, so epkg.src.gitRepoUrl is unset.
@@ -386,9 +384,7 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (
     epkgs:
-    (map (p: epkgs.${p}) (lib.attrNames doomPackageSet))
-    ++ (extraPackages epkgs)
-    ++ extraBinPackages
+    (map (p: epkgs.${p}) (lib.attrNames doomPackageSet)) ++ (extraPackages epkgs) ++ extraBinPackages
   );
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
