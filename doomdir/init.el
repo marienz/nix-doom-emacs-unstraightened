@@ -45,7 +45,7 @@
        (nix +lsp)
 
        :tools
-       (lsp +eglot)
+       (lsp)
 
        :config
        (default +bindings +smartparens))
