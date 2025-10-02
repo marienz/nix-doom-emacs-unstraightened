@@ -120,24 +120,17 @@
       formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
       packages = perSystemPackages (
         pkgs:
+        let
+          default = doomFromPackages pkgs {
+            doomDir = ./doomdir;
+            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+          };
+        in
         {
-          doom-emacs =
-            (doomFromPackages pkgs {
-              doomDir = ./doomdir;
-              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-            }).doomEmacs;
-          doom-emacs-unset-profile =
-            (doomFromPackages pkgs {
-              doomDir = ./doomdir;
-              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-              profileName = "";
-            }).doomEmacs;
-          doom-emacs-tangle =
-            (doomFromPackages pkgs {
-              doomDir = ./doomdir;
-              doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-              tangleArgs = ".";
-            }).doomEmacs;
+          doom-emacs = default.doomEmacs;
+          emacs-with-doom = default.emacsWithDoom;
+          doom-emacs-unset-profile = default.doomEmacs.override { profileName = ""; };
+          doom-emacs-tangle = default.doomEmacs.override { tangleArgs = "."; };
         }
         // (
           let
