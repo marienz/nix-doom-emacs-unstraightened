@@ -20,6 +20,11 @@ commonArgs=(
     --set-default DOOMLOCALDIR "$doomLocalDir"
     --set DOOMDIR $doomProfile/doomdir
 )
+if [[ -n $lspUsePlists ]]; then
+    commonArgs+=(
+        --set LSP_USE_PLISTS 1
+    )
+fi
 
 makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
     "${commonArgs[@]}" \
