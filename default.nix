@@ -372,7 +372,7 @@ let
       # But we do need some filtering (currently just "emacs" itself) to avoid infinite recursion
       # while populating repoToPin.
       upstreamWithPins = lib.mapAttrs (
-        n: p: if lib.elem p [ esuper.emacs ] then p else makePackage n { }
+        n: p: if (!lib.isDerivation p) || p == esuper.emacs then p else makePackage n { }
       ) esuper;
       doomPackages = lib.mapAttrs makePackage doomPackageSet;
       allPackages = upstreamWithPins // doomPackages;
