@@ -31,4 +31,5 @@ if [ -d "$emacs/Applications" ]; then
     cp -R "$emacs/Applications" "$out/Applications"
     chmod -R u+w "$out/Applications"
     ln -sf "$out/bin/emacs" "$out/Applications/Emacs.app/Contents/MacOS/Emacs"
+    rm -f $out/Applications/Emacs.app/Contents/native-lisp
 fi
