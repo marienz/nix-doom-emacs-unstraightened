@@ -74,10 +74,10 @@ let
         echo "ORGVERSION = $(sed -ne 's/^;; Version: \([^\n-]\+\).*/\1/p' lisp/org.el)" >> local.mk
         make config
       '';
-      preBuild = ''
+      preBuild = (old.preBuild or "") + ''
         make autoloads
       '';
-      postInstall = ''
+      postInstall = (old.postInstall or "") + ''
         make install-etc install-info
       '';
     });
