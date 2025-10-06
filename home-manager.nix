@@ -139,6 +139,21 @@ in
         '';
       };
 
+      # Passed to overrideScope (see https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config).
+      emacsPackageOverrides = mkOption {
+        default = eself: esuper: { };
+        example = "eself: esuper: { somePackage = esuper.somePackage.overrideAttrs { ignoreCompilationError = true; }; }";
+        type = types.functionTo (types.functionTo (types.lazyAttrsOf types.package));
+        description = ''
+          Function passed to (emacsPackagesFor emacs).overrideScope.
+
+          This is applied after applying Doom's pins (and after generating derivations for packages
+          where we cannot pin the original nixpkgs derivation).
+
+          See https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config for more information.
+        '';
+      };
+
       # Home Manager-specific options.
       provideEmacs = mkOption {
         type = types.bool;
@@ -183,6 +198,7 @@ in
             extraPackages
             extraBinPackages
             tangleArgs
+            emacsPackageOverrides
             ;
         };
       in

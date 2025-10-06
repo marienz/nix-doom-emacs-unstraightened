@@ -35,6 +35,8 @@
   ],
   # Args to pass to `doom +org tangle`.
   tangleArgs ? null,
+  # Passed to overrideScope (see https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config).
+  emacsPackageOverrides ? (eself: esuper: { }),
 
   callPackage,
   callPackages,
@@ -384,6 +386,7 @@ let
       allPackages
     )
     (eself: esuper: callPackages ./elisp-packages-late.nix { inherit esuper eself; })
+    emacsPackageOverrides
   ];
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from

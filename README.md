@@ -191,6 +191,13 @@ support use without flakes.
   [Org-mode manual](https://orgmode.org/manual/Extracting-Source-Code.html) for
   more information.
 
+- `emacsPackageOverrides`: Function passed to `(emacsPackagesFor
+  emacs).overrideScope` (see [Nixpkgs
+  manual](https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config)). Runs
+  after Unstraightened's own overrides have been applied. That means it can be
+  used to fix problems with Unstraightened's automatically-generated
+  derivations, by using `esuper.<name>.overrideAttrs`.
+
 > [!NOTE]
 > The `:config literate` module has no effect when using Unstraightened.
 > Use `tangleArgs = "--all config.org"` instead.
