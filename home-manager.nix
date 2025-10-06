@@ -142,7 +142,7 @@ in
       # Passed to overrideScope (see https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config).
       emacsPackageOverrides = mkOption {
         default = eself: esuper: { };
-        example = "eself: esuper: { somePackage = esuper.somePackage.overrideAttrs { ignoreCompilationError = true; }; }";
+        example = literalExpression "eself: esuper: { somePackage = esuper.somePackage.overrideAttrs { ignoreCompilationError = true; }; }";
         type = types.functionTo (types.functionTo (types.lazyAttrsOf types.package));
         description = ''
           Function passed to (emacsPackagesFor emacs).overrideScope.
