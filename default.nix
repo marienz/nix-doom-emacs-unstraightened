@@ -117,7 +117,7 @@ let
 
   # Step 2: override Emacs packages to respect Doom's pins (and add/fix packages).
   doomEmacsPackages = lib.foldl' (p: p.overrideScope) (emacsPackagesFor emacs) [
-    (eself: esuper: callPackages ./elisp-packages-early.nix { inherit emacs esuper eself; })
+    (eself: esuper: callPackages ./elisp-packages-early.nix { inherit esuper eself; })
     (
       eself: esuper:
       let
@@ -383,7 +383,7 @@ let
       in
       allPackages
     )
-    (eself: esuper: callPackages ./elisp-packages-late.nix { inherit emacs esuper eself; })
+    (eself: esuper: callPackages ./elisp-packages-late.nix { inherit esuper eself; })
   ];
 
   # Step 3: Build an emacsWithPackages, pulling all packages from step 1 from

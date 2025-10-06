@@ -19,7 +19,6 @@
 # This means packages defined here must build as-is / must still build without src overridden.
 
 {
-  emacs,
   eself,
   esuper,
 }:

@@ -15,7 +15,6 @@
 # Overrides applied after Doom's pins.
 
 {
-  emacs,
   eself,
   esuper,
   git,
@@ -61,7 +60,7 @@ let
     # intended, but the end result seems to work...
     org = esuper.org.overrideAttrs (old: {
       nativeBuildInputs = old.nativeBuildInputs ++ [
-        emacs
+        esuper.emacs
         makeWrapper
       ];
       # Finding ORGVERSION is a hack (based on the one in Doom).
