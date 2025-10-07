@@ -273,10 +273,10 @@ in
 # of them get test coverage both ways: since breakage in the other direction seems less likely,
 # filter out unpinned packages here rather than trying to keep track of it per-package.
 
-lib.flip lib.mapAttrs esuper (
+lib.flip lib.mapAttrs packages (
   name: package:
-  if (package.passthru.doom-emacs-pinned or false) && lib.hasAttr name packages then
-    packages.${name}
-  else
-    package
+  let
+    orig = esuper.${name};
+  in
+  if (orig.passthru.doom-emacs-pinned or false) then package else orig
 )
