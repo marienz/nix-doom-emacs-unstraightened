@@ -39,9 +39,6 @@
     # https://github.com/melpa/melpa/pull/9520
     helm-icons = "https://github.com/yyoncho/helm-icons";
     helm-posframe = "https://github.com/tumashu/helm-posframe";
-
-    # Repoint at new upstream (hopefully temporarily)
-    centered-window = "https://github.com/nullvec/centered-window-mode.git";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
@@ -50,8 +47,6 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
-    # New upstream did not keep history.
-    centered-window = "701f56cd1d2b68352d29914f05ca1b0037bb2595";
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
