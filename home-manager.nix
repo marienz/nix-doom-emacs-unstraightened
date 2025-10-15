@@ -41,7 +41,7 @@ in
       # Options passed through to default.nix.
       # Keep in the same order as default.nix, and in sync with the inherit below!
       doomDir = mkOption {
-        type = types.path;
+        type = types.pathInStore;
         example = literalExpression "./doom";
         description = "The DOOMDIR to build from and bundle.";
       };
