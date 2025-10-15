@@ -20,6 +20,14 @@
 (defcli! dump
     ((output-directory ("-o" dir) "Directory to dump into."))
   "Dump intermediates for nix-doom-emacs-unstraightened."
+  ;; Fail if doom-user-dir does not exist.
+  ;;
+  ;; It looks like this can happen if the user set doomDir to a non-store path,
+  ;; which is not visible inside the Nix build sandbox. Doom does not seem to
+  ;; error out on this: we end up with the same result as an empty doomDir.
+  (unless (file-readable-p doom-user-dir)
+    (user-error "DOOMDIR not readable: %s" doom-user-dir))
+
   ;; This also loads the user's init.el.
   (doom-modules-initialize)
   (let* ((all-packages (doom-package-list))
