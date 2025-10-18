@@ -130,6 +130,14 @@ in
     completion.helm = true;
   };
   flyspell-correct-popup = doomBuildTest { checkers.spell = [ "+flyspell" ]; };
+  # To pull in dap-mode at all we need +lsp on some language module,
+  # but (debugger +lsp) pins it.
+  #
+  # TODO: add a check confirming this actually pulled in unpinned dap-mode.
+  unpinned-dap-mode = doomBuildTest {
+    lang.java = [ "+lsp" ];
+    lang.scala = [ "+lsp" ];
+  };
 
   extraPackages = doomTest "extraPackages" { config.default = true; } {
     extraPackages = epkgs: [ epkgs.vterm ];
