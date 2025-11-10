@@ -50,7 +50,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
       - name: Install Nix
-        uses: cachix/install-nix-action@fd24c48048070c1be9acd18c9d369a83f0fe94d7 # v31
+        uses: cachix/install-nix-action@7ec16f2c061ab07b235a7245e06ed46fe9a1cab6 # v31
         with:
           github_access_token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Enable Cachix
