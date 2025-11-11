@@ -278,8 +278,14 @@ let
             # https://codeberg.org/rwv/android-mode/archive/67f7c0d7d37605efc7f055b76d731556861c3eb9.tar.gz
             codeberg = lib.strings.match "(https://codeberg.org/[^/]+/[^/]+)/.*" (epkg.src.url or "");
             url =
+              # Build a canonical fetch URL from the recipe host/repo when possible.
+              #
+              # - GitHub recipes use "owner/repo" (optionally with .git); we prefix with github host.
+              # - SourceHut recipes use "~owner/repo"; we prefix with git.sr.ht host.
               if (p.recipe.host or "") == "github" && p ? recipe.repo then
                 "https://github.com/${p.recipe.repo}"
+              else if (p.recipe.host or "") == "sourcehut" && p ? recipe.repo then
+                "https://git.sr.ht/~${p.recipe.repo}"
               else if (p.recipe.type or "git") == "git" && p ? recipe.repo && (p.recipe.host or null) == null then
                 p.recipe.repo
               else
@@ -337,7 +343,8 @@ let
                       tail = lib.removePrefix "https://git.sr.ht/" url;
                       split = lib.splitString "/" tail;
                       owner = lib.head split;
-                      repo = lib.elemAt split 1;
+                      # Mirror GitHub handling and strip optional ".git" suffix.
+                      repo = lib.removeSuffix ".git" (lib.elemAt split 1);
                     in
                     {
                       type = "sourcehut";
