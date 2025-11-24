@@ -29,7 +29,7 @@ jobs:
         with:
           ref: main
       - name: Install Nix
-        uses: cachix/install-nix-action@7ec16f2c061ab07b235a7245e06ed46fe9a1cab6 # v31
+        uses: cachix/install-nix-action@0b0e072294b088b73964f1d72dfdac0951439dbd # v31
         with:
           github_access_token: '${{ secrets.GITHUB_TOKEN }}'
       - name: Update and push flake.lock
