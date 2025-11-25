@@ -14,7 +14,6 @@
 
 {
   callPackages,
-  emptyDirectory,
   emacs,
   lib,
   linkFarm,

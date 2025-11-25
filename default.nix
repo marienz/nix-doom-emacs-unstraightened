@@ -49,7 +49,6 @@
   lib,
   runCommandLocal,
   runtimeShell,
-  writeText,
   makeBinaryWrapper,
   stdenv,
   stdenvNoCC,
