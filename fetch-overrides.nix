@@ -39,6 +39,8 @@
     # https://github.com/melpa/melpa/pull/9520
     helm-icons = "https://github.com/yyoncho/helm-icons";
     helm-posframe = "https://github.com/tumashu/helm-posframe";
+    # Dropped from Melpa (repository archived but still usable).
+    bundler = "https://github.com/endofunky/bundler.el";
   };
 
   # Pins for packages not pinned by Doom and not in nixpkgs or emacs-overlay.
