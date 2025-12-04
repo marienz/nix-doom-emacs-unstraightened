@@ -172,10 +172,10 @@ let
       packageRequires = [ eself.sly ];
       ignoreCompilationError = true;
     };
-    org-noter = esuper.org-noter.overrideAttrs (attrs: {
+    org-noter = esuper.org-noter.overrideAttrs {
       # Nixpkgs conditionally patches an older version, which our "9999snapshot" version breaks.
       patches = [ ];
-    });
+    };
     # Newer nixpkgs uses a melpa-build that requires a library with the same name of the package name.
     # Several wanderlust-related packages do not. emacsmirror fixed this: apply their fix.
     apel = esuper.apel.overrideAttrs (attrs: {
