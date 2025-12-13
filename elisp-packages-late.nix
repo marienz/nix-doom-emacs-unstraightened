@@ -233,6 +233,11 @@ let
       buildInputs = attrs.buildInputs ++ [ eself.evil ];
     });
 
+    # gptel-forge needs git as a build input
+    gptel-forge = esuper.gptel-forge.overrideAttrs (attrs: {
+      nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ git ];
+    });
+
     janet-ts-mode = esuper.janet-ts-mode.overrideAttrs {
       # TODO: Attempts to use libtree-sitter-janet-simple at build time.
       # This is not sufficient to fix it:
