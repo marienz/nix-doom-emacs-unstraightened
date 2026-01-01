@@ -24,11 +24,20 @@
          (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
                           (_ :eval
+;; HACK: we want to set doom-profile-dir, but that is a def*const*, which
+;; (unlike a defvar) is unconditionally initialized (if we just set it from the
+;; profile loader it gets overridden). We could try to make it get initialized
+;; to the right value by setting doom-profile-data-dir (which is a normal
+;; defvar) but we'd need to later undo that as it is also used to store user
+;; data. So instead we use eval-after-load to override the defconst (Emacs does
+;; not actually enforce their const-ness...).
+(defvar doom-profile-dir)
+(with-eval-after-load 'doom
+  (setq doom-profile-dir ,profile-directory))
+
 ;; HACK: install advice of doom-profile-init-file from the profile loader,
 ;; because we do not gain control between here and Doom using this to find the
 ;; profile init file (from which our own init.el is loaded).
-(defvar doom-profile-data-dir)
-(defvar doom-profile-dir)
 ;; Having to specify this seems like a bug(?)
 (declare-function doom-profile-init-file@unstraightened "init")
 (declare-function doom-profile-key "doom-lib")
@@ -61,7 +70,6 @@ requested makes `doom doctor' work."
                               emacs-major-version emacs-minor-version))))
 )
                           (user-emacs-directory . ,doom-emacs-dir)
-                          (doom-profile-data-dir . ,profile-directory)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-write-load-file new-profiles load-file)
     ;; HACK: Disable native compilation to avoid a recompilation loop.
