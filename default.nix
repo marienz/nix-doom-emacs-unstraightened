@@ -324,7 +324,8 @@ let
             };
             src =
               if experimentalFetchTree then
-                fetchTree (
+                # Keep "builtins" for flake-compat compat
+                builtins.fetchTree (
                   if lib.hasPrefix "https://github.com/" url then
                     let
                       tail = lib.removePrefix "https://github.com/" url;
