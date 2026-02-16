@@ -19,6 +19,7 @@ commonArgs=(
     --set DOOMPROFILE "$profileName"
     --set-default DOOMLOCALDIR "$doomLocalDir"
     --set DOOMDIR $doomProfile/doomdir
+    --suffix PATH ":" "$extraBinPackagesPath"
 )
 if [[ -n $lspUsePlists ]]; then
     commonArgs+=(
