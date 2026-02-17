@@ -181,5 +181,6 @@
       # Original name used in our documentation.
       # `nix flake check` (as of Nix 2.24) prefers homeModule, so we provide both.
       hmModule = homeModule;
+      lib = { inherit doomFromPackages; };
     };
 }
