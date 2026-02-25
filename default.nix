@@ -281,8 +281,11 @@ let
               #
               # - GitHub recipes use "owner/repo" (optionally with .git); we prefix with github host.
               # - SourceHut recipes use "~owner/repo"; we prefix with git.sr.ht host.
+              # - Codeberg recipes use "owner/repo"; we prefix with codeberg host.
               if (p.recipe.host or "") == "github" && p ? recipe.repo then
                 "https://github.com/${p.recipe.repo}"
+              else if (p.recipe.host or "") == "codeberg" && p ? recipe.repo then
+                "https://codeberg.org/${p.recipe.repo}"
               else if (p.recipe.host or "") == "sourcehut" && p ? recipe.repo then
                 "https://git.sr.ht/~${p.recipe.repo}"
               else if (p.recipe.type or "git") == "git" && p ? recipe.repo && (p.recipe.host or null) == null then
