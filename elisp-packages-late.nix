@@ -144,6 +144,10 @@ let
     rustic = esuper.rustic.overrideAttrs (old: {
       packageRequires = old.packageRequires ++ [ eself.flycheck ];
     });
+    # dumb-jump dropped its popup and s dependency upstream. Our pinned version still needs them.
+    dumb-jump = esuper.dumb-jump.overrideAttrs (old: {
+      packageRequires = old.packageRequires ++ [ eself.s eself.popup ];
+    });
     # TODO: refactor our dependency-extraction so we can apply it selectively to packages we don't
     # generate the entire derivation for.
     #
