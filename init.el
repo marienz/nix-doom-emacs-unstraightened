@@ -47,16 +47,3 @@ it. Just skip it entirely."
   (prin1-to-string `(progn
                       (load (getenv "DOOMPROFILELOADFILE") nil 'nomessage)
                       ,(read flycheck-emacs-lisp-check-form))))
-
-;; The restart-emacs package redefines the restart-emacs function provided by
-;; Emacs (which takes no arguments) with a replacement that takes an "args"
-;; argument. We need to define our advice after the correct function has been
-;; loaded: advice-add would normally handle autoloads but does not handle this.
-(after! restart-emacs
-  (defadvice! nix-doom-restart-emacs (fargs)
-    "Add --init-directory argument necessary to start Doom."
-    :filter-args #'restart-emacs
-    (cl-destructuring-bind (&optional args) fargs
-      (let* ((init-arg (format "--init-directory=%s" doom-emacs-dir))
-             (fixed-args (cons init-arg args)))
-        (list fixed-args)))))
