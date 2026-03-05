@@ -43,9 +43,9 @@
  'doom-profile-generators
  '("80-loaddefs-nix.auto.el" generate-nix-autoloads unstraightened--startup-nix-autoloads))
 
-;; Doom runs this with package.el activated, but suppresses activation during
-;; normal startup. Store the side effects of activation in the profile to avoid
-;; (slow) package activation during normal startup.
+;; Doom runs this with package.el initialized (but not activated, fixed below).
+;; Store the side effects of activation in the profile to avoid (slow) package
+;; activation during normal startup.
 ;;
 ;; package-activate-1 does:
 ;; - Load autoloads. Duplicated by generate-unstraightened-autoloads.
@@ -100,6 +100,9 @@
     ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from")
      (init-file ("-i" file) "unstraightened init.el"))
   "Write a Doom profile."
+  ;; Doom initializes but does not activate package.el.
+  ;; (This is idempotent, so no harm either way.)
+  (package-activate-all)
   ;; This also loads our generated profile's init.el (so we include the right
   ;; packages in the profile).
   (doom-modules-initialize)
