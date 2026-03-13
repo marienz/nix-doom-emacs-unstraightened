@@ -43,6 +43,14 @@ jobs:
           - emacs30-gtk3
           - emacs30-pgtk
           - emacs-without-nativecomp
+        exclude:
+          - os: macos-latest
+            emacs: emacs30-gtk3
+          - os: macos-latest
+            emacs: emacs30-pgtk
+        include:
+          - os: macos-latest
+            emacs: emacs30-macports
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
