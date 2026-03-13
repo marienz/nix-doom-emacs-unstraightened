@@ -23,7 +23,7 @@
 let
   # https://github.com/NixOS/nixpkgs/blob/f4501c9681b56c207927782b4c76a07190a58ab9/pkgs/development/compilers/gnat-bootstrap/default.nix
   # We might be able to drop this once nixpkgs defaults to gnat 14.
-  adaUnsupported = stdenv.hostPlatform.system == "aarch64-darwin";
+  adaUnsupported = !stdenv.hostPlatform.isx86;
   commonArgs = "-o $out" + (lib.optionalString adaUnsupported " -s '(:lang ada)'");
   allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
