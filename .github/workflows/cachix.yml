@@ -50,7 +50,7 @@ jobs:
             emacs: emacs30-pgtk
         include:
           - os: macos-latest
-            emacs: emacs30-macports
+            emacs: emacs30-macport
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository

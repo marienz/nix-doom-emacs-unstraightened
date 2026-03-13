@@ -154,12 +154,15 @@
                 );
             emacsen =
               # Keep in sync with .github/workflows/cachix.yml
-              (lib.genAttrs [
-                "emacs30"
-                "emacs30-nox"
-                "emacs30-gtk3"
-                "emacs30-pgtk"
-              ] (name: pkgs.${name}))
+              (lib.genAttrs (
+                [
+                  "emacs30"
+                  "emacs30-nox"
+                  "emacs30-gtk3"
+                  "emacs30-pgtk"
+                ]
+                ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs30-macport"
+              ) (name: pkgs.${name}))
               // {
                 emacs-without-nativecomp = pkgs.emacs.override { withNativeCompilation = false; };
               };
