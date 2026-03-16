@@ -23,7 +23,6 @@
     nose = "https://github.com/emacsattic/nose.git";
     ob-ammonite = "https://github.com/emacsattic/ob-ammonite.git";
     ammonite-term-repl = "https://github.com/emacsattic/ammonite-term-repl.git";
-    ob-clojure-literate = "https://github.com/emacsattic/ob-clojure-literate.git";
     # sourcehut fetcher doesn't work for the same reason codeberg doesn't.
     fennel-mode = "https://git.sr.ht/~technomancy/fennel-mode";
     graphql-ts-mode = "https://git.sr.ht/~joram/graphql-ts-mode";
