@@ -414,13 +414,15 @@ let
           pkg.overrideAttrs (
             lib.optionalAttrs isLspModeOrDependant {
               # TODO: simplify if https://github.com/NixOS/nixpkgs/pull/452898 is merged.
-              preBuild = let
-                origPreBuild = pkg.preBuild or "";
-                origPreBuildString = if origPreBuild == null then "" else origPreBuild;
-              in
-                origPreBuildString + ''
-                export LSP_USE_PLISTS=1
-              '';
+              preBuild =
+                let
+                  origPreBuild = pkg.preBuild or "";
+                  origPreBuildString = if origPreBuild == null then "" else origPreBuild;
+                in
+                origPreBuildString
+                + ''
+                  export LSP_USE_PLISTS=1
+                '';
             }
           );
         # TODO: very similar map to the upstreamWithPins one. Rework makePackage signature for reuse?
