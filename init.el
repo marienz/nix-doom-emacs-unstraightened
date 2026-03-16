@@ -32,7 +32,7 @@ it. Just skip it entirely."
   (require 'straight)  ;; straight-load-build-cache is not autoloaded.
   (straight--load-build-cache))
 
-(after! doom-straight
+(with-eval-after-load 'doom-straight
   (setq straight-base-dir
         (file-name-directory (directory-file-name doom-user-dir))))
 
