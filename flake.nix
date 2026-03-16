@@ -117,7 +117,7 @@
           makeDoomPackages = doomFromPackages pkgs;
         }
       );
-      formatter = perSystemPackages (pkgs: pkgs.nixfmt-rfc-style);
+      formatter = perSystemPackages (pkgs: pkgs.nixfmt);
       packages = perSystemPackages (
         pkgs:
         let
