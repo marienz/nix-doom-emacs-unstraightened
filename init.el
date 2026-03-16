@@ -18,13 +18,13 @@
 ;;
 ;; Loaded from the profile init file.
 
-(defadvice! nix-doom-skip-core-packages (&rest _)
+(define-advice doom-initialize-core-packages
+    (:override (&rest _) unstraightened)
   "HACK: don't install straight and core packages.
 
 `doom-initialize-core-packages' would no-op out if
 `straight-recipe-repositories' is set, but we do not want to set
 it. Just skip it entirely."
-  :override #'doom-initialize-core-packages
   (doom-log "nix-doom-emacs-unstraightened overriding core package init")
   ;; doom-initialize-core-packages normally registers recipes, which loads the
   ;; build cache by side effect, which leaves straight--build-cache available
