@@ -485,6 +485,8 @@ let
     name = "doom-emacs";
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
 
+    extraBinPackagesPath = lib.makeBinPath extraBinPackages;
+
     # emacsWithPackages also accessed externally (for pushing to Cachix).
     inherit
       doomProfile
