@@ -152,6 +152,10 @@ let
         eself.dash
       ];
     });
+    # utop made its tuareg dependency optional, but our pinned version still needs it.
+    utop = esuper.utop.overrideAttrs (old: {
+      packageRequires = old.packageRequires ++ [ eself.tuareg ];
+    });
     # TODO: refactor our dependency-extraction so we can apply it selectively to packages we don't
     # generate the entire derivation for.
     #
