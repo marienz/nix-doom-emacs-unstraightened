@@ -15,7 +15,7 @@
 {
   inputs = {
     # Default to reusing the system's emacs package if it has nixpkgs in the system flake registry.
-    nixpkgs.url = "nixpkgs";
+    nixpkgs.url = "github:marienz/nixpkgs/squash-mac-unstable";
     systems.url = "github:nix-systems/default";
     doomemacs = {
       url = "github:doomemacs/doomemacs";
