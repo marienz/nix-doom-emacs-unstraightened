@@ -48,6 +48,7 @@
     sly-stepper = "da84e3bba8466c2290c2dc7c27d7f4c48c27b39e";
     # In emacsattic, so shouldn't change underneath us.
     ammonite-term-repl = "b552fe21977e005c1c460bf6607557e67241a6b6";
+    polymode = "14b1fd8d2a183f11b123f62e02801dc1139da9c1";
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
