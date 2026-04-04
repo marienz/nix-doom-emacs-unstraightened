@@ -188,6 +188,7 @@ let
             "pin"
             "type"
             "env" # ignored. Used by doom for LSP_USE_PLISTS: revisit if its use spreads.
+            "freeze" # ignored. Used by doom to exclude packages from automated bumps.
           ];
           assert (p ? type) -> lib.asserts.assertOneOf "type of ${name}" p.type [ "core" ];
           let
