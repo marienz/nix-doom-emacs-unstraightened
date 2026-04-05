@@ -440,7 +440,7 @@ let
   # the set from step 2.
   emacsWithPackages = doomEmacsPackages.emacsWithPackages (
     epkgs:
-    (map (p: epkgs.${p}) (lib.attrNames doomPackageSet)) ++ (extraPackages epkgs) ++ extraBinPackages
+    (map (p: epkgs.${p}) (lib.attrNames doomPackageSet)) ++ (extraPackages epkgs)
   );
 
   # Step 4: build a DOOMDIR, Doom profile and profile loader using Emacs from
