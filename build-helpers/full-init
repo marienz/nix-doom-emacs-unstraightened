@@ -25,7 +25,7 @@
 ;; No attempt at efficiency, but package.el files are small...
 
 (defun walk-package-exp (l)
-  (cond ((not (consp l)) nil)
+  (cond ((not (proper-list-p l)) nil)
         ((and (> (length l) 1)
               (eq 'modulep! (car l))
               (not (keywordp (cadr l))))
