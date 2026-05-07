@@ -20,7 +20,6 @@
   runCommand,
   testers,
   tmux,
-  writeText,
   writeTextDir,
 
   doomSource,
@@ -42,7 +41,7 @@ let
     name: init: doomArgs:
     testers.testEqualContents {
       assertion = "name = ${name}; modules = ${toPretty { } init}; args = ${toPretty { } doomArgs};";
-      expected = writeText "doom-expected" "Doom functions";
+      expected = lib.toFile "doom-expected" "Doom functions";
       # Runs Doom in tmux, waiting (by polling) until its window disappears.
       actual =
         runCommand "interactive"
@@ -56,7 +55,7 @@ let
                 // {
                   doomDir = linkFarm "test-doomdir" {
                     "config.el" = ./tests.el;
-                    "init.el" = writeText "init.el" (toInit init);
+                    "init.el" = lib.toFile "init.el" (toInit init);
                   };
                 }
               ))
