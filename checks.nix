@@ -20,6 +20,7 @@
   runCommand,
   testers,
   tmux,
+  writeText,
   writeTextDir,
 
   doomSource,
@@ -41,7 +42,10 @@ let
     name: init: doomArgs:
     testers.testEqualContents {
       assertion = "name = ${name}; modules = ${toPretty { } init}; args = ${toPretty { } doomArgs};";
-      expected = lib.toFile "doom-expected" "Doom functions";
+      # toFile here seems to trigger a CI failure on macOS: doom-expected has gid nixbld...
+      # May be a race condition: also happened without toFile, see
+      # https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42
+      expected = writeText "doom-expected" "Doom functions";
       # Runs Doom in tmux, waiting (by polling) until its window disappears.
       actual =
         runCommand "interactive"
