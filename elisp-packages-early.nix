@@ -21,10 +21,15 @@
 {
   eself,
   esuper,
+  emptyDirectory,
 }:
 {
   # Upstream renamed from opencl-mode to opencl-c-mode. melpa2nix requires single-file-package file
   # names match the package name. So rename the package (not the file, just in case someone loads it
   # explicitly).
   opencl-mode = esuper.opencl-c-mode;
+
+  # nixpkgs includes agda-input in agda2-mode, and makes agda-input an error to make sure you notice
+  # when trying to use just that. Assume that Doom users use Doom's :lang agda, which includes both.
+  agda-input = emptyDirectory;
 }
