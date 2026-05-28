@@ -22,9 +22,7 @@
   writeTextDir,
 }:
 let
-  # Pulls in gprbuild, which is broken on Darwin.
-  # https://github.com/NixOS/nixpkgs/pull/539937 may fix it.
-  # Currently also broken on other platforms, see https://github.com/NixOS/nixpkgs/issues/544219
+  # ada-mode is broken, see https://github.com/NixOS/nixpkgs/issues/544219
   adaUnsupported = true;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
   commonArgs = [
