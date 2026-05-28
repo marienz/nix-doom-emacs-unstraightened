@@ -259,7 +259,7 @@ let
       # Apply pending upstream fix as an alternative to
       # https://github.com/doomemacs/doomemacs/commit/541207196fd1ec71bc81393f57ca91263c23b682
       # (which does not work when evil-numbers is byte-compiled)
-      patches = (old.patches or []) ++ [
+      patches = (old.patches or [ ]) ++ [
         (fetchpatch2 {
           url = "https://github.com/juliapath/evil-numbers/pull/31/commits/2229ad6df398f4c959981b543c467ed6b89320a2.patch";
           hash = "sha256-PAklkvKyiZ04QikbmtLD1tlfcfjeNDNpbDol9OcITGU=";
