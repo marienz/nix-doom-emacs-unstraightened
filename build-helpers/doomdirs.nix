@@ -22,14 +22,8 @@
   writeTextDir,
 }:
 let
-  # https://github.com/NixOS/nixpkgs/blob/f4501c9681b56c207927782b4c76a07190a58ab9/pkgs/development/compilers/gnat-bootstrap/default.nix
-  # We might be able to drop this once nixpkgs defaults to gnat 14.
-  adaUnsupported = !stdenv.hostPlatform.isx86;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
-  commonArgs =
-    "-m ${doomModules} -o $out"
-    + (lib.optionalString adaUnsupported " -s '(:lang ada)'")
-    + (lib.optionalString pdftoolsBroken " -s '(:tools pdf)'");
+  commonArgs = "-m ${doomModules} -o $out" + (lib.optionalString pdftoolsBroken " -s '(:tools pdf)'");
   allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
