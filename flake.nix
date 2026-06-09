@@ -120,6 +120,7 @@
         pkgs.callPackages ./checks.nix {
           toInit = toInit nixpkgs.lib;
           doomSource = doomemacs;
+          doomModules = doomemacs-modules;
           makeDoomPackages = doomFromPackages pkgs;
         }
       );
@@ -156,6 +157,7 @@
                   pkgs.callPackages ./build-helpers/doomdirs.nix {
                     inherit emacs;
                     doomSource = doomemacs;
+                    doomModules = doomemacs-modules;
                   }
                 );
             emacsen =

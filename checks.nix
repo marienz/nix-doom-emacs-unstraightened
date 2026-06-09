@@ -24,12 +24,13 @@
   writeTextDir,
 
   doomSource,
+  doomModules,
   makeDoomPackages,
   toInit,
 }:
 let
   inherit (lib.generators) toPretty;
-  doomDirs = callPackages ./build-helpers/doomdirs.nix { inherit doomSource; };
+  doomDirs = callPackages ./build-helpers/doomdirs.nix { inherit doomSource doomModules; };
   common = {
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;

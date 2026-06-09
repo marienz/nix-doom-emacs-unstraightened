@@ -35,6 +35,7 @@
 
 (defcli! full-init
     ((output-directory ("-o" dir) "Directory to write init.el into.")
+     (modules-dir ("-m" dir) "Doom modules directory.")
      (&flag flags? ("--flags"))
      (&multi skip ("-s" form) "Module to skip, as `(:cat name)'." ))
   "Write init.el with all modules."
@@ -45,6 +46,8 @@
 
 (doom!
 ")
+    ;; See `dump'.
+    (setf (caddr doom-module-load-path) (file-name-concat modules-dir "modules"))
     (doom-modules-initialize)
     ;; Doom gives us (FLAG . VALUE) cons cells. Drop the flag (always -s).
     (let ((skip (mapcar #'cdr skip)))
