@@ -19,7 +19,7 @@
 
        :ui
        doom
-       doom-dashboard
+       dashboard
        modeline
        nav-flash
        ophints
