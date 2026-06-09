@@ -174,6 +174,8 @@ support use without flakes.
 - `doomSource`: Doom source tree. Defaults to a flake input: overriding that
   input is probably easier than passing this.
 
+- `doomModules`: like `doomSource`, but for the Doom modules source tree.
+
 - `extraBinPackages`: packages to add to `$PATH`. Defaults to Git, ripgrep and
   fd.
 
