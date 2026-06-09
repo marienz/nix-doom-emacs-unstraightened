@@ -21,6 +21,10 @@
       url = "github:doomemacs/doomemacs";
       flake = false;
     };
+    doomemacs-modules = {
+      url = "github:doomemacs/modules";
+      flake = false;
+    };
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
       inputs = {
@@ -36,6 +40,7 @@
       self,
       systems,
       doomemacs,
+      doomemacs-modules,
       nixpkgs,
       emacs-overlay,
       ...
@@ -60,6 +65,7 @@
           mergedArgs = args // {
             inherit emacsPackagesFor toInit;
             doomSource = doomemacs;
+            doomModules = doomemacs-modules;
           };
         in
         pkgs.callPackages self mergedArgs;

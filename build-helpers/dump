@@ -18,7 +18,8 @@
 (require 'json)
 
 (defcli! dump
-    ((output-directory ("-o" dir) "Directory to dump into."))
+    ((modules-dir ("-m" dir) "Doom modules directory.")
+     (output-directory ("-o" dir) "Directory to dump into."))
   "Dump intermediates for nix-doom-emacs-unstraightened."
   ;; Fail if doom-user-dir does not exist.
   ;;
@@ -27,6 +28,11 @@
   ;; error out on this: we end up with the same result as an empty doomDir.
   (unless (file-readable-p doom-user-dir)
     (user-error "DOOMDIR not readable: %s" doom-user-dir))
+  (unless (string-equal (file-name-concat doom-emacs-dir "sources/doom+/modules")
+                        (caddr doom-module-load-path))
+    ;; If you hit this, you'll also need to update build-profile-loader.
+    (user-error "nix-doom-emacs-unstraightened is not compatible with this version of Doom"))
+  (setf (caddr doom-module-load-path) (file-name-concat modules-dir "modules"))
 
   ;; This also loads the user's init.el.
   (doom-modules-initialize)

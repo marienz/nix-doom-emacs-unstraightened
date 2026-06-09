@@ -26,7 +26,7 @@ export DOOMDIR=$out/doomdir
 # DOOMLOCALDIR must be writable, Doom creates some subdirectories.
 export DOOMLOCALDIR="$PWD/doomlocaldir"
 $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
-    ${noProfileHack:+-u} -n "$profileName" -b "$out"
+    ${noProfileHack:+-u} -n "$profileName" -m "$doomModules" -b "$out"
 
 # With DOOMPROFILE set, doom-state-dir and friends are HOME-relative.
 export HOME="$PWD/home"

@@ -19,6 +19,8 @@
   doomLocalDir,
   # Doom source tree.
   doomSource,
+  # Doom modules source tree.
+  doomModules,
   # Emacs package to build against.
   emacs,
   # Name of doom profile to use. Empty string to disable profile early in startup.
@@ -52,6 +54,7 @@
   makeBinaryWrapper,
   stdenv,
   stdenvNoCC,
+  symlinkJoin,
   toInit,
   writeTextDir,
 }:
@@ -60,11 +63,18 @@ let
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
 
-  tangleDoomDir = writeTextDir "init.el" (
+  tangleInit = writeTextDir "init.el" (
     toInit lib {
       lang.org = true;
     }
   );
+  tangleDoomDir = symlinkJoin {
+    name = "tangle-doomdir";
+    paths = [
+      tangleInit
+      doomModules
+    ];
+  };
 
   # Preprocess DOOMDIR with `doom +org tangle` if requested.
   doomDir' =
@@ -110,7 +120,7 @@ let
       DOOMDIR = "${doomDir'}";
     };
     script = ./build-helpers/dump;
-    scriptArgs = "-o $out";
+    scriptArgs = "-m ${doomModules} -o $out";
   };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
@@ -454,6 +464,7 @@ let
 
     inherit
       doomIntermediates
+      doomModules
       doomSource
       runtimeShell
       ;

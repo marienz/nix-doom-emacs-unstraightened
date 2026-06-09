@@ -18,8 +18,11 @@
 (defcli! build-profile-loader
   ((profile-name ("-n" form) "Profile name.")
    (base-directory ("-b" dir) "Base directory (for profile and straight).")
+   (modules-dir ("-m" dir) "Doom modules directory.")
    (unset-profile ("-u") "Unset DOOMPROFILE at startup."))
   "Write Doom's profile loader."
+  ;; See `dump'.
+  (setf (caddr doom-module-load-path) (file-name-concat modules-dir "modules"))
   (let* ((profile-directory (expand-file-name "profile/" base-directory))
          (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
@@ -70,6 +73,7 @@ requested makes `doom doctor' work."
                               emacs-major-version emacs-minor-version))))
 )
                           (user-emacs-directory . ,doom-emacs-dir)
+                          (doom-module-load-path . ,doom-module-load-path)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-write-load-file new-profiles load-file)
     ;; HACK: Disable native compilation to avoid a recompilation loop.
