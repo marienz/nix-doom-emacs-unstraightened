@@ -70,6 +70,14 @@
         in
         pkgs.callPackages self mergedArgs;
 
+      mkDoomDirs =
+        pkgs: emacs:
+        pkgs.callPackages ./build-helpers/doomdirs.nix {
+          inherit emacs;
+          doomSource = doomemacs;
+          doomModules = doomemacs-modules;
+        };
+
       # Convert a Nix expression to a `doom!` block suitable for init.el.
       #
       # Input: a nested attribute set.
@@ -119,8 +127,7 @@
         pkgs:
         pkgs.callPackages ./checks.nix {
           toInit = toInit nixpkgs.lib;
-          doomSource = doomemacs;
-          doomModules = doomemacs-modules;
+          makeDoomDirs = mkDoomDirs pkgs;
           makeDoomPackages = doomFromPackages pkgs;
         }
       );
@@ -144,22 +151,14 @@
             inherit (nixpkgs) lib;
             depBuilds =
               emacs:
-              lib.mapAttrs
-                (
-                  name: doomDir:
-                  (doomFromPackages pkgs {
-                    inherit doomDir emacs;
-                    doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-                    experimentalFetchTree = true;
-                  }).doomEmacs.emacsWithPackages.deps
-                )
-                (
-                  pkgs.callPackages ./build-helpers/doomdirs.nix {
-                    inherit emacs;
-                    doomSource = doomemacs;
-                    doomModules = doomemacs-modules;
-                  }
-                );
+              lib.flip lib.mapAttrs (mkDoomDirs pkgs emacs) (
+                name: doomDir:
+                (doomFromPackages pkgs {
+                  inherit doomDir emacs;
+                  doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+                  experimentalFetchTree = true;
+                }).doomEmacs.emacsWithPackages.deps
+              );
             emacsen =
               # Keep in sync with .github/workflows/cachix.yml
               (lib.genAttrs (
