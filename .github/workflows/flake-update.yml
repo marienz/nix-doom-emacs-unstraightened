@@ -32,10 +32,22 @@ jobs:
         uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
         with:
           github_access_token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Check out Doom core
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: doomemacs/doomemacs
+          path: doomemacs
       - name: Update and push flake.lock
         run: |
+          core_rev=$(git --git-dir=doomemacs/.git rev-parse HEAD)
+          modules_rev=$(
+            git --git-dir=doomemacs/.git submodule status --cached sources/doom+ |
+            sed -Ee 's/^-([0-9a-f]+) .*/\1/')
+          echo "core rev: $core_rev, modules rev: $modules_rev"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git checkout -b flake-update
-          nix flake update --commit-lock-file
+          nix flake update --commit-lock-file \
+            --override-input doomemacs "github:doomemacs/doomemacs/$core_rev" \
+            --override-input doomemacs-modules "github:doomemacs/modules/$modules_rev"
           git push --force origin flake-update
