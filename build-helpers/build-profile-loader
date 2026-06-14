@@ -61,6 +61,7 @@ requested makes `doom doctor' work."
          (ref (if profile (doom-profile-key profile t) (cons nil nil)))
          (name (pop ref)))
     (unless (or (null name)
+                (eq t profile)
                 (and (not (string-empty-p my-profile))
                      (string-equal name my-profile)))
       (error "Accessing other profiles from Unstraightened is unsupported."))
