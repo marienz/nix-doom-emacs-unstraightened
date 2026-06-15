@@ -139,14 +139,6 @@ let
         done
       '';
     });
-    # dumb-jump dropped its popup and s dependency upstream. Our pinned version still needs them.
-    dumb-jump = esuper.dumb-jump.overrideAttrs (old: {
-      packageRequires = old.packageRequires ++ [
-        eself.s
-        eself.popup
-        eself.dash
-      ];
-    });
     # utop made its tuareg dependency optional, but our pinned version still needs it.
     utop = esuper.utop.overrideAttrs (old: {
       packageRequires = old.packageRequires ++ [ eself.tuareg ];
