@@ -237,10 +237,6 @@ let
         writableTmpDirAsHomeHook
       ];
     });
-    # Make it native-compile (and make evil-collection-describe-bindings-work).
-    evil-collection = esuper.evil-collection.overrideAttrs (old: {
-      packageRequires = old.packageRequires ++ [ eself.annalist ];
-    });
     # Make it byte-compile.
     #
     # TODO ask upstream about missing evil dependency?
