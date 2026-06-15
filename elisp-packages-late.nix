@@ -261,7 +261,7 @@ let
 
     evil-numbers = esuper.evil-numbers.overrideAttrs (old: {
       # Apply pending upstream fix as an alternative to
-      # https://github.com/doomemacs/doomemacs/commit/541207196fd1ec71bc81393f57ca91263c23b682
+      # https://github.com/doomemacs/core/commit/541207196fd1ec71bc81393f57ca91263c23b682
       # (which does not work when evil-numbers is byte-compiled)
       patches = (old.patches or [ ]) ++ [
         (fetchpatch2 {
@@ -274,7 +274,7 @@ let
     # Other files that fail to byte-compile:
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
     # - stylus-mode, missing dependency on sws-mode(?)
-    #   See also https://github.com/doomemacs/doomemacs/commit/f9feaec5bd75f4d997e0b07bc5c8b9177be20781
+    #   See also https://github.com/doomemacs/core/commit/f9feaec5bd75f4d997e0b07bc5c8b9177be20781
     # - xref-js2: upstream bug(?).
     #   Error: `add-to-list' can't use lexical var `words'; use `push' or `cl-pushnew'
     # - several others, looks like mostly missing (frequently optional) deps.

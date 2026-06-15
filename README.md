@@ -1,7 +1,7 @@
 # nix-doom-emacs-unstraightened
 
 `nix-doom-emacs-unstraightened` (referred to as "Unstraightened" below) builds
-[Doom Emacs](https://github.com/doomemacs/doomemacs) using
+[Doom Emacs](https://github.com/doomemacs/core) using
 [Nix](https://nixos.org) bundling a user configuration directory and the
 dependencies specified by it. It is very similar to
 [nix-doom-emacs](https://github.com/nix-community/nix-doom-emacs), but is
@@ -239,7 +239,7 @@ The Home Manager module supports the same options, as well as:
   dependencies), but also some disadvantages (see known problems below).
 
 - Unstraightened uses Doom's
-  [profiles](https://github.com/doomemacs/doomemacs/tree/master/profiles) under
+  [profiles](https://github.com/doomemacs/core/tree/master/profiles) under
   the hood. This affects where Doom stores local state:
 
   | Variable | Doom | Unstraightened |
@@ -428,7 +428,7 @@ just for package builds.
 ### Unstraightened seems to use `package.el`. Isn't that bad?
 
 Doom's FAQ offers [several arguments against
-`package.el`](https://github.com/doomemacs/doomemacs/blob/master/docs/faq.org#why-does-doom-use-straightel-and-not-packageel).
+`package.el`](https://github.com/doomemacs/core/blob/master/docs/faq.org#why-does-doom-use-straightel-and-not-packageel).
 They boil down to two problems, neither of which applies to Unstraightened:
 
 - `package.el` always builds from head: no rollback, no pinning, no
@@ -456,7 +456,7 @@ There are a few issues:
   packages not in emacs-overlay. Especially the latter is slow.
 
 - Doom (currently) [does not native-compile ahead of
-  time](https://github.com/doomemacs/doomemacs/issues/6811), but Unstraightened
+  time](https://github.com/doomemacs/core/issues/6811), but Unstraightened
   (or nixpkgs, really), does.
 
   - It should be possible to disable nativecomp and/or move it to runtime, but

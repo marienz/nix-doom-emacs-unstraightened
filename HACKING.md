@@ -1,6 +1,6 @@
 # Internals/design notes
 
-## Why [profiles](https://github.com/doomemacs/doomemacs/tree/master/profiles)?
+## Why [profiles](https://github.com/doomemacs/core/tree/master/profiles)?
 
 Because the profile loader runs early enough we can get Doom to load the profile
 init file from outside `DOOMLOCALDIR` relatively cleanly. Not using the "global"

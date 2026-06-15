@@ -6,13 +6,13 @@
         "lastModified": 1781585478,
         "narHash": "sha256-XDqqb0ZmnGgKDE2PYTxQmKA5SRq8cpfKd8IzS3dEPQg=",
         "owner": "doomemacs",
-        "repo": "doomemacs",
+        "repo": "core",
         "rev": "5cc36a30a4b66e1a88072e239c02d67ae6029b2f",
         "type": "github"
       },
       "original": {
         "owner": "doomemacs",
-        "repo": "doomemacs",
+        "repo": "core",
         "type": "github"
       }
     },

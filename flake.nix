@@ -18,7 +18,7 @@
     nixpkgs.url = "nixpkgs";
     systems.url = "github:nix-systems/default";
     doomemacs = {
-      url = "github:doomemacs/doomemacs";
+      url = "github:doomemacs/core";
       flake = false;
     };
     doomemacs-modules = {
