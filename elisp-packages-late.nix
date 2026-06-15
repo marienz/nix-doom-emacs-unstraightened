@@ -139,12 +139,6 @@ let
         done
       '';
     });
-    # Rustic dropped its hard flycheck dependency upstream, but Doom is pinned to a revision
-    # that still has it, causing errors at nativecomp time.
-    # TODO: drop this once Doom catches up
-    rustic = esuper.rustic.overrideAttrs (old: {
-      packageRequires = old.packageRequires ++ [ eself.flycheck ];
-    });
     # dumb-jump dropped its popup and s dependency upstream. Our pinned version still needs them.
     dumb-jump = esuper.dumb-jump.overrideAttrs (old: {
       packageRequires = old.packageRequires ++ [
