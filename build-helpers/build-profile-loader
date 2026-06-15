@@ -44,7 +44,8 @@
 ;; Having to specify this seems like a bug(?)
 (declare-function doom-profile-init-file@unstraightened "init")
 (declare-function doom-profile-key "doom-lib")
-(define-advice doom-profile-init-file (:override (profile) unstraightened)
+(define-advice doom-profile-init-file
+    (:override (profile &optional filename) unstraightened)
   "Return unstraightened's profile init file.
 
 `doom-profile-init-file' locates the profile relative to `doom-data-dir', but
@@ -59,7 +60,10 @@ requested makes `doom doctor' work."
          ;; Open-code cl-destructuring-bind into (name . ref),
          ;; to avoid loading cl in the profile loader.
          (ref (if profile (doom-profile-key profile t) (cons nil nil)))
-         (name (pop ref)))
+         (name (pop ref))
+         (filename (or filename (format "init.%d.%d.el"
+                                        emacs-major-version
+                                        emacs-minor-version))))
     (unless (or (null name)
                 (eq t profile)
                 (equal (doom-profile-key t t) profile)
@@ -70,9 +74,7 @@ requested makes `doom doctor' work."
                 (string-equal "0" ref))
       (error
        "Accessing other profile versions from Unstraightened is unsupported."))
-    (file-name-concat doom-profile-dir
-                      (format "init.%d.%d.el"
-                              emacs-major-version emacs-minor-version))))
+    (file-name-concat doom-profile-dir filename)))
 )
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-module-load-path . ,doom-module-load-path)
