@@ -20,8 +20,9 @@
 ;; (currently a string written to $out), and then exits.
 
 (defun test-no-profile ()
-  (when doom-profile
-    (error "doom-profile should be unset, is %s" doom-profile)))
+  (unless (or (null doom-profile)
+              (equal (doom-profile-key t t) doom-profile))
+    (error "doom-profile should be unset or default, is %s" doom-profile)))
 
 (defun test-nix-profile ()
   (unless (and doom-profile (equal (car doom-profile) "nix"))
