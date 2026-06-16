@@ -222,7 +222,7 @@ let
     # https://github.com/PythonNut/evil-easymotion/commit/fb7182625fcb1b1f7d43f69df620d98aa0f42a86
     # removed the dependency, I do not understand why.
     evil-easymotion = esuper.evil-easymotion.overrideAttrs (attrs: {
-      buildInputs = attrs.buildInputs ++ [ eself.evil ];
+      packageRequires = attrs.packageRequires ++ [ eself.evil ];
     });
 
     janet-ts-mode = esuper.janet-ts-mode.overrideAttrs {
