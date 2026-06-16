@@ -61,7 +61,7 @@ let
     # intended, but the end result seems to work...
     org = esuper.org.overrideAttrs (old: {
       nativeBuildInputs = old.nativeBuildInputs ++ [
-        esuper.emacs
+        eself.emacs
         makeWrapper
       ];
       # Finding ORGVERSION is a hack (based on the one in Doom).
