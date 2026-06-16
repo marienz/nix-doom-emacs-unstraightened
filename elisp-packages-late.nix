@@ -82,9 +82,6 @@ let
         make install-etc install-info
       '';
     });
-    org-contrib = esuper.org-contrib.overrideAttrs (old: {
-      packageRequires = old.packageRequires ++ [ eself.org ];
-    });
     sln-mode = esuper.sln-mode.overrideAttrs (old: {
       # Straight uses a recipe from el-get that specifies the font-lock-ext
       # dependency.
