@@ -85,7 +85,7 @@ let
     sln-mode = esuper.sln-mode.overrideAttrs (old: {
       # Straight uses a recipe from el-get that specifies the font-lock-ext
       # dependency.
-      buildInputs = (old.buildInputs or [ ]) ++ [ eself.font-lock-ext ];
+      packageRequires = (old.packageRequires or [ ]) ++ [ eself.font-lock-ext ];
     });
     # Straight checks for git's presence at import time.
     # We could probably get by with feeding it /bin/true or similar,
