@@ -42,6 +42,7 @@ jobs:
           - emacs30-nox
           - emacs30-gtk3
           - emacs30-pgtk
+          - emacs31
           - emacs-without-nativecomp
         exclude:
           - os: macos-latest

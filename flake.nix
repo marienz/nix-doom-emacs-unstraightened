@@ -167,6 +167,7 @@
                   "emacs30-nox"
                   "emacs30-gtk3"
                   "emacs30-pgtk"
+                  "emacs31"
                 ]
                 ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs30-macport"
               ) (name: pkgs.${name}))
