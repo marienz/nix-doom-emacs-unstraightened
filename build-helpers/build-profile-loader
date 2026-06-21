@@ -27,6 +27,27 @@
          (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
                           (_ :eval
+;; HACK: install advice of doom-profile-dir from the profile loader,
+;; because we do not gain control between here and Doom using this to find the
+;; profile init file (from which our own init.el is loaded).
+;;
+;; Overriding doom-profile-dir affects doom-profile-init-dir and
+;; doom-profile-init-file.
+
+(defconst unstraightened--profile-dir ,profile-directory)
+
+;; Having to specify this seems like a bug(?)
+(declare-function doom-profile-init-dir@unstraightened "init")
+(declare-function doom--dir "doom-lib")
+(declare-function doom--profile "doom-lib")
+(define-advice doom-profile-init-dir
+    (:override (profile &rest segments) unstraightened)
+  "Return unstraightened's profile directory (in the Nix store)."
+  (declare (side-effect-free t))
+  (let ((p (doom--profile profile)))
+    (doom--dir (file-name-concat unstraightened--profile-dir (car p) (cdr p))
+               segments)))
+
 ;; HACK: we want to set doom-profile-dir, but that is a def*const*, which
 ;; (unlike a defvar) is unconditionally initialized (if we just set it from the
 ;; profile loader it gets overridden). We could try to make it get initialized
@@ -36,46 +57,7 @@
 ;; not actually enforce their const-ness...).
 (defvar doom-profile-dir)
 (with-eval-after-load 'doom
-  (setq doom-profile-dir ,profile-directory))
-
-;; HACK: install advice of doom-profile-init-file from the profile loader,
-;; because we do not gain control between here and Doom using this to find the
-;; profile init file (from which our own init.el is loaded).
-;; Having to specify this seems like a bug(?)
-(declare-function doom-profile-init-file@unstraightened "init")
-(declare-function doom-profile-key "doom-lib")
-(define-advice doom-profile-init-file
-    (:override (profile &optional filename) unstraightened)
-  "Return unstraightened's profile init file.
-
-`doom-profile-init-file' locates the profile relative to `doom-data-dir', but
-nix-doom-emacs-unstraightened keeps its profile in a different location.
-Override `doom-profile-init-file' to confirm it is called to get the default
-or unstraightened profile (erroring out otherwise), then return the custom path.
-
-Returning the unstraightened profile if the default profile is
-requested makes `doom doctor' work."
-  (declare (side-effect-free t))
-  (require 'doom-profiles)  ; for doom-profile-key
-  (let* ((my-profile ,(symbol-name profile-name))
-         ;; Open-code cl-destructuring-bind into (name . ref),
-         ;; to avoid loading cl in the profile loader.
-         (ref (if profile (doom-profile-key profile t) (cons nil nil)))
-         (name (pop ref))
-         (filename (or filename (format "init.%d.%d.el"
-                                        emacs-major-version
-                                        emacs-minor-version))))
-    (unless (or (null name)
-                (eq t profile)
-                (equal (doom-profile-key t t) profile)
-                (and (not (string-empty-p my-profile))
-                     (string-equal name my-profile)))
-      (error "Accessing other profiles from Unstraightened is unsupported."))
-    (unless (or (null ref)
-                (string-equal "0" ref))
-      (error
-       "Accessing other profile versions from Unstraightened is unsupported."))
-    (file-name-concat doom-profile-dir filename)))
+  (setq doom-profile-dir (doom-profile-init-dir doom-profile)))
 )
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-module-load-path . ,doom-module-load-path)
