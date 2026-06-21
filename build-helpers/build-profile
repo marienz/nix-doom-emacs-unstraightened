@@ -19,29 +19,33 @@
 (defvar site-lisp)
 (defvar init-file)
 
-(defun generate-unstraightened-init-load ()
+(defun generate-unstraightened-init-load (_profile)
   "Load unstraightened init.el."
-  `((defun unstraightened--startup-init ()
-      (doom-load ,init-file))))
+  (doom-file-write
+   "00-unstraightened-init.init.el"
+   `((defun unstraightened--startup-init (_profile)
+       (doom-load ,init-file))
+     (add-hook 'doom-startup-functions #'unstraightened--startup-init 0))))
 
-(add-to-list
- 'doom-profile-generators
- '("00-unstraightened-init.auto.el" generate-unstraightened-init-load unstraightened--startup-init))
+(add-to-list 'doom-profile-generate-functions
+             #'generate-unstraightened-init-load)
 
-(defun generate-nix-autoloads ()
+(defun generate-nix-autoloads (_profile)
   "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
-  `((defun unstraightened--startup-nix-autoloads ()
-      (let ((load-in-progress t))
-        ,@(let (filenames)
-            (dolist (filename (directory-files site-lisp))
-              (when (string-suffix-p "-autoloads.el" filename)
-                (push (expand-file-name filename site-lisp) filenames)))
-            (doom-autoloads--scan
-             filenames doom-autoloads-excluded-files 'literal))))))
+  ;; 65 is before -unstraightened-autoloads (below)
+  (doom-file-write
+   "65-loaddefs-nix.init.el"
+   `((defun unstraightened--startup-nix-autoloads (_profile)
+       ,@(let (filenames)
+           (dolist (filename (directory-files site-lisp))
+             (when (string-suffix-p "-autoloads.el" filename)
+               (push (expand-file-name filename site-lisp) filenames)))
+           (doom-autoloads--scan
+            filenames doom-autoloads-excluded-files 'literal)))
+     (add-hook 'doom-startup-functions
+               #'unstraightened--startup-nix-autoloads 65))))
 
-(add-to-list
- 'doom-profile-generators
- '("80-loaddefs-nix.auto.el" generate-nix-autoloads unstraightened--startup-nix-autoloads))
+(add-to-list 'doom-profile-generate-functions #'generate-nix-autoloads)
 
 ;; Doom runs this with package.el initialized (but not activated, fixed below).
 ;; Store the side effects of activation in the profile to avoid (slow) package
@@ -53,46 +57,37 @@
 ;; - Add Info node. Doom already stores Info-directory-list.
 ;; - Add name to package-activated-list. Stored below.
 
-(defun generate-unstraightened-autoloads ()
+(defun generate-unstraightened-autoloads (_profile)
   "Like doom-profile--generate-package-autoloads but for package.el."
-  `((defun unstraightened--startup-unstraightened-autoloads ()
-      (let ((load-in-progress t))
-        ,@(doom-autoloads--scan
-           (mapcar (lambda (s)
-                     (format "%s.el"
-                             (package--autoloads-file-name
-                              (package-get-descriptor s))))
-                   ;; Packages are (currently...) pushed onto
-                   ;; package-activated-list as they are activated. Reverse the
-                   ;; list here so packages activated first get their autoloads
-                   ;; loaded first.
-                   ;;
-                   ;; An example package that requires this is geiser-guile: it
-                   ;; calls geiser-activate-implementation from autoloads,
-                   ;; requiring geiser's autoloads are loaded first.
-                   (nreverse
-                    (seq-difference package-activated-list
-                                    (mapcar #'intern-soft
-                                            doom-autoloads-excluded-packages))))
-           doom-autoloads-excluded-files
-           'literal)))))
+  ;; 70 is the same priority as doom--startup-loaddefs-packages
+  ;; (and before doom--startup-modules)
+  (doom-file-write
+   "70-loaddefs-unstraightened.init.el"
+   `((defun unstraightened--startup-unstraightened-autoloads (_profile)
+       ,@(doom-autoloads--scan
+          (mapcar (lambda (s)
+                    (format "%s.el"
+                            (package--autoloads-file-name
+                             (package-get-descriptor s))))
+                  ;; Packages are (currently...) pushed onto
+                  ;; package-activated-list as they are activated. Reverse the
+                  ;; list here so packages activated first get their autoloads
+                  ;; loaded first.
+                  ;;
+                  ;; An example package that requires this is geiser-guile: it
+                  ;; calls geiser-activate-implementation from autoloads,
+                  ;; requiring geiser's autoloads are loaded first.
+                  (nreverse
+                   (seq-difference package-activated-list
+                                   (mapcar #'intern-soft
+                                           doom-autoloads-excluded-packages))))
+          doom-autoloads-excluded-files
+          'literal))
+     (add-hook 'doom-startup-functions
+               #'unstraightened--startup-unstraightened-autoloads 70))))
 
-(add-to-list
- 'doom-profile-generators
- '("90-loaddefs-unstraightened.auto.el" generate-unstraightened-autoloads unstraightened--startup-unstraightened-autoloads))
-
-;; Subtle: Doom currently combines the partials in lexicographical order, but
-;; calls their closures in doom-profile-generators list order.
-;;
-;; Those orders are identical for Doom's own generators (so this may not be
-;; intentional). But it means unstraightened--startup-init runs later than
-;; intended.
-;;
-;; Fix it by sorting the list.
-;;
-;; TODO: ask about this upstream.
-(setq doom-profile-generators
-      (seq-sort-by #'car #'string< doom-profile-generators))
+(add-to-list 'doom-profile-generate-functions
+             #'generate-unstraightened-autoloads)
 
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 

@@ -56,6 +56,7 @@ or unstraightened profile (erroring out otherwise), then return the custom path.
 Returning the unstraightened profile if the default profile is
 requested makes `doom doctor' work."
   (declare (side-effect-free t))
+  (require 'doom-profiles)  ; for doom-profile-key
   (let* ((my-profile ,(symbol-name profile-name))
          ;; Open-code cl-destructuring-bind into (name . ref),
          ;; to avoid loading cl in the profile loader.
