@@ -35,7 +35,7 @@ jobs:
       - name: Check out Doom core
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: doomemacs/doomemacs
+          repository: doomemacs/core
           path: doomemacs
       - name: Update and push flake.lock
         run: |
@@ -48,6 +48,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git checkout -b flake-update
           nix flake update --commit-lock-file \
-            --override-input doomemacs "github:doomemacs/doomemacs/$core_rev" \
+            --override-input doomemacs "github:doomemacs/core/$core_rev" \
             --override-input doomemacs-modules "github:doomemacs/modules/$modules_rev"
           git push --force origin flake-update
