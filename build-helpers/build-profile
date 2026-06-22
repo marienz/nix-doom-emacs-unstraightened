@@ -21,11 +21,7 @@
 
 (defun generate-unstraightened-init-load (_profile)
   "Load unstraightened init.el."
-  (doom-file-write
-   "00-unstraightened-init.init.el"
-   `((defun unstraightened--startup-init (_profile)
-       (doom-load ,init-file))
-     (add-hook 'doom-startup-functions #'unstraightened--startup-init 0))))
+  (make-symbolic-link init-file "00-unstraightened-init.load.el"))
 
 (add-to-list 'doom-profile-generate-functions
              #'generate-unstraightened-init-load)
