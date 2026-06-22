@@ -28,10 +28,10 @@
 
 (defun generate-nix-autoloads (_profile)
   "Pull in autoloads for non-ELPA emacsWithPackages dependencies."
-  ;; 65 is before -unstraightened-autoloads (below)
+  ;; 65 is before -unstraightened-loaddefs (below)
   (doom-file-write
-   "65-loaddefs-nix.init.el"
-   `((defun unstraightened--startup-nix-autoloads (_profile)
+   "65-unstraightened-loaddefs-nix.init.el"
+   `((defun unstraightened--startup-nix-loaddefs (_profile)
        ,@(let (filenames)
            (dolist (filename (directory-files site-lisp))
              (when (string-suffix-p "-autoloads.el" filename)
@@ -39,7 +39,7 @@
            (doom-autoloads--scan
             filenames doom-autoloads-excluded-files 'literal)))
      (add-hook 'doom-startup-functions
-               #'unstraightened--startup-nix-autoloads 65))))
+               #'unstraightened--startup-nix-loaddefs 65))))
 
 (add-to-list 'doom-profile-generate-functions #'generate-nix-autoloads)
 
@@ -48,18 +48,18 @@
 ;; activation during normal startup.
 ;;
 ;; package-activate-1 does:
-;; - Load autoloads. Duplicated by generate-unstraightened-autoloads.
+;; - Load autoloads. Duplicated by generate-unstraightened-loaddefs.
 ;; - Add to load-path. Doom already stores load-path.
 ;; - Add Info node. Doom already stores Info-directory-list.
 ;; - Add name to package-activated-list. Stored below.
 
-(defun generate-unstraightened-autoloads (_profile)
-  "Like doom-profile--generate-package-autoloads but for package.el."
+(defun generate-unstraightened-loaddefs (_profile)
+  "Like doom-profile--generate-loaddefs-packages but for package.el."
   ;; 70 is the same priority as doom--startup-loaddefs-packages
   ;; (and before doom--startup-modules)
   (doom-file-write
-   "70-loaddefs-unstraightened.init.el"
-   `((defun unstraightened--startup-unstraightened-autoloads (_profile)
+   "70-unstraightened-loaddefs.init.el"
+   `((defun unstraightened--startup-unstraightened-loaddefs (_profile)
        ,@(doom-autoloads--scan
           (mapcar (lambda (s)
                     (format "%s.el"
@@ -80,10 +80,9 @@
           doom-autoloads-excluded-files
           'literal))
      (add-hook 'doom-startup-functions
-               #'unstraightened--startup-unstraightened-autoloads 70))))
+               #'unstraightened--startup-unstraightened-loaddefs 70))))
 
-(add-to-list 'doom-profile-generate-functions
-             #'generate-unstraightened-autoloads)
+(add-to-list 'doom-profile-generate-functions #'generate-unstraightened-loaddefs)
 
 (add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
