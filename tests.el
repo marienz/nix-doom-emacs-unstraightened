@@ -21,11 +21,12 @@
 
 (defun test-no-profile ()
   (unless (or (null doom-profile)
-              (equal (doom-profile-key t t) doom-profile))
+              (equal (doom-profile-key t t) (doom-profile-key doom-profile t)))
     (error "doom-profile should be unset or default, is %s" doom-profile)))
 
 (defun test-nix-profile ()
-  (unless (and doom-profile (equal (car doom-profile) "nix"))
+  (unless (and doom-profile
+               (equal (car (doom-profile-key doom-profile t)) "nix"))
     (error "non-nix doom-profile %s" doom-profile)))
 
 (defun test-external-org ()
