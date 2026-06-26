@@ -48,15 +48,15 @@
     (doom--dir (file-name-concat unstraightened--profile-dir (car p) (cdr p))
                segments)))
 
-;; HACK: we want to set doom-profile-dir, but that is a def*const*, which
-;; (unlike a defvar) is unconditionally initialized (if we just set it from the
-;; profile loader it gets overridden). We could try to make it get initialized
-;; to the right value by setting doom-profile-data-dir (which is a normal
-;; defvar) but we'd need to later undo that as it is also used to store user
-;; data. So instead we use eval-after-load to override the defconst (Emacs does
-;; not actually enforce their const-ness...).
+;; HACK: reset doom-profile-dir after Doom sets it.
+;;
+;; We cannot set it straight away because it is a defconst, which always
+;; (re)sets the value. In newer versions of Doom `doom-initialize' then further
+;; resets it: set it right after that.
 (defvar doom-profile-dir)
-(with-eval-after-load 'doom
+(define-advice doom-initialize
+    (:after (profile-id &optional interactive?) unstraightened)
+  "Reset `doom-profile-dir' after `doom-initialize'."
   (setq doom-profile-dir (doom-profile-init-dir doom-profile)))
 )
                           (user-emacs-directory . ,doom-emacs-dir)
