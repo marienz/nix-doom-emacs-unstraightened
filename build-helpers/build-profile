@@ -73,10 +73,7 @@
                   ;; An example package that requires this is geiser-guile: it
                   ;; calls geiser-activate-implementation from autoloads,
                   ;; requiring geiser's autoloads are loaded first.
-                  (nreverse
-                   (seq-difference package-activated-list
-                                   (mapcar #'intern-soft
-                                           doom-autoloads-excluded-packages))))
+                  (nreverse package-activated-list))
           doom-autoloads-excluded-files
           'literal))
      (add-hook 'doom-startup-functions
