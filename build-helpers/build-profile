@@ -72,13 +72,13 @@
                   ;; An example package that requires this is geiser-guile: it
                   ;; calls geiser-activate-implementation from autoloads,
                   ;; requiring geiser's autoloads are loaded first.
-                  (nreverse package-activated-list))))
+                  (reverse package-activated-list)))
+       (set-default-toplevel-value 'package-activated-list
+                                   ',package-activated-list))
      (add-hook 'doom-startup-functions
                #'unstraightened--startup-unstraightened-loaddefs 70))))
 
 (add-to-list 'doom-profile-generate-functions #'generate-unstraightened-loaddefs)
-
-(add-to-list 'doom-autoloads-cached-vars 'package-activated-list)
 
 (defcli! build-profile
     ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from")
