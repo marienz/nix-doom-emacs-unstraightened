@@ -36,8 +36,7 @@
            (dolist (filename (directory-files site-lisp))
              (when (string-suffix-p "-autoloads.el" filename)
                (push (expand-file-name filename site-lisp) filenames)))
-           (doom-autoloads--scan
-            filenames doom-autoloads-excluded-files 'literal)))
+           (doom-loaddefs-scan-literal filenames)))
      (add-hook 'doom-startup-functions
                #'unstraightened--startup-nix-loaddefs 65))))
 
@@ -60,7 +59,7 @@
   (doom-file-write
    "70-unstraightened-loaddefs.init.el"
    `((defun unstraightened--startup-unstraightened-loaddefs (_profile)
-       ,@(doom-autoloads--scan
+       ,@(doom-loaddefs-scan-literal
           (mapcar (lambda (s)
                     (format "%s.el"
                             (package--autoloads-file-name
@@ -73,9 +72,7 @@
                   ;; An example package that requires this is geiser-guile: it
                   ;; calls geiser-activate-implementation from autoloads,
                   ;; requiring geiser's autoloads are loaded first.
-                  (nreverse package-activated-list))
-          doom-autoloads-excluded-files
-          'literal))
+                  (nreverse package-activated-list))))
      (add-hook 'doom-startup-functions
                #'unstraightened--startup-unstraightened-loaddefs 70))))
 
