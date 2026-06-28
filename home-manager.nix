@@ -179,19 +179,24 @@ in
         '';
       };
 
-      # Hidden/internal options.
       finalEmacsPackage = mkOption {
         type = types.package;
-        visible = false;
         readOnly = true;
-        description = "The final Emacs-compatible package";
+        description = ''
+          The final Emacs-compatible package (providing an `emacs` binary).
+
+          This can be used to refer to that binary by full path elsewhere in your configuration.
+        '';
       };
 
       finalDoomPackage = mkOption {
         type = types.package;
-        visible = false;
         readOnly = true;
-        description = "The final doom-emacs package";
+        description = ''
+          The final Doom Emacs package (providing a `doom-emacs` binary).
+
+          This can be used to refer to that binary by full path elsewhere in your configuration.
+        '';
       };
 
     };
