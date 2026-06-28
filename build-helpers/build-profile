@@ -32,11 +32,10 @@
   (doom-file-write
    "65-unstraightened-loaddefs-nix.init.el"
    `((defun unstraightened--startup-nix-loaddefs (_profile)
-       ,@(let (filenames)
-           (dolist (filename (directory-files site-lisp))
-             (when (string-suffix-p "-autoloads.el" filename)
-               (push (expand-file-name filename site-lisp) filenames)))
-           (doom-loaddefs-scan-literal filenames)))
+       ,@(doom-loaddefs-scan-literal
+          (cl-loop for filename in (directory-files site-lisp)
+                   if (string-suffix-p "-autoloads.el" filename)
+                   collect (expand-file-name filename site-lisp))))
      (add-hook 'doom-startup-functions
                #'unstraightened--startup-nix-loaddefs 65))))
 
@@ -60,19 +59,16 @@
    "70-unstraightened-loaddefs.init.el"
    `((defun unstraightened--startup-unstraightened-loaddefs (_profile)
        ,@(doom-loaddefs-scan-literal
-          (mapcar (lambda (s)
-                    (format "%s.el"
-                            (package--autoloads-file-name
-                             (package-get-descriptor s))))
-                  ;; Packages are (currently...) pushed onto
-                  ;; package-activated-list as they are activated. Reverse the
-                  ;; list here so packages activated first get their autoloads
-                  ;; loaded first.
-                  ;;
-                  ;; An example package that requires this is geiser-guile: it
-                  ;; calls geiser-activate-implementation from autoloads,
-                  ;; requiring geiser's autoloads are loaded first.
-                  (reverse package-activated-list)))
+          ;; Packages are (currently...) pushed onto package-activated-list as
+          ;; they are activated. Reverse the list here so packages activated
+          ;; first get their autoloads loaded first.
+          ;;
+          ;; An example package that requires this is geiser-guile: it calls
+          ;; geiser-activate-implementation from autoloads, requiring geiser's
+          ;; autoloads are loaded first.
+          (cl-loop for package in (reverse package-activated-list)
+                   collect (format "%s.el" (package--autoloads-file-name
+                                            (package-get-descriptor package)))))
        (set-default-toplevel-value 'package-activated-list
                                    ',package-activated-list))
      (add-hook 'doom-startup-functions
