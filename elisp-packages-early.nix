@@ -32,11 +32,4 @@
   # nixpkgs includes agda-input in agda2-mode, and makes agda-input an error to make sure you notice
   # when trying to use just that. Assume that Doom users use Doom's :lang agda, which includes both.
   agda-input = emptyDirectory;
-
-  # Make it byte-compile. Upstream treats consult as a soft dependency since only project-consult
-  # uses it (and projectile core does not load that), but gives consult pulls in no further
-  # dependencies we might as well pull it in.
-  projectile = esuper.projectile.overrideAttrs (attrs: {
-    packageRequires = attrs.packageRequires ++ [ eself.consult ];
-  });
 }
