@@ -41,3 +41,7 @@ if grep -q -F "$TMPDIR/" -r $out; then
     echo "Doom profile contains a forbidden reference to $TMPDIR/"
     exit 1
 fi
+
+echo "checks for #132: my IDs are $(id)"
+find "$out" -type l ! -perm -004 -ls
+echo "checks for #132: $(grep Extra $(find "$out/profile" -name 00-unstraightened-init.load.el))"
