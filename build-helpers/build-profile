@@ -21,7 +21,14 @@
 
 (defun generate-unstraightened-init-load (_profile)
   "Load unstraightened init.el."
-  (make-symbolic-link init-file "00-unstraightened-init.load.el"))
+  ;; `doom-profile-generate' wraps profile generation in `with-file-modes'
+  ;; #o750, so a symlink created here would otherwise end up group/other
+  ;; inaccessible. That is harmless on Linux (permission bits on symlinks
+  ;; are not checked), but not on macOS, where it breaks anything reading the
+  ;; Nix store as a different user, such as `cachix push'. Override back to a
+  ;; normal, world-readable mode for this symlink specifically.
+  (with-file-modes #o755
+    (make-symbolic-link init-file "00-unstraightened-init.load.el")))
 
 (add-to-list 'doom-profile-generate-functions
              #'generate-unstraightened-init-load)

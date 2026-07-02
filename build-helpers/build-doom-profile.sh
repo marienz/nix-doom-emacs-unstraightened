@@ -41,3 +41,19 @@ if grep -q -F "$TMPDIR/" -r $out; then
     echo "Doom profile contains a forbidden reference to $TMPDIR/"
     exit 1
 fi
+
+# Nix normalizes the permissions of regular files in $out to a world-readable
+# mode after the build, but (deliberately) leaves symlinks alone, since Linux
+# does not support chmod'ing (or even meaningfully storing the mode of) a
+# symlink. Any symlink created with a restrictive umask (e.g. by Emacs' own
+# `with-file-modes' in doom-profile-generate) therefore ships into the store
+# exactly as created. That is harmless on Linux (permission bits on symlinks
+# are not checked there), but not on macOS, where such a symlink becomes
+# unreadable to anything other than its owner/group, breaking tools like
+# `cachix push' that read the whole store path. Fail the build if that happens
+# again instead of shipping a broken store path silently.
+if find $out -type l ! -perm -444 -print | grep -q .; then
+    echo "Doom profile contains symlinks that are not world-readable:"
+    find $out -type l ! -perm -444 -ls
+    exit 1
+fi
