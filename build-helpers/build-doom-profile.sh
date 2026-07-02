@@ -52,8 +52,8 @@ fi
 # unreadable to anything other than its owner/group, breaking tools like
 # `cachix push' that read the whole store path. Fail the build if that happens
 # again instead of shipping a broken store path silently.
-if find $out -type l ! -perm -444 -print | grep -q .; then
+if find "$out" -type l ! -perm -004 -print | grep -q .; then
     echo "Doom profile contains symlinks that are not world-readable:"
-    find $out -type l ! -perm -444 -ls
+    find "$out" -type l ! -perm -004 -ls
     exit 1
 fi
