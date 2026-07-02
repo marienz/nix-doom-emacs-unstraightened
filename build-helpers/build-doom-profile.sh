@@ -47,11 +47,19 @@ fi
 # does not support chmod'ing (or even meaningfully storing the mode of) a
 # symlink. Any symlink created with a restrictive umask (e.g. by Emacs' own
 # `with-file-modes' in doom-profile-generate) therefore ships into the store
-# exactly as created. That is harmless on Linux (permission bits on symlinks
-# are not checked there), but not on macOS, where such a symlink becomes
-# unreadable to anything other than its owner/group, breaking tools like
-# `cachix push' that read the whole store path. Fail the build if that happens
-# again instead of shipping a broken store path silently.
+# exactly as created.
+#
+# That is harmless on Linux (permission bits on symlinks are not checked
+# there). It is also harmless in the common case on macOS, because merely
+# *following* a symlink (e.g. opening the file it points to) never checks its
+# permission bits either, on any OS. It only matters on macOS when something
+# calls readlink(2) to retrieve the link's literal target string instead of
+# following it, which is exactly what building a NAR to push to a binary
+# cache requires: `cachix push' (and any other NAR-producing tool) fails to
+# read such a symlink when run as anyone other than its owner or group, e.g.
+# the invoking CI user reading a path built by the nix-daemon build user.
+# Fail the build if that happens again instead of shipping a broken store
+# path silently.
 if find "$out" -type l ! -perm -004 -print | grep -q .; then
     echo "Doom profile contains symlinks that are not world-readable:"
     find "$out" -type l ! -perm -004 -ls
