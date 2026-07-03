@@ -41,3 +41,13 @@ if grep -q -F "$TMPDIR/" -r $out; then
     echo "Doom profile contains a forbidden reference to $TMPDIR/"
     exit 1
 fi
+
+# On macOS, symlinks that are not world-readable can be open()ed but readlink()
+# fails, which does not break us directly but might break tools.
+#
+# We currently create one such symlink: find and fix any.
+#
+# Normalize to 755 instead of using +444 because chmod currently drops the x bit
+# if we do (which may be a bug: it looks like it follows the symlink when using
+# fstatat to get the current mode bits...)
+find $out -type l -not -perm -755 -execdir chmod -h 755 '{}' +
