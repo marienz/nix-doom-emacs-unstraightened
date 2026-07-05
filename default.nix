@@ -383,13 +383,15 @@ let
             reqlist = if reqjson == null then [ ] else reqjson;
           in
           if pin != null then
-            epkg.overrideAttrs {
+            epkg.overrideAttrs (old: {
               inherit src;
               version = snapshotVersion;
               commit = pin;
-              # elisp-packages-late checks for this.
-              passthru.doom-emacs-pinned = true;
-            }
+              passthru = (old.passthru or { }) // {
+                # elisp-packages-late checks for this.
+                doom-emacs-pinned = true;
+              };
+            })
           else
             epkg;
         # Hack: we call makePackage for everything (not just doomPackageSet), just to hit the
