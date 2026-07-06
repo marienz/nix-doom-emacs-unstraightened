@@ -33,6 +33,10 @@
         nixpkgs.follows = "";
       };
     };
+    doomdir = {
+      url = ./doomdir;
+      flake = false;
+    };
   };
 
   outputs =
@@ -43,6 +47,7 @@
       doomemacs-modules,
       nixpkgs,
       emacs-overlay,
+      doomdir,
       ...
     }:
     let
@@ -120,6 +125,7 @@
 
       homeModule = import ./home-manager.nix {
         inherit doomFromPackages;
+        doomDirInput = doomdir;
       };
     in
     {
@@ -136,7 +142,7 @@
         pkgs:
         let
           default = doomFromPackages pkgs {
-            doomDir = ./doomdir;
+            doomDir = doomdir;
             doomLocalDir = "~/.local/share/nix-doom-unstraightened";
           };
         in

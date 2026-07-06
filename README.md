@@ -31,21 +31,19 @@ Please report any issues.
 
 ### Test run
 
-1. Check out this repository
-2. Optional: run `nix flake update nixpkgs` (Nix 2.19 or up) or `nix flake lock
-   --update-input nixpkgs` (earlier versions). If `nixpkgs` is in the system
-   registry (which it is by default on NixOS 24.05 and up) this will make
-   Unstraightened reuse more dependencies already on your system.
+```shell
+nix run github:marienz/nix-doom-emacs-unstraightened#doom-emacs \
+  --override-input doomdir ~/.config/doom \
+  --override-input nixpkgs nixpkgs
+```
 
-> [!NOTE]
-> Updating other inputs (with `nix flake update`) is not recommended. These
-> inputs are automatically updated daily as long as tests pass. Updating
-> manually may update to an incompatible version of Doom or Emacs packages.
+If you do not already have Doom Emacs set up, omit `--override-input doomdir
+~/.config/doom`. (Or if your configuration is in a different location or a git
+repository, pass its path or url here.)
 
-3. `rm doomdir/*` (delete my example/test configuration)
-4. Copy your Doom configuration into `doomdir`
-5. Make sure all files are added to the Git index (`git add doomdir`)
-6. Run `nix run .#doom-emacs`.
+`--override-input nixpkgs nixpkgs` is optional. It uses nixpkgs from the system
+registry, which makes Unstraightened reuse more dependencies already on your
+system. If omitted, current nixpkgs-unstable is used.
 
 If this does not work, the "with flakes" setup below is unlikely to work either.
 Please file an issue.
@@ -56,19 +54,22 @@ Add this flake as an input in `flake.nix`:
 
 ``` nix
 inputs = {
-  nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
-  # Optional, to download less. Neither the module nor the overlay uses this input.
-  nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "";
-};
-```
+  nix-doom-emacs-unstraightened = {
+    url = "github:marienz/nix-doom-emacs-unstraightened";
+    inputs = {
+      # If you use the home-manager module, you can set your doomdir here.
+      #
+      # If your Doom configuration is in this flake:
+      doomdir.url = "./doom.d";
+      # If your Doom configuration is in a different repository:
+      doomdir.url = "git+https://example.com/git/doomdir";
+      # Or leave `doomdir` unset and set `programs.doom-emacs.doomDir` in your
+      # home-manager configuration (see below).
 
-If your Doom configuration lives in a different repository, add that as input
-too:
-
-``` nix
-inputs = {
-  doom-config.url = "...";
-  doom-config.flake = false;
+      # Optional, to download less. Neither the module nor the overlay uses this input.
+      nixpkgs.follows = "";
+    }
+  };
 };
 ```
 
@@ -94,7 +95,6 @@ Configure it in `home.nix`:
 ``` nix
   programs.doom-emacs = {
     enable = true;
-    doomDir = inputs.doom-config;  # or e.g. `./doom.d` for a local configuration
   };
 ```
 
@@ -126,10 +126,9 @@ The overlay adds two packages:
 
   ``` nix
   (pkgs.doomEmacs {
-    doomDir = inputs.doom-config;
-    # If you stored your Doom configuration in the same flake, use
-    #   doomDir = ./path/to/doom/config;
-    # instead.
+    # Path to your doom configuration.
+    # Required (does not default to the doomdir flake input).
+    doomDir = ./path/to/your/doom/config;
     doomLocalDir = "~/.local/share/nix-doom";
   })
   ```
@@ -154,7 +153,8 @@ support use without flakes.
 `doomEmacs` and `emacsWithDoom` support the following options:
 
 - `doomDir`: your configuration directory (also known as DOOMDIR, Doom private
-  directory / module). Required.
+  directory / module). Required when not using the home-manager module, which
+  defaults it to the `doomdir` flake input.
 
 - `doomLocalDir`: value Doom should use as `DOOMLOCALDIR`. Required, because by
   default Doom would use its source directory, which is read-only.

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{ doomFromPackages }:
+{ doomFromPackages, doomDirInput }:
 {
   config,
   options,
@@ -42,8 +42,13 @@ in
       # Keep in the same order as default.nix, and in sync with the inherit below!
       doomDir = mkOption {
         type = types.pathInStore;
+        default = doomDirInput;
         example = literalExpression "./doom";
-        description = "The DOOMDIR to build from and bundle.";
+        description = ''
+          The DOOMDIR to build from and bundle.
+
+          Defaults to the `doomdir` input of the nix-doom-emacs-unstraightened flake.
+        '';
       };
 
       doomLocalDir = mkOption {
