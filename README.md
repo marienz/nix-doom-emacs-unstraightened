@@ -16,10 +16,8 @@ automatically. If you're reading this on GitHub, there should be a CI status
 badge above: if CI is passing, Unstraightened installs an up-to-date version of
 Doom Emacs and (almost) all module dependencies.
 
-macOS is not covered by CI but was previously reported working. Please file an
-issue if it does not work for you (and please comment on
-https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42 if you know
-why CI is not working).
+macOS is covered by CI and reported as working by users, but not used by this
+project's author. Please file an issue if it does not work.
 
 You may encounter "Cannot find Git revision" errors on Nix versions newer than
 2.18.x (see [#14](https://github.com/marienz/nix-doom-emacs-unstraightened/issues/14)).
@@ -28,6 +26,17 @@ Try enabling `experimentalFetchTree` to work around this (see below).
 Please report any issues.
 
 ## How to use
+
+### (optional) Enable Cachix
+
+If you use nixpkgs-unstable, adding our [Cachix](https//cachix.org/) cache
+should speed things up. See
+https://app.cachix.org/cache/doom-emacs-unstraightened or the [Cachix documentation](https://docs.cachix.org/getting-started#using-binaries-with-nix)
+for instructions.
+
+If you do not use nixpkgs-unstable, or see slow build times even with the cache,
+please file an issue mentioning which version of nixpkgs and Emacs you use and I
+will see what I can do.
 
 ### Test run
 
@@ -38,15 +47,25 @@ nix run github:marienz/nix-doom-emacs-unstraightened#doom-emacs \
 ```
 
 If you do not already have Doom Emacs set up, omit `--override-input doomdir
-~/.config/doom`. (Or if your configuration is in a different location or a git
-repository, pass its path or url here.)
+~/.config/doom` to use a simple example configuration. (Or if your configuration
+is in a different location or a git repository, pass its path or URL here.)
 
-`--override-input nixpkgs nixpkgs` is optional. It uses nixpkgs from the system
-registry, which makes Unstraightened reuse more dependencies already on your
-system. If omitted, current nixpkgs-unstable is used.
+> [!NOTE]
+> If the path to your doomdir is in a Git repository but not yet checked in, you
+> will need to `git add` it for this to work. (Your doomdir does not need to be
+> in a Git repository for testing, but if it is in one, it needs to be tracked
+> by Git.)
 
-If this does not work, the "with flakes" setup below is unlikely to work either.
-Please file an issue.
+`--override-input nixpkgs nixpkgs` is optional. If `nixpkgs` is in the system
+registry (which it is by default on current NixOS) this allows Unstraightened to
+use more dependencies (particularly Emacs) already on your system. If omitted,
+current nixpkgs-unstable is used.
+
+If `nix run github:marienz/nix-doom-emacs-unstraightened#doom-emacs` does not
+work, the "with flakes" setup below is unlikely to work either. Please file an
+issue. If this does work, but passing in your doomdir does not, please file an
+issue if you cannot work out the problem (and you're willing to share at least
+part of your configuration).
 
 ### With flakes
 
@@ -261,19 +280,17 @@ The Home Manager module supports the same options, as well as:
 
 ## Comparison to `nix-doom-emacs`
 
+[nix-doom-emacs](https://github.com/nix-community/nix-doom-emacs) was an earlier
+solution to the same problem.
+
 - Unstraightened does not attempt to use straight.el at all. Instead, it uses
   Doom's CLI to make Doom export its dependencies, then uses Nix's
   `emacsWithPackages` to install them all, then configures Doom to use the
-  "built-in" version for all its dependencies. This approach seems simpler to
-  me, but time will have to tell how well it holds up.
+  "built-in" version for all its dependencies.
 
-- Unstraightened respects Doom's pins. I believe this is necessary for a system
-  like this to work: Doom really does frequently make local changes to adjust to
-  changes or work around bugs in its dependencies.
-
-- Unstraightened is much younger. It is simpler in places because it assumes
-  Emacs >=29. It probably still has some problems already solved by
-  `nix-doom-emacs`, and it is too soon to tell how robust it is.
+- Unstraightened respects Doom's pins. This was not practical to implement in
+  nix-doom-emacs, but seems to be necessary to avoid breakage caused by
+  divergence between Doom's pinned packages and emacs-overlay (or nixpkgs).
 
 ## Bugs
 
@@ -288,20 +305,36 @@ The way Unstraightened applies Doom's pins to Nix instead of straight.el build
 recipes is a hack. Although it seems to work fairly well (better than I
 expected), it will break at times.
 
-If it breaks, it should break at build time, but I do not know all failure modes
-to expect yet.
+If it breaks, it has (so far) only broken at build time.
 
-One likely failure mode is an error about Git commits not being present in the
-upstream repository. To fix this, try building against a revision of the
-`emacs-overlay` flake that is closer to the age of `doomemacs`. This is a
-fundamental limitation: Doom assumes its pins are applied to `straight.el` build
-recipes, while we use nixpkgs / emacs-overlay. If these diverge, our build
-breaks.
+There are two common failure modes. You should not see either of them for Doom's
+packages (CI catches them and prevents Unstraightened's pinned versions of Doom
+and emacs-overlay from updating until I work around the problem), but you may
+see them for packages you pin in your own `packages.el`.
 
-Another possible problem is a package failing to build or run because one of its
-dependencies is missing. Unstraightened currently uses dependencies from the
-original (emacs-overlay) package. This is largely a performance optimization,
-that can be revisited if it breaks too frequently.
+#### Git commit not found
+
+Errors about Git commits not being present in the upstream repository can occur
+because Unstraightened applies pins to build recipes from emacs-overlay, while
+Doom applies them to `straight.el` build recipes. These two sources sometimes
+diverge.
+
+To work around this for a pin in `packages.el`, add a `:recipe`.
+
+#### Missing dependencies
+
+Unstraightened currently uses dependencies from the original (emacs-overlay)
+package. This is a performance optimization: auto-detecting dependencies uses
+[IFD](https://nix.dev/manual/nix/2.34/language/import-from-derivation), which
+would be very slow if used for all packages.
+
+The usual way in which this breaks is: a package dropped a dependency upstream,
+and emacs-overlay picked up a revision with this change, but it is still pinned
+to an earlier version.
+
+To work around this for a pin in `packages.el`, you can use
+`emacsPackageOverrides` to add the missing dependency back, like
+[this](https://github.com/marienz/nix-doom-emacs-unstraightened/blob/eb4c375ae3d7b9c75852ef7200350b4b3b855261/elisp-packages-late.nix#L228-L235)). But in most cases bumping the package will be simpler.
 
 ### Saving Custom changes fails
 
@@ -318,15 +351,19 @@ I am open to suggestions for how this should work:
 
 ### Flag-controlled packages may be broken
 
-Doom supports listing all packages (including ones pulled in by modules that are
-not currently enabled). Unstraightened uses this to build-test them. However,
-this does not include packages enabled through currently-disabled flags.
+To catch problems like the ones involving pins, Unstraightened tries to
+build-test all packages used by Doom. But just enabling all of Doom's modules is
+not sufficient to pull in all packages because some dependencies are controlled
+by module flags, and enabling all flags on all modules is still not sufficient
+because some dependencies are controlled by specific combinations of enabled and
+_disabled_ flags...
 
-This is tricky because Doom seems to not support accessing supported flags
-programmatically, and because some flags are mutually exclusive.
+Unstraightened currently approximates this by building with all modules enabled
+(but flags disabled), all modules and all flags enabled, and a few manually
+identified combinations of enabled and disabled flags (example: covering
+language modules with `+lsp` but without `+eglot`).
 
-I may end up approximating this by checking in a hardcoded `init.el` with all
-(or at least most) currently-available flags enabled.
+I may have missed a corner case: if you notice one, please file an issue.
 
 ### `doom doctor` fails with / complains about...
 
@@ -378,18 +415,20 @@ Add `(package! foo)` to `packages.el`.
 Do not wrap emacsWithDoom in emacsWithPackages. See [HACKING](./HACKING.md) for
 why this will not work.
 
-The Home Manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
-If this is not sufficient, please file an issue.
+The Home Manager option `extraPackages` is available to add extra Emacs packages
+from nixpkgs to Doom Emacs. If this is not sufficient, please file an issue.
 
 ### How do I add packages not in Emacs overlay?
 
 Add `(package! foo :recipe ...)` to `packages.el`.
 
-If there is a derivation in emacs-overlay or nixpkgs, it will use the same dependencies as the deriviation (which won't
-always work if you pin to a sufficiently different version). If not, the dependencies are autodetected them from headers
-in the package.
+If there is a derivation in emacs-overlay or nixpkgs, it will use the same
+dependencies as the derivation (which [won't always work if you pin to a
+sufficiently different version](#pins-can-break)). If not, the dependencies are
+auto-detected from headers in the package.
 
-If the detected dependencies aren't sufficient, you'll have to add the package in Nix directly, with `extraPackages`.
+If the detected dependencies are not sufficient, you will have to add the
+package in Nix directly, with `extraPackages`:
 
 ```nix
               extraPackages = (
@@ -459,18 +498,19 @@ There are a few issues:
   time](https://github.com/doomemacs/core/issues/6811), but Unstraightened
   (or nixpkgs, really), does.
 
-  - It should be possible to disable nativecomp and/or move it to runtime, but
-    see the next point...
+  - You can try to disable this through [this
+    trick](https://github.com/nix-community/emacs-overlay/issues/369#issuecomment-4427696458),
+    (set `emacs` passed to Unstraightened to that), but it relies on nixpkgs
+    implementation details and might break at some point.
 
-- Unstraightened's packages should be cacheable, but I don't have that set up
-  yet.
+  - https://cachix.org/ may help (see next point).
 
-  - In particular, Unstraightened's generated derivations for elisp packages do
-    not depend on the exact Doom source or configuration they're generated from.
-    They depend on the pinned version and Emacs binary used to build them, but
-    not much else. So it should be possible to build a Doom configuration with
-    just a few modules enabled using commonly-used versions of Emacs from CI and
-    push the results to a binary cache like https://cachix.org/.
+- Unstraightened's packages are cached on cachix.org, but this is not perfect.
+
+  - Unstraightened's generated derivations for elisp packages do not depend on
+    the exact Doom source or configuration they're generated from, making them
+    somewhat cacheable. But they do do depend on the pinned version and specific
+    Emacs binary: we do not build and cache all possible combinations.
 
 ### Required disclaimer
 
