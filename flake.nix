@@ -34,7 +34,7 @@
       };
     };
     doomdir = {
-      url = "./doomdir";
+      url = "path:./doomdir";
       flake = false;
     };
   };
