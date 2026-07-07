@@ -178,7 +178,11 @@
                 ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs30-macport"
               ) (name: pkgs.${name}))
               // {
-                emacs-without-nativecomp = pkgs.emacs.override { withNativeCompilation = false; };
+                emacs-without-nativecomp = pkgs.emacs.overrideAttrs (old: {
+                  passthru = old.passthru // {
+                    withNativeCompilation = false;
+                  };
+                });
               };
           in
           lib.mapAttrs' (
