@@ -3,11 +3,11 @@
     "doomdir": {
       "flake": false,
       "locked": {
-        "path": "doomdir",
+        "path": "./doomdir",
         "type": "path"
       },
       "original": {
-        "path": "doomdir",
+        "path": "./doomdir",
         "type": "path"
       },
       "parent": []
