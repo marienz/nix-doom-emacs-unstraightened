@@ -3,14 +3,15 @@
     "doomdir": {
       "flake": false,
       "locked": {
+        "lastModified": 1,
+        "narHash": "sha256-HvdpM0xCS55XTQvJF1fxBZNBrOyQ96mscWiBULVYowI=",
         "path": "./doomdir",
         "type": "path"
       },
       "original": {
         "path": "./doomdir",
         "type": "path"
-      },
-      "parent": []
+      }
     },
     "doomemacs": {
       "flake": false,
@@ -69,7 +70,7 @@
         "narHash": "sha256-2l8yOB5aYd+05Q9V9Y1YhgbSa1j1o5QX+nvYs5FL80A=",
         "rev": "f205b5574fd0cb7da5b702a2da51507b7f4fdd1b",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1028110.f205b5574fd0/nixexprs.tar.xz"
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1028110.f205b5574fd0/nixexprs.tar.xz?lastModified=1783279667&rev=f205b5574fd0cb7da5b702a2da51507b7f4fdd1b"
       },
       "original": {
         "id": "nixpkgs",
