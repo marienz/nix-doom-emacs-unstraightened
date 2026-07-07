@@ -217,7 +217,7 @@ The Home Manager module supports the same options, as well as:
 - `provideEmacs`: disable this to only provide a `doom-emacs` binary, not an
   `emacs` binary (that is: it switches from `emacsWithDoom` to `doomEmacs`). Use
   this if you want to install vanilla Emacs in parallel.
-  
+
 ## Comparison to "normal" Doom Emacs
 
 - Unstraightened updates Doom and its dependencies along with the rest of your
@@ -379,7 +379,7 @@ Do not wrap emacsWithDoom in emacsWithPackages. See [HACKING](./HACKING.md) for
 why this will not work.
 
 The Home Manager option `extraPackages` is available to add extra Emacs packages from nixpkgs to Doom Emacs.
-If this is not sufficient, please file an issue. 
+If this is not sufficient, please file an issue.
 
 ### How do I add packages not in Emacs overlay?
 
