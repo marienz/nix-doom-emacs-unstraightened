@@ -3,14 +3,20 @@
     "doomdir": {
       "flake": false,
       "locked": {
-        "path": "doomdir",
-        "type": "path"
+        "dir": "doomdir",
+        "lastModified": 1783506694,
+        "narHash": "sha256-G4O/7kEhl7bgBSz5FMyrDGUygJSiFFhMslKBjWWALl8=",
+        "owner": "marienz",
+        "repo": "nix-doom-emacs-unstraightened",
+        "rev": "d303e5297a3be204797204ad2c2aa99a0523304b",
+        "type": "github"
       },
       "original": {
-        "path": "doomdir",
-        "type": "path"
-      },
-      "parent": []
+        "dir": "doomdir",
+        "owner": "marienz",
+        "repo": "nix-doom-emacs-unstraightened",
+        "type": "github"
+      }
     },
     "doomemacs": {
       "flake": false,

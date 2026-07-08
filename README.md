@@ -56,6 +56,9 @@ is in a different location or a git repository, pass its path or URL here.)
 > in a Git repository for testing, but if it is in one, it needs to be tracked
 > by Git.)
 
+> [!NOTE]
+> The example doomdir currently does not work when using Lix (see #133).
+
 `--override-input nixpkgs nixpkgs` is optional. If `nixpkgs` is in the system
 registry (which it is by default on current NixOS) this allows Unstraightened to
 use more dependencies (particularly Emacs) already on your system. If omitted,

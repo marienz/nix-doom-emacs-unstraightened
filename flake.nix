@@ -34,7 +34,15 @@
       };
     };
     doomdir = {
-      url = ./doomdir;
+      # This should be "path:./doomdir", but that breaks Lix when combined with a Nix-generated
+      # flake.lock (see https://github.com/marienz/nix-doom-emacs-unstraightened/issues/133).
+      #
+      # For now, point back at our own upstream. To test changes to the example doomdir, use
+      # --override-input.
+      #
+      # Caveat: this *also* does not work with Lix (it seems to ignore dir=?), but in a way that
+      # only affects users actually using the example doomdir.
+      url = "github:marienz/nix-doom-emacs-unstraightened?dir=doomdir";
       flake = false;
     };
   };
