@@ -71,4 +71,4 @@ jobs:
       - name: Cache downloads
         uses: ./.github/actions/cache-downloads
       - name: Build packages for Cachix
-        run: nix build .#cachix-${{ matrix.emacs }}
+        run: nix build ./cachix#cachix-${{ matrix.emacs }}

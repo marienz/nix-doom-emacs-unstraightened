@@ -152,47 +152,6 @@
           doom-emacs-unset-profile = default.doomEmacs.override { profileName = ""; };
           doom-emacs-tangle = default.doomEmacs.override { tangleArgs = "."; };
         }
-        // (
-          let
-            inherit (nixpkgs) lib;
-            depBuilds =
-              emacs:
-              lib.flip lib.mapAttrs (mkDoomDirs pkgs emacs) (
-                name: doomDir:
-                (doomFromPackages pkgs {
-                  inherit doomDir emacs;
-                  doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-                  experimentalFetchTree = true;
-                }).doomEmacs.emacsWithPackages.deps
-              );
-            emacsen =
-              # Keep in sync with .github/workflows/cachix.yml
-              (lib.genAttrs (
-                [
-                  "emacs30"
-                  "emacs30-nox"
-                  "emacs30-gtk3"
-                  "emacs30-pgtk"
-                  "emacs31"
-                ]
-                ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs30-macport"
-              ) (name: pkgs.${name}))
-              // {
-                emacs-without-nativecomp = pkgs.emacs.overrideAttrs (old: {
-                  passthru = old.passthru // {
-                    withNativeCompilation = false;
-                  };
-                });
-              };
-          in
-          lib.mapAttrs' (
-            name: emacs:
-            let
-              p = pkgs.linkFarm "cachix-${name}" (depBuilds emacs);
-            in
-            lib.nameValuePair p.name p
-          ) emacsen
-        )
       );
       overlays.default = final: prev: {
         doomEmacs = args: (doomFromPackages final args).doomEmacs;
