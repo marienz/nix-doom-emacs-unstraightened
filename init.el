@@ -14,36 +14,38 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;; Extra initialization code for nix-doom-emacs-unstraightened.
-;;
-;; Loaded from the profile init file.
+(doom! :completion
+       vertico
 
-(define-advice doom-initialize-core-packages
-    (:override (&rest _) unstraightened)
-  "HACK: don't install straight and core packages.
+       :ui
+       doom
+       dashboard
+       modeline
+       nav-flash
+       ophints
+       (popup +defaults)
+       window-select
 
-`doom-initialize-core-packages' would no-op out if
-`straight-recipe-repositories' is set, but we do not want to set
-it. Just skip it entirely."
-  (doom-log "nix-doom-emacs-unstraightened overriding core package init")
-  ;; doom-initialize-core-packages normally registers recipes, which loads the
-  ;; build cache by side effect, which leaves straight--build-cache available
-  ;; afterwards. Doom assumes this cache is available, so force a load here.
-  (require 'straight)  ;; straight-load-build-cache is not autoloaded.
-  (straight--load-build-cache))
+       :editor
+       evil
 
-(with-eval-after-load 'doom-straight
-  (setq straight-base-dir
-        (file-name-directory (directory-file-name doom-user-dir))))
+       :emacs
+       undo
 
-;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
-;; Doom. Extend this to run the profile loader first: what Doom does here is
-;; similar enough to its normal startup it needs the same fixes.
-;;
-;; Note this assumes DOOMPROFILELOADFILE and DOOMPROFILE leak into child
-;; processes (the loader does nothing if DOOMPROFILE is unset).
-(setq-hook! +emacs-lisp--flycheck-non-package-mode
-  flycheck-emacs-lisp-check-form
-  (prin1-to-string `(progn
-                      (load (getenv "DOOMPROFILELOADFILE") nil 'nomessage)
-                      ,(read flycheck-emacs-lisp-check-form))))
+       :term
+       eshell
+       vterm
+
+       :os
+       (:if (featurep :system 'macos) macos)
+       (tty +osc)
+
+       :lang
+       emacs-lisp
+       (nix +lsp)
+
+       :tools
+       (lsp +eglot)
+
+       :config
+       (default +bindings +smartparens))
