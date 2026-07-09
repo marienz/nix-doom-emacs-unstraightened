@@ -34,7 +34,9 @@
       };
     };
     doomdir = {
-      url = ./doomdir;
+      # This should be "path:./doomdir", but that causes issues with Lix.
+      # As a workaround, point this at a branch that contains just the doomdir, at the top level.
+      url = "github:marienz/nix-doom-emacs-unstraightened/doomdir";
       flake = false;
     };
   };
