@@ -1,0 +1,32 @@
+name: check (lix)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Ref/branch to check'
+        required: false
+        type: string
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@a0fee77b2a98bb7c5c0ed7ae6d6ad4903dbdad0d
+        with:
+          github_access_token: '${{ secrets.GITHUB_TOKEN }}'
+          extra_nix_config: |
+            trusted-public-keys = doom-emacs-unstraightened.cachix.org-1:O5oOlRPnmQEvVaFyuMTmthCEooHbrg54WgSLR07tmg4= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://doom-emacs-unstraightened.cachix.org/ https://cache.nixos.org/
+      - name: Cache downloads
+        uses: ./.github/actions/cache-downloads
+      - name: nix flake check
+        run: nix flake check -L --show-trace
