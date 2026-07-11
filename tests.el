@@ -65,9 +65,9 @@
 
 (defun test-package-activated-list ()
   "Test package-activated-list is set."
-  ;; which-key could be any other package pulled in by a minimal Doom config.
-  (unless (memq 'which-key package-activated-list)
-    (error "which-key not on package-activated-list: %s"
+  ;; straight could be any other package pulled in by a minimal Doom config.
+  (unless (memq 'straight package-activated-list)
+    (error "straight not on package-activated-list: %s"
            package-activated-list)))
 
 (add-hook 'doom-after-init-hook 'test-doom)
