@@ -30,6 +30,11 @@ jobs:
     with:
       ref: flake-update
     needs: [flake-update]
+  lix:
+    uses: ./.github/workflows/lix.yml
+    with:
+      ref: flake-update
+    needs: [flake-update]
   cachix:
     uses: ./.github/workflows/cachix.yml
     with:
