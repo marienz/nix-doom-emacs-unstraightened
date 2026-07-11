@@ -1,36 +1,23 @@
 # How to Contribute
 
-I love patches!
+Contributions (code or otherwise) are much appreciated!
 
-Because this is a [side
-project](https://opensource.google/documentation/reference/releasing) I released
-while working for Google, you will need to sign a CLA before I can accept them.
+## Issues
 
-## Before you begin
+You can help me help you by including steps to reproduce your problem. If you're
+comfortable sharing the entire flake or Doom configuration triggering it, just
+include a link to that in bug reports: pruning it down to just what's required
+to reproduce the problem is appreciated but not required.
 
-### Sign our Contributor License Agreement
+## Pull requests
 
-Contributions to this project must be accompanied by a
-[Contributor License Agreement](https://cla.developers.google.com/about) (CLA).
-You (or your employer) retain the copyright to your contribution; this simply
-gives us permission to use and redistribute your contributions as part of the
-project.
+This project aims to support everything Doom upstream does: if some Doom module
+or feature is not usable from Unstraightened, that is generally a bug worth
+fixing.
 
-If you or your current employer have already signed the Google CLA (even if it
-was for a different project), you probably don't need to do it again.
-
-Visit <https://cla.developers.google.com/> to see your current agreements or to
-sign a new one.
-
-### Review our Community Guidelines
-
-This project follows [Google's Open Source Community
-Guidelines](https://opensource.google/conduct/).
-
-## Contribution process
-
-### Code Reviews
-
-All submissions, including submissions by project members, require review. We
-use [GitHub pull requests](https://docs.github.com/articles/about-pull-requests)
-for this purpose.
+However, problems with specific packages not pulled in by Doom (added through
+`package!` in your own configuration) are generally out of scope. If you cannot
+find a way of fixing these without modifying Unstraightened, please file an
+issue: I am generally happy to add hooks or features you can use from your own
+configuration, but prefer not to carry patches, pins or overrides for specific
+packages.
