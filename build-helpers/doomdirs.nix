@@ -22,8 +22,8 @@
   writeTextDir,
 }:
 let
-  # https://github.com/NixOS/nixpkgs/blob/f4501c9681b56c207927782b4c76a07190a58ab9/pkgs/development/compilers/gnat-bootstrap/default.nix
-  # We might be able to drop this once nixpkgs defaults to gnat 14.
+  # Pulls in gprbuild, which is broken on Darwin.
+  # https://github.com/NixOS/nixpkgs/pull/539937 may fix it.
   adaUnsupported = !stdenv.hostPlatform.isx86;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
   commonArgs =
