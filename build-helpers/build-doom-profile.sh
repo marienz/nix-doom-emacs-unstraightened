@@ -32,9 +32,7 @@ $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
 export HOME="$PWD/home"
 export DOOMPROFILE="$profileName";
 export DOOMPROFILELOADFILE=$out/loader/init
-$runtimeShell $doomSource/bin/doomscript $buildProfile \
-    -i $initEl \
-    -l $deps/share/emacs/site-lisp
+$runtimeShell $doomSource/bin/doomscript $buildProfile -i $initEl
 
 # Similar to audit-tmpdir.sh in nixpkgs.
 if grep -q -F "$TMPDIR/" -r $out; then
