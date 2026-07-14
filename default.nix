@@ -378,9 +378,8 @@ let
               emacs = lib.getExe emacs;
               printDeps = ./build-helpers/print-deps.el;
             } "$emacs -Q --batch --script $printDeps $src $name > $out";
-            reqjson = lib.importJSON reqfile;
             # json-encode encodes the empty list as null (nil), not [].
-            reqlist = if reqjson == null then [ ] else reqjson;
+            reqlist = lib.defaultTo [ ] (lib.importJSON reqfile);
           in
           if pin != null then
             epkg.overrideAttrs (old: {
