@@ -16,7 +16,6 @@
 ;; limitations under the License.
 
 ;; Set from run!
-(defvar site-lisp)
 (defvar init-file)
 
 (defun generate-unstraightened-init-load (_profile)
@@ -25,21 +24,6 @@
 
 (add-to-list 'doom-profile-generate-functions
              #'generate-unstraightened-init-load)
-
-(defun generate-nix-autoloads (_profile)
-  "Pull in autoloads for non-package.el emacsWithPackages dependencies."
-  ;; 65 is before Doom's loaddefs.
-  (doom-file-write
-   "65-unstraightened-loaddefs-nix.init.el"
-   `((defun unstraightened--startup-nix-loaddefs (_profile)
-       ,@(doom-loaddefs-scan-literal
-          (cl-loop for filename in (directory-files site-lisp)
-                   if (string-suffix-p "-autoloads.el" filename)
-                   collect (expand-file-name filename site-lisp))))
-     (add-hook 'doom-startup-functions
-               #'unstraightened--startup-nix-loaddefs 65))))
-
-(add-to-list 'doom-profile-generate-functions #'generate-nix-autoloads)
 
 ;; Doom runs this with package.el initialized (but not activated, fixed below).
 ;; Store the side effects of activation in the profile to avoid (slow) package
@@ -68,8 +52,7 @@
 (add-to-list 'doom-profile-generate-functions #'generate-package-activation)
 
 (defcli! build-profile
-    ((site-lisp ("-l" dir) "site-lisp directory to load autoloads from")
-     (init-file ("-i" file) "unstraightened init.el"))
+    ((init-file ("-i" file) "unstraightened init.el"))
   "Write a Doom profile."
   ;; Doom initializes but does not activate package.el.
   ;; (This is idempotent, so no harm either way.)

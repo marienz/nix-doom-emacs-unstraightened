@@ -476,7 +476,6 @@ let
     buildProfile = ./build-helpers/build-profile;
     initEl = ./init.el;
     EMACS = lib.getExe emacsWithPackages;
-    inherit (emacsWithPackages) deps;
     # Enable this to troubleshoot failures at this step.
     #DEBUG = "1";
 
