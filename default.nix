@@ -52,6 +52,7 @@
   runCommandLocal,
   runtimeShell,
   makeBinaryWrapper,
+  makeShellWrapper,
   stdenv,
   stdenvNoCC,
   symlinkJoin,
@@ -124,6 +125,7 @@ let
   };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
+  doomVersion = lib.trim (lib.readFile "${doomIntermediates}/doom-version");
 
   # Step 2: override Emacs packages to respect Doom's pins (and add/fix packages).
   doomEmacsPackages = lib.foldl' (p: p.overrideScope) (emacsPackagesFor emacs) [
@@ -505,12 +507,13 @@ let
       doomProfile
       doomLocalDir
       doomSource
+      doomVersion
       emacsWithPackages
       lspUsePlists
       ;
     profileName = nonEmptyProfileName;
 
-    nativeBuildInputs = [ makeBinaryWrapper ];
+    nativeBuildInputs = [ makeBinaryWrapper makeShellWrapper ];
   };
 
   emacsWithDoom = stdenvNoCC.mkDerivation {

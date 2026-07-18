@@ -26,7 +26,8 @@
              #'generate-unstraightened-init-load)
 
 (defcli! build-profile
-    ((init-file ("-i" file) "unstraightened init.el"))
+    ((init-file ("-i" file) "unstraightened init.el")
+     (output-directory ("-o" dir) "output directory"))
   "Write a Doom profile."
   ;; This also loads our generated profile's init.el (so we include the right
   ;; packages in the profile).
@@ -39,6 +40,15 @@
   ;; Trigger a write of straight's build cache (which we write into the profile
   ;; and load again later).
   (straight-prune-build-cache)
-  (doom-profile-generate))
+  (doom-profile-generate)
+  ;; The `doom' CLI normally generates and loads a loaddefs file very similar to
+  ;; the one built into the profile. Doom invalidates this on `doom sync' /
+  ;; `doom upgrade': to prevent this from going stale we build a similar file
+  ;; here and wrap `doom' to load it.
+  (doom-file-write (expand-file-name "doom-cli-loaddefs.el" output-directory)
+                   (list (doom-file-read
+                          (doom-profile-init-file
+                           t "init.d/10-doom-cli-loaddefs.load.el"))
+                         '(provide 'doom-cli-loaddefs))))
 
 (run! "build-profile" (cdr (member "--" argv)))
