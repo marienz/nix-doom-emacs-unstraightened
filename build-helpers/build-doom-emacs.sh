@@ -27,12 +27,15 @@ if [[ -n $lspUsePlists ]]; then
     )
 fi
 
-makeWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
+makeBinaryWrapper $emacsWithPackages/bin/emacs $out/bin/doom-emacs \
     "${commonArgs[@]}" \
     --add-flags "--init-directory=$doomSource"
-makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
+makeBinaryWrapper $doomSource/bin/doomscript $out/bin/doomscript \
     --set EMACS $emacsWithPackages/bin/emacs \
     "${commonArgs[@]}"
-makeWrapper $doomSource/bin/doom $out/bin/doom \
+makeShellWrapper $doomSource/bin/doom $out/bin/doom \
     --set EMACS $emacsWithPackages/bin/emacs \
+    --run 'cachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/doom"' \
+    --run 'mkdir -p "$cachedir"' \
+    --run "ln -sf $doomProfile/doom-cli-loaddefs.*.el \"\$cachedir\"/" \
     "${commonArgs[@]}"

@@ -52,6 +52,7 @@
   runCommandLocal,
   runtimeShell,
   makeBinaryWrapper,
+  makeShellWrapper,
   stdenv,
   stdenvNoCC,
   symlinkJoin,
@@ -510,7 +511,7 @@ let
       ;
     profileName = nonEmptyProfileName;
 
-    nativeBuildInputs = [ makeBinaryWrapper ];
+    nativeBuildInputs = [ makeBinaryWrapper makeShellWrapper ];
   };
 
   emacsWithDoom = stdenvNoCC.mkDerivation {
