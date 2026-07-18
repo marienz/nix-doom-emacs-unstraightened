@@ -22,7 +22,7 @@
 ;;
 ;; Ignores negated flags (assumes they are used positively at least once).
 ;;
-;; No attempt at efficiency, but package.el files are small...
+;; No attempt at efficiency, but packages.el files are small...
 
 (defun walk-package-exp (l)
   (cond ((not (proper-list-p l)) nil)
