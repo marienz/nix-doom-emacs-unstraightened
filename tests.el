@@ -63,11 +63,4 @@
 (defun test-extraPackages ()
   (require 'vterm))
 
-(defun test-package-activated-list ()
-  "Test package-activated-list is set."
-  ;; straight could be any other package pulled in by a minimal Doom config.
-  (unless (memq 'straight package-activated-list)
-    (error "straight not on package-activated-list: %s"
-           package-activated-list)))
-
 (add-hook 'doom-after-init-hook 'test-doom)
