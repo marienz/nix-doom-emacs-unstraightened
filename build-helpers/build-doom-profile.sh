@@ -34,6 +34,11 @@ export DOOMPROFILE="$profileName";
 export DOOMPROFILELOADFILE=$out/loader/init
 $runtimeShell $doomSource/bin/doomscript $buildProfile -i $initEl
 
+# Run the `doom` CLI once to generate its loaddefs file.
+# Because we set doom-cli-loaddefs-file in the profile loader,
+# this writes to the profile and our wrapped `doom` loads it from there later.
+$runtimeShell $doomSource/bin/doom --pager cat help >/dev/null
+
 # Similar to audit-tmpdir.sh in nixpkgs.
 if grep -q -F "$TMPDIR/" -r $out; then
     echo "Doom profile contains a forbidden reference to $TMPDIR/"

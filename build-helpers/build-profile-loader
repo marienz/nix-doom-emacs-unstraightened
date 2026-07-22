@@ -24,6 +24,7 @@
   ;; See `dump'.
   (setf (caddr doom-module-load-path) (file-name-concat modules-dir "modules"))
   (let* ((profile-directory (expand-file-name "profile/" base-directory))
+         (loaddefs-file (expand-file-name "doom-cli-loaddefs.el" base-directory))
          (load-file (expand-file-name "loader/init.el" base-directory))
          (new-profiles `((,profile-name
                           (_ :eval
@@ -61,6 +62,7 @@
 )
                           (user-emacs-directory . ,doom-emacs-dir)
                           (doom-module-load-path . ,doom-module-load-path)
+                          (doom-cli-loaddefs-file . ,loaddefs-file)
                           ,@(when unset-profile '(("DOOMPROFILE" . nil)))))))
     (doom-profiles-write-load-file new-profiles load-file)
     ;; HACK: Disable native compilation to avoid a recompilation loop.
