@@ -111,6 +111,7 @@ in
   cmake = doomTest "cmake" { lang.cc = true; } { };
 
   org-re-reveal = doomTest "org-re-reveal" { lang.org = [ "+present" ]; } { };
+  package-activated-list = doomTest "package-activated-list" { config.default = true; } { };
 
   # Various tests of module combinations.
   unpinned-org = doomTest "external-org" { app.rss = [ "+org" ]; } { };

@@ -25,9 +25,38 @@
 (add-to-list 'doom-profile-generate-functions
              #'generate-unstraightened-init-load)
 
+;; Doom runs this with package.el initialized (but not activated, fixed below).
+;; Store the side effects of activation in the profile to avoid (slow) package
+;; activation during normal startup.
+;;
+;; package-activate-1 does:
+;; - Load autoloads. Doom already handles this as of
+;;   https://github.com/doomemacs/core/commit/d19a264ba857724608457c625d9cdece8c1c22b8,
+;;   but that may change again.
+;; - Add to load-path. Doom already stores load-path.
+;; - Add Info node. Doom already stores Info-directory-list.
+;; - Add name to package-activated-list. Stored below.
+
+(defun generate-package-activation (_profile)
+  "Persist `package-activated-list'."
+  ;; 71 is right after doom--startup-loaddefs-packages
+  ;; (and before doom--startup-modules)
+  (doom-file-write
+   "71-unstraightened-package-activation.init.el"
+   `((defun unstraightened--startup-unstraightened-loaddefs (_profile)
+       (set-default-toplevel-value 'package-activated-list
+                                   ',package-activated-list))
+     (add-hook 'doom-startup-functions
+               #'unstraightened--startup-unstraightened-loaddefs 71))))
+
+(add-to-list 'doom-profile-generate-functions #'generate-package-activation)
+
 (defcli! build-profile
     ((init-file ("-i" file) "unstraightened init.el"))
   "Write a Doom profile."
+  ;; Doom initializes but does not activate package.el.
+  ;; (This is idempotent, so no harm either way.)
+  (package-activate-all)
   ;; This also loads our generated profile's init.el (so we include the right
   ;; packages in the profile).
   (doom-modules-initialize)
