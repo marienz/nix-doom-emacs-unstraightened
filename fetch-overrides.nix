@@ -51,6 +51,8 @@
 
     # Pinning Ghostel requires updating the hash of its fixed-output zigDeps derivation.
     ghostel = null;
+    # evil-ghostel is tightly coupled to ghostel: unpin it too.
+    evil-ghostel = null;
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
