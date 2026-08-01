@@ -42,10 +42,11 @@ let
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config.default = true; };
-  doomTest =
-    name: init: doomArgs:
+  mkDoomTest =
+    name: doom: postFailureMessage:
     testers.testEqualContents {
-      assertion = "name = ${name}; modules = ${toPretty { } init}; args = ${toPretty { } doomArgs};";
+      assertion = "doom test ${name}";
+      inherit postFailureMessage;
       # toFile here seems to trigger a CI failure on macOS: doom-expected has gid nixbld...
       # May be a race condition: also happened without toFile, see
       # https://github.com/marienz/nix-doom-emacs-unstraightened/issues/42
@@ -57,16 +58,8 @@ let
             # Read by tests.el.
             testName = name;
             nativeBuildInputs = [
+              doom
               tmux
-              (mkDoom (
-                doomArgs
-                // {
-                  doomDir = linkFarm "test-doomdir" {
-                    "config.el" = ./tests.el;
-                    "init.el" = lib.toFile "init.el" (toInit init);
-                  };
-                }
-              ))
             ];
           }
           ''
@@ -79,6 +72,25 @@ let
             tmux kill-session -t doom-testing
           '';
     };
+  doomTest =
+    name: init: doomArgs:
+    let
+      doom = mkDoom (
+        doomArgs
+        // {
+          doomDir = linkFarm "test-doomdir" {
+            "config.el" = ./tests.el;
+            "init.el" = lib.toFile "init.el" (toInit init);
+          };
+        }
+      );
+    in
+    mkDoomTest name doom ''
+      Doom test ${name} failed.
+        modules = ${toPretty { } init}
+        args = ${toPretty { } doomArgs}
+    '';
+
   doomBuildTest = init: mkDoom { doomDir = mkDoomDir init; };
 in
 {
@@ -149,4 +161,18 @@ in
   extraPackages = doomTest "extraPackages" { config.default = true; } {
     extraPackages = epkgs: [ epkgs.vterm ];
   };
+
+  packageActivationTest =
+    let
+      doom = mkDoom {
+        doomDir = linkFarm "test-doomdir" {
+          "config.el" = ./tests.el;
+          "packages.el" = lib.toFile "packages.el" "(package! go-mode)";
+        };
+      };
+    in
+    mkDoomTest "auto-mode-alist-has-go" doom ''
+      Expected go-mode to add itself to auto-mode-alist and the Doom profile to persist that.
+      This may indicate we generated the Doom profile without activating go-mode first.
+    '';
 }

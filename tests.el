@@ -70,4 +70,8 @@
     (error "straight not on package-activated-list: %s"
            package-activated-list)))
 
+(defun test-auto-mode-alist-has-go ()
+  (unless (assoc "\\.go\\'" auto-mode-alist)
+    (error ".go not on auto-mode-alist")))
+
 (add-hook 'doom-after-init-hook 'test-doom)
