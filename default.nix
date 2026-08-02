@@ -124,6 +124,7 @@ let
   };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
+  doomBuiltinPackages = lib.importJSON "${doomIntermediates}/builtin-packages.json";
 
   # Step 2: override Emacs packages to respect Doom's pins (and add/fix packages).
   doomEmacsPackages = lib.foldl' (p: p.overrideScope) (emacsPackagesFor emacs) [
@@ -427,7 +428,13 @@ let
           in
           pkg.overrideAttrs (
             old:
-            lib.optionalAttrs isLspModeOrDependant {
+            lib.optionalAttrs (old ? packageRequires) {
+              packageRequires = lib.flip lib.filter old.packageRequires (
+                # Keep null to not unnecessarily change derivations.
+                p: p == null || !lib.elem p.pname doomBuiltinPackages
+              );
+            }
+            // lib.optionalAttrs isLspModeOrDependant {
               preBuild = (old.preBuild or "") + ''
                 export LSP_USE_PLISTS=1
               '';
