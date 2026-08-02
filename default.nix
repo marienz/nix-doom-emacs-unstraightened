@@ -426,17 +426,11 @@ let
               || (lib.elem "lsp-mode" (map (p: p.ename or "not-a-package") (pkg.packageRequires or [ ])));
           in
           pkg.overrideAttrs (
+            old:
             lib.optionalAttrs isLspModeOrDependant {
-              # TODO: simplify if https://github.com/NixOS/nixpkgs/pull/452898 is merged.
-              preBuild =
-                let
-                  origPreBuild = pkg.preBuild or "";
-                  origPreBuildString = if origPreBuild == null then "" else origPreBuild;
-                in
-                origPreBuildString
-                + ''
-                  export LSP_USE_PLISTS=1
-                '';
+              preBuild = (old.preBuild or "") + ''
+                export LSP_USE_PLISTS=1
+              '';
             }
           );
         # TODO: very similar map to the upstreamWithPins one. Rework makePackage signature for reuse?
