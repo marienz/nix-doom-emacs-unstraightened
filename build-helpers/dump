@@ -48,14 +48,17 @@
            when files
            do (setf (thread-first plist (plist-get :recipe) (plist-get :files))
                     (prin1-to-string files))
-           ;; For built-in packages, the :ignore property is the location of the
-           ;; built-in library, which is a Nix store path. We do not want that
-           ;; path to escape: avoid it by just filtering ignored packages here.
            unless (or (plist-get plist :ignore)
                       (plist-get plist :disable))
            collect (cons pname plist)))
+         (builtin-packages
+          (cl-loop
+           for (pname . plist) in all-packages
+           when (eq (plist-get plist :type) 'built-in)
+           collect pname))
          (default-directory output-directory))
     (doom-file-write "packages.json" (json-encode packages))
+    (doom-file-write "builtin-packages.json" (json-encode builtin-packages))
     (doom-file-write
      "packages.el"
      `(";;; packages.el -*- lexical-binding: t; -*-\n"
