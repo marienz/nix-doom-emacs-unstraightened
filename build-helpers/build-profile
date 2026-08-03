@@ -15,16 +15,6 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;; Set from run!
-(defvar init-file)
-
-(defun generate-unstraightened-init-load (_profile)
-  "Load unstraightened init.el."
-  (make-symbolic-link init-file "00-unstraightened-init.load.el"))
-
-(add-to-list 'doom-profile-generate-functions
-             #'generate-unstraightened-init-load)
-
 ;; Doom runs this with package.el initialized (but not activated, fixed below).
 ;; Store the side effects of activation in the profile to avoid (slow) package
 ;; activation during normal startup.
@@ -52,7 +42,7 @@
 (add-to-list 'doom-profile-generate-functions #'generate-package-activation)
 
 (defcli! build-profile
-    ((init-file ("-i" file) "unstraightened init.el"))
+    ((unstraightened-module ("-m" dir) "Unstraightened module directory."))
   "Write a Doom profile."
   ;; Doom initializes but does not activate package.el.
   ;; (This is idempotent, so no harm either way.)
@@ -60,9 +50,13 @@
   ;; This also loads our generated profile's init.el (so we include the right
   ;; packages in the profile).
   (doom-modules-initialize)
-  ;; Load our init.el, so we can load straight without hitting
-  ;; doom-initialize-packages / doom-initialize-core-packages.
-  (doom-load init-file)
+  ;; Force-enable our internal module (keep in sync with `dump').
+  (doom-module--put '(:emacs . unstraightened)
+                    :path unstraightened-module)
+  ;; HACK: load our module's init file.
+  ;; We need its straight-base-dir and doom-initialize-core-packages advice:
+  ;; doom-profile-generate calls doom-initialize-core-packages early.
+  (doom-load (expand-file-name "init.el" unstraightened-module))
   ;; Now load straight (straight-prune-build-cache is not autoloaded).
   (require 'straight)
   ;; Trigger a write of straight's build cache (which we write into the profile

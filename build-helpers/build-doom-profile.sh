@@ -32,7 +32,7 @@ $runtimeShell $doomSource/bin/doomscript $buildProfileLoader \
 export HOME="$PWD/home"
 export DOOMPROFILE="$profileName";
 export DOOMPROFILELOADFILE=$out/loader/init
-$runtimeShell $doomSource/bin/doomscript $buildProfile -i $initEl
+$runtimeShell $doomSource/bin/doomscript $buildProfile -m $ourModule
 
 # Run the `doom` CLI once to generate its loaddefs file.
 # Because we set doom-cli-loaddefs-file in the profile loader,

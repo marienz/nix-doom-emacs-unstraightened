@@ -61,6 +61,8 @@
 let
   inherit (import ./fetch-overrides.nix) extraFiles extraPins extraUrls;
 
+  ourModule = ./doom-module;
+
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
 
   tangleInit = writeTextDir "init.el" (
@@ -120,7 +122,7 @@ let
       DOOMDIR = "${doomDir'}";
     };
     script = ./build-helpers/dump;
-    scriptArgs = "-m ${doomModules} -o $out";
+    scriptArgs = "-m ${doomModules} -u ${ourModule} -o $out";
   };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
@@ -473,6 +475,7 @@ let
       doomIntermediates
       doomModules
       doomSource
+      ourModule
       runtimeShell
       ;
     doomDir = doomDir';
@@ -480,7 +483,6 @@ let
     noProfileHack = profileName == "";
     buildProfileLoader = ./build-helpers/build-profile-loader;
     buildProfile = ./build-helpers/build-profile;
-    initEl = ./init.el;
     EMACS = lib.getExe emacsWithPackages;
     # Enable this to troubleshoot failures at this step.
     #DEBUG = "1";
