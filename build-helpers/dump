@@ -19,7 +19,8 @@
 
 (defcli! dump
     ((modules-dir ("-m" dir) "Doom modules directory.")
-     (output-directory ("-o" dir) "Directory to dump into."))
+     (output-directory ("-o" dir) "Directory to dump into.")
+     (unstraightened-module ("-u" dir) "Unstraightened module directory."))
   "Dump intermediates for nix-doom-emacs-unstraightened."
   ;; Fail if doom-user-dir does not exist.
   ;;
@@ -36,6 +37,9 @@
 
   ;; This also loads the user's init.el.
   (doom-modules-initialize)
+  ;; Force-enable our internal module (keep in sync with `build-profile').
+  (doom-module--put '(:emacs . unstraightened)
+                    :path unstraightened-module)
   (let* ((all-packages (doom-package-list))
          (packages
           (cl-loop
