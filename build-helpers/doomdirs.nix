@@ -24,7 +24,8 @@
 let
   # Pulls in gprbuild, which is broken on Darwin.
   # https://github.com/NixOS/nixpkgs/pull/539937 may fix it.
-  adaUnsupported = !stdenv.hostPlatform.isx86;
+  # Currently also broken on other platforms, see https://github.com/NixOS/nixpkgs/issues/544219
+  adaUnsupported = true;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
   commonArgs =
     "-m ${doomModules} -o $out"
