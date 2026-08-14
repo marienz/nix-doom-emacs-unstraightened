@@ -501,6 +501,7 @@ let
     name = "doom-emacs";
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
 
+    # TODO: switch back to passing extraBinPackages to emacsWithPackages after 26.11, see #117.
     extraBinPackagesPath = lib.makeBinPath extraBinPackages;
 
     # emacsWithPackages also accessed externally (for pushing to Cachix).
