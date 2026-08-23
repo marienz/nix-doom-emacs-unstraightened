@@ -54,8 +54,8 @@
     # evil-ghostel is tightly coupled to ghostel: unpin it too.
     evil-ghostel = null;
 
-    # Try latest version to see if it works on Emacs 31 again.
-    swift-mode = "053336346073e6e2849c19cadd6c6e3e79985c2d";
+    # Bisecting swift-mode to find the trigger of a crash on Emacs 31 on MacOS.
+    swift-mode = "f48ca7a92e70d7ea20ed53ccb41b045ebfbf6ddc";
   };
 
   # :files passed in to melpa2nix (currently only if not already present in recipe).
