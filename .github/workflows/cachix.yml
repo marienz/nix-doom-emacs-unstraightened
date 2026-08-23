@@ -39,9 +39,6 @@ jobs:
           - macos-latest  # aarch64-darwin
         emacs:
           - emacs30
-          - emacs30-nox
-          - emacs30-gtk3
-          - emacs30-pgtk
           - emacs31
           - emacs-without-nativecomp
         exclude:
@@ -49,9 +46,6 @@ jobs:
             emacs: emacs30-gtk3
           - os: macos-latest
             emacs: emacs30-pgtk
-        include:
-          - os: macos-latest
-            emacs: emacs30-macport
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
