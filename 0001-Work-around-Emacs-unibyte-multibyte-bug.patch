@@ -1,0 +1,52 @@
+From c231058209460fa212ec683e77342bc20ac986a1 Mon Sep 17 00:00:00 2001
+From: Marien Zwart <marien.zwart@gmail.com>
+Date: Thu, 27 Aug 2026 13:53:40 +1000
+Subject: [PATCH] Work around Emacs unibyte / multibyte bug
+
+Emacs assumes that when called from a buffer with unibyte characters,
+any character passed to `char-syntax` is also unibyte. Our syntax table
+creation code can violate that assumption if swift-mode-lexer is loaded
+while the current buffer is unibyte.
+
+Fix this by using a temporary (assumed to be multibyte) buffer.
+---
+ swift-mode-lexer.el | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/swift-mode-lexer.el b/swift-mode-lexer.el
+index a18e6fc..70d0b20 100644
+--- a/swift-mode-lexer.el
++++ b/swift-mode-lexer.el
+@@ -402,17 +402,18 @@ Return the new point."
+     ;; Note that combining characters are not modified here; they are also
+     ;; identifier characters, so they are left as word constituents.  The lexer
+     ;; handles them with `swift-mode:operator-combining-character-skip-chars'.
+-    (with-syntax-table table
+-      (dolist (range swift-mode:operator-head-ranges)
+-        (let ((char (car range)))
+-          (while (<= char (cdr range))
+-            ;; Although characters like 〈, 「, or ⟦ are operator heads in
+-            ;; the Swift grammar, they are often used as parentheses in
+-            ;; comments and strings.  Keep their parenthesis syntax so that
+-            ;; `show-paren-mode' and `forward-sexp' work on them.
+-            (unless (memq (char-syntax char) '(?\( ?\)))
+-              (modify-syntax-entry char "." table))
+-            (setq char (1+ char))))))
++    (with-temp-buffer
++      (with-syntax-table table
++        (dolist (range swift-mode:operator-head-ranges)
++          (let ((char (car range)))
++            (while (<= char (cdr range))
++              ;; Although characters like 〈, 「, or ⟦ are operator heads in
++              ;; the Swift grammar, they are often used as parentheses in
++              ;; comments and strings.  Keep their parenthesis syntax so that
++              ;; `show-paren-mode' and `forward-sexp' work on them.
++              (unless (memq (char-syntax char) '(?\( ?\)))
++                (modify-syntax-entry char "." table))
++              (setq char (1+ char)))))))
+     (modify-syntax-entry ?. "." table)
+     ;; Separators
+     (mapc (lambda (c) (modify-syntax-entry c "." table)) ",;")
+-- 
+2.55.0
+

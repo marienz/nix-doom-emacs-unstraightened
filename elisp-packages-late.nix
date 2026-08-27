@@ -255,6 +255,13 @@ let
       ];
     });
 
+    # See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/141
+    swift-mode = esuper.swift-mode.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [
+        ./0001-Work-around-Emacs-unibyte-multibyte-bug.patch
+      ];
+    });
+
     # Other files that fail to byte-compile:
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
     # - stylus-mode, missing dependency on sws-mode(?)
