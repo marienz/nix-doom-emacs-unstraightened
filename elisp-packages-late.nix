@@ -258,7 +258,7 @@ let
     # See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/141
     swift-mode = esuper.swift-mode.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [
-        ./0001-Work-around-Emacs-unibyte-multibyte-bug.patch
+        ./elisp-patches/0001-Work-around-Emacs-unibyte-multibyte-bug.patch
       ];
     });
 
