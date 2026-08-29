@@ -56,6 +56,11 @@ is in a different location or a git repository, pass its path or URL here.)
 > in a Git repository for testing, but if it is in one, it needs to be tracked
 > by Git.)
 
+> [!NOTE]
+> If the path to your doomdir is in a subdirectory of a Git repository, you may
+> need to use `--override-input doomdir path:/path/to/doomdir` (see [this
+> issue](https://github.com/NixOS/nix/issues/16388)).
+
 `--override-input nixpkgs nixpkgs` is optional. If `nixpkgs` is in the system
 registry (which it is by default on current NixOS) this allows Unstraightened to
 use more dependencies (particularly Emacs) already on your system. If omitted,
