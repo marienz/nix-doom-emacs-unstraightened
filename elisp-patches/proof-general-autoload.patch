@@ -1,0 +1,61 @@
+diff --git a/proof-general.el b/proof-general.el
+index c1f4c9127f..72945239e2 100644
+--- a/proof-general.el
++++ b/proof-general.el
+@@ -3,7 +3,7 @@
+ ;; This file is part of Proof General.
+ 
+ ;; Portions © Copyright 1994-2012  David Aspinall and University of Edinburgh
+-;; Portions © Copyright 2003-2022  Free Software Foundation, Inc.
++;; Portions © Copyright 2003-2024  Free Software Foundation, Inc.
+ ;; Portions © Copyright 2001-2017  Pierre Courtieu
+ ;; Portions © Copyright 2010, 2016  Erik Martin-Dorel
+ ;; Portions © Copyright 2011-2013, 2016-2017  Hendrik Tews
+@@ -54,20 +54,15 @@
+ ;; * Loading a minimal PG setup on startup (not all of Proof General, of course;
+ ;;   mostly mode hooks and autoloads).
+ 
+-;;;###autoload
+-(eval-and-compile
+-  (defvar pg-init--script-full-path
+-    (or (bound-and-true-p byte-compile-current-file)
+-        (and load-in-progress load-file-name)
+-
+-        (buffer-file-name)))
+-  (defvar pg-init--pg-root
+-    (file-name-directory pg-init--script-full-path)))
+-
+ ;;;###autoload
+ (unless (bound-and-true-p byte-compile-current-file)
+-  ;; This require breaks compilation, so it must only run when loading the package.
+-  (require 'proof-site (expand-file-name "generic/proof-site" pg-init--pg-root)))
++  ;; This require breaks compilation, so it must run only when loading
++  ;; the package.
++  (require 'proof-site
++           (expand-file-name "generic/proof-site"
++                             (file-name-directory
++                              (or (and load-in-progress load-file-name)
++                                  buffer-file-name)))))
+ 
+ (eval-when-compile
+   ;; FIXME: [ This is used during installation of the ELPA package ]
+@@ -76,12 +71,17 @@
+   ;; session, so we here add to load-path all the subdirectories so
+   ;; that files in (say) coq/ can (require 'coq-foo) and the compiler will find
+   ;; the corresponding file.
+-  (let ((byte-compile-directories
++  (let ((pg-root
++         (file-name-directory
++          (or (bound-and-true-p byte-compile-current-file)
++              (and load-in-progress load-file-name)
++              buffer-file-name)))
++        (byte-compile-directories
+          '("generic" "lib"
+            "coq" "easycrypt" "pghaskell" "pgocaml" "pgshell" "phox" "qrhl"
+            )))
+     (dolist (dir byte-compile-directories)
+-      (add-to-list 'load-path (expand-file-name dir pg-init--pg-root)))))
++      (add-to-list 'load-path (expand-file-name dir pg-root)))))
+ 
+ (provide 'proof-general)
+ ;;; proof-general.el ends here

@@ -268,6 +268,12 @@ let
       ];
     });
 
+    proof-general = esuper.proof-general.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [
+        ./elisp-patches/proof-general-autoload.patch
+      ];
+    });
+
     # Other files that fail to byte-compile:
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
     # - stylus-mode, missing dependency on sws-mode(?)
