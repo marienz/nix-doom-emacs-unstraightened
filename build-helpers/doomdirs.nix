@@ -28,7 +28,7 @@ let
   adaUnsupported = true;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
   commonArgs =
-    "-m ${doomModules} -o $out"
+    "-m ${doomModules} -s '(:doom compat)' -o $out"
     + (lib.optionalString adaUnsupported " -s '(:lang ada)'")
     + (lib.optionalString pdftoolsBroken " -s '(:tools pdf)'");
   allModules = callPackage ./doomscript.nix {
