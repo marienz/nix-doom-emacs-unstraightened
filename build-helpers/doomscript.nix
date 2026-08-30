@@ -18,7 +18,7 @@
   doomSource,
   debug ? false,
   name ? "doomscript",
-  extraArgs ? { },
+  extraEnv ? { },
 
   emacs,
   lib,
@@ -27,14 +27,15 @@
   gitMinimal,
 }:
 runCommandLocal name
-  (
-    {
-      inherit doomSource runtimeShell script;
+  {
+    __structuredAttrs = true;
+    inherit doomSource runtimeShell script;
+    env = {
       EMACS = lib.getExe emacs;
     }
     // (lib.optionalAttrs debug { DEBUG = "1"; })
-    // extraArgs
-  )
+    // extraEnv;
+  }
   # Set DOOMLOCALDIR somewhere harmless to stop Doom from trying to create it somewhere read-only.
   # Provide git because Doom uses it when printing backtraces:
   # omitting it makes for needlessly confusing error messages.

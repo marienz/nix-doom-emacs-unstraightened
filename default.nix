@@ -83,16 +83,19 @@ let
     if tangleArgs != null then
       runCommandLocal "tangled-doomdir"
         {
+          __structuredAttrs = true;
           inherit
             tangleArgs
             doomDir
             doomSource
             runtimeShell
             ;
-          EMACS = lib.getExe emacs;
-          DOOMDIR = tangleDoomDir;
-          # Enable this to troubleshoot failures at this step.
-          #DEBUG = "1";
+          env = {
+            EMACS = lib.getExe emacs;
+            DOOMDIR = tangleDoomDir;
+            # Enable this to troubleshoot failures at this step.
+            #DEBUG = "1";
+          };
         }
         ''
           mkdir $out doomlocaldir
@@ -118,7 +121,7 @@ let
   doomIntermediates = callPackage ./build-helpers/doomscript.nix {
     name = "doom-intermediates";
     inherit doomSource emacs;
-    extraArgs = {
+    extraEnv = {
       DOOMDIR = "${doomDir'}";
     };
     script = ./build-helpers/dump;
@@ -383,6 +386,7 @@ let
             # Run locally to avoid a network roundtrip.
             reqfile = runCommandLocal "${name}-deps" {
               inherit src name;
+              __structuredAttrs = true;
               emacs = lib.getExe emacs;
               printDeps = ./build-helpers/print-deps.el;
             } "$emacs -Q --batch --script $printDeps $src $name > $out";
@@ -470,6 +474,7 @@ let
   doomProfile = stdenvNoCC.mkDerivation {
     name = "doom-profile";
     buildCommandPath = ./build-helpers/build-doom-profile.sh;
+    __structuredAttrs = true;
 
     inherit
       doomIntermediates
@@ -483,9 +488,11 @@ let
     noProfileHack = profileName == "";
     buildProfileLoader = ./build-helpers/build-profile-loader;
     buildProfile = ./build-helpers/build-profile;
-    EMACS = lib.getExe emacsWithPackages;
-    # Enable this to troubleshoot failures at this step.
-    #DEBUG = "1";
+    env = {
+      EMACS = lib.getExe emacsWithPackages;
+      # Enable this to troubleshoot failures at this step.
+      #DEBUG = "1";
+    };
 
     # Required to avoid Doom erroring out at startup.
     nativeBuildInputs = [ git ];
@@ -500,6 +507,7 @@ let
   doomEmacs = stdenv.mkDerivation {
     name = "doom-emacs";
     buildCommandPath = ./build-helpers/build-doom-emacs.sh;
+    __structuredAttrs = true;
 
     # TODO: switch back to passing extraBinPackages to emacsWithPackages after 26.11, see #117.
     extraBinPackagesPath = lib.makeBinPath extraBinPackages;
@@ -522,6 +530,7 @@ let
     inherit (emacs) meta;
     inherit doomEmacs emacs;
     buildCommandPath = ./build-helpers/build-emacs-with-doom.sh;
+    __structuredAttrs = true;
 
     # Force local build as it's near-trivial.
     preferLocalBuild = true;

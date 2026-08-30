@@ -68,8 +68,11 @@ let
       actual =
         runCommand "interactive"
           {
-            # Read by tests.el.
-            testName = name;
+            __structuredAttrs = true;
+            env = {
+              # Read by tests.el.
+              testName = name;
+            };
             nativeBuildInputs = [
               doom
               tmux
