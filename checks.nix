@@ -96,14 +96,14 @@ let
         args = ${toPretty { } doomArgs}
     '';
 
-  doomBuildTest = init: mkDoom { doomDir = mkDoomDir init; };
+  doomBuildTest = init: mkDoomFromDir (mkDoomDir init);
   doomdirTests = lib.flip lib.mapAttrs (makeDoomDirs emacs) (
     name: doomdir:
     mkDoomTest "noop" (mkDoomFromDir (mkTestDoomDir doomdir)) "Startup failed with ${name}"
   );
 in
 {
-  minimal = mkDoom { doomDir = minimalDoomDir; };
+  minimal = mkDoomFromDir minimalDoomDir;
   minimalEmacs =
     (makeDoomPackages (
       common
@@ -118,7 +118,7 @@ in
       epkgs.treesit-grammars.with-all-grammars
     ];
   };
-  example = mkDoom { doomDir = ./doomdir; };
+  example = mkDoomFromDir ./doomdir;
   example-without-loader = mkDoom {
     doomDir = ./doomdir;
     profileName = "";
@@ -170,9 +170,7 @@ in
 
   packageActivationTest =
     let
-      doom = mkDoom {
-        doomDir = mkTestDoomDir (writeTextDir "packages.el" "(package! go-mode)");
-      };
+      doom = mkDoomFromDir (mkTestDoomDir (writeTextDir "packages.el" "(package! go-mode)"));
     in
     mkDoomTest "auto-mode-alist-has-go" doom ''
       Expected go-mode to add itself to auto-mode-alist and the Doom profile to persist that.
