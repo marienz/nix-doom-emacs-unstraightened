@@ -29,7 +29,7 @@ Please report any issues.
 
 ### (optional) Enable Cachix
 
-If you use nixpkgs-unstable, adding our [Cachix](https//cachix.org/) cache
+If you use nixpkgs-unstable, adding our [Cachix](https://cachix.org/) cache
 should speed things up. See
 https://app.cachix.org/cache/doom-emacs-unstraightened or the [Cachix documentation](https://docs.cachix.org/getting-started#using-binaries-with-nix)
 for instructions.
