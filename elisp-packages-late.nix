@@ -262,6 +262,12 @@ let
       ];
     });
 
+    nael-lsp = esuper.nael-lsp.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [
+        ./elisp-patches/nael-mode-lsp-autoload.patch
+      ];
+    });
+
     # Other files that fail to byte-compile:
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
     # - stylus-mode, missing dependency on sws-mode(?)

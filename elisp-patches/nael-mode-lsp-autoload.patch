@@ -1,0 +1,12 @@
+diff --git a/nael-lsp/nael-lsp.el b/nael-lsp/nael-lsp.el
+index 892c06f..f8f55cc 100644
+--- a/nael-lsp/nael-lsp.el
++++ b/nael-lsp/nael-lsp.el
+@@ -33,7 +33,6 @@
+   :link '(emacs-library-link :tag "Source Lisp File" "nael-lsp.el")
+   :prefix "nael-lsp-")
+ 
+-;;;###autoload
+ (keymap-set nael-mode-map
+             "C-c C-l"
+             #'lsp)
