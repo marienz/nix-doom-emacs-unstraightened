@@ -27,10 +27,20 @@ let
   # Currently also broken on other platforms, see https://github.com/NixOS/nixpkgs/issues/544219
   adaUnsupported = true;
   pdftoolsBroken = stdenv.hostPlatform.isDarwin;
-  commonArgs =
-    "-m ${doomModules} -s '(:doom compat)' -o $out"
-    + (lib.optionalString adaUnsupported " -s '(:lang ada)'")
-    + (lib.optionalString pdftoolsBroken " -s '(:tools pdf)'");
+  commonArgs = [
+    "-m"
+    "${doomModules}"
+    "-s"
+    "(:doom compat)"
+  ]
+  ++ lib.optionals adaUnsupported [
+    "-s"
+    "(:lang ada)"
+  ]
+  ++ lib.optionals pdftoolsBroken [
+    "-s"
+    "(:tools pdf)"
+  ];
   allModules = callPackage ./doomscript.nix {
     name = "doom-full-init";
     inherit doomSource emacs;
@@ -42,7 +52,7 @@ let
     name = "doom-full-init";
     inherit doomSource emacs;
     script = ./full-init;
-    scriptArgs = "--flags " + commonArgs;
+    scriptArgs = [ "--flags" ] ++ commonArgs;
   };
 
   # Hack, but given how this is used it's good enough even if the replacement misfires.

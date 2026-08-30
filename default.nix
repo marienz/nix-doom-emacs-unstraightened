@@ -125,7 +125,12 @@ let
       DOOMDIR = "${doomDir'}";
     };
     script = ./build-helpers/dump;
-    scriptArgs = "-m ${doomModules} -u ${ourModule} -o $out";
+    scriptArgs = [
+      "-m"
+      "${doomModules}"
+      "-u"
+      "${ourModule}"
+    ];
   };
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";

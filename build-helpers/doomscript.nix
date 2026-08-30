@@ -29,7 +29,12 @@
 runCommandLocal name
   {
     __structuredAttrs = true;
-    inherit doomSource runtimeShell script;
+    inherit
+      doomSource
+      runtimeShell
+      script
+      scriptArgs
+      ;
     env = {
       EMACS = lib.getExe emacs;
     }
@@ -43,5 +48,5 @@ runCommandLocal name
     mkdir $out doomlocaldir
     export DOOMLOCALDIR="$PWD/doomlocaldir"
     export PATH=${lib.getBin gitMinimal}/bin:$PATH
-    $runtimeShell $doomSource/bin/doomscript $script ${scriptArgs}
+    $runtimeShell $doomSource/bin/doomscript $script "''${scriptArgs[@]}" -o $out
   ''
