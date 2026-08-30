@@ -18,6 +18,7 @@
   lib,
   linkFarm,
   runCommand,
+  symlinkJoin,
   testers,
   tmux,
   writeText,
@@ -29,7 +30,18 @@
 }:
 let
   inherit (lib.generators) toPretty;
-  doomDirs = makeDoomDirs emacs;
+  mkTestDoomDir =
+    doomDir:
+    let
+      testDir = linkFarm "test-config" { "config.el" = ./tests.el; };
+    in
+    symlinkJoin {
+      name = "test-doomdir";
+      paths = [
+        doomDir
+        testDir
+      ];
+    };
   common = {
     doomLocalDir = "~/.local/share/nix-doom-unstraightened";
     experimentalFetchTree = true;
@@ -40,6 +52,7 @@ let
     });
   };
   mkDoom = args: (makeDoomPackages (common // args)).doomEmacs;
+  mkDoomFromDir = doomDir: mkDoom { inherit doomDir; };
   mkDoomDir = args: writeTextDir "init.el" (toInit args);
   minimalDoomDir = mkDoomDir { config.default = true; };
   mkDoomTest =
@@ -75,15 +88,7 @@ let
   doomTest =
     name: init: doomArgs:
     let
-      doom = mkDoom (
-        doomArgs
-        // {
-          doomDir = linkFarm "test-doomdir" {
-            "config.el" = ./tests.el;
-            "init.el" = lib.toFile "init.el" (toInit init);
-          };
-        }
-      );
+      doom = mkDoom (doomArgs // { doomDir = mkTestDoomDir (mkDoomDir init); });
     in
     mkDoomTest name doom ''
       Doom test ${name} failed.
@@ -92,6 +97,10 @@ let
     '';
 
   doomBuildTest = init: mkDoom { doomDir = mkDoomDir init; };
+  doomdirTests = lib.flip lib.mapAttrs (makeDoomDirs emacs) (
+    name: doomdir:
+    mkDoomTest "noop" (mkDoomFromDir (mkTestDoomDir doomdir)) "Startup failed with ${name}"
+  );
 in
 {
   minimal = mkDoom { doomDir = minimalDoomDir; };
@@ -109,9 +118,6 @@ in
       epkgs.treesit-grammars.with-all-grammars
     ];
   };
-  allModules = mkDoom { doomDir = doomDirs.allModules; };
-  allModulesAndFlags = mkDoom { doomDir = doomDirs.allModulesAndFlags; };
-  allModulesMostFlags = mkDoom { doomDir = doomDirs.allModulesMostFlags; };
   example = mkDoom { doomDir = ./doomdir; };
   example-without-loader = mkDoom {
     doomDir = ./doomdir;
@@ -165,10 +171,7 @@ in
   packageActivationTest =
     let
       doom = mkDoom {
-        doomDir = linkFarm "test-doomdir" {
-          "config.el" = ./tests.el;
-          "packages.el" = lib.toFile "packages.el" "(package! go-mode)";
-        };
+        doomDir = mkTestDoomDir (writeTextDir "packages.el" "(package! go-mode)");
       };
     in
     mkDoomTest "auto-mode-alist-has-go" doom ''
@@ -176,3 +179,4 @@ in
       This may indicate we generated the Doom profile without activating go-mode first.
     '';
 }
+// doomdirTests

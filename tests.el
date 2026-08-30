@@ -19,6 +19,8 @@
 ;; This tries to hook into startup as late as possible, write a sign of life
 ;; (currently a string written to $out), and then exits.
 
+(defun test-noop ())
+
 (defun test-no-profile ()
   (unless (or (null doom-profile)
               (equal (doom-profile-key t t) (doom-profile-key doom-profile t)))
