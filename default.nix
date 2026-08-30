@@ -506,21 +506,57 @@ let
   # makeBinaryWrapper pulls in a compiler, so don't force this one local.
   doomEmacs = stdenv.mkDerivation {
     name = "doom-emacs";
-    buildCommandPath = ./build-helpers/build-doom-emacs.sh;
     __structuredAttrs = true;
 
-    # TODO: switch back to passing extraBinPackages to emacsWithPackages after 26.11, see #117.
-    extraBinPackagesPath = lib.makeBinPath extraBinPackages;
+    passthru = {
+      inherit
+        emacsWithPackages # used by the cachix sub-flake.
+        doomProfile # for debugging
+        ;
+    };
 
-    # emacsWithPackages also accessed externally (for pushing to Cachix).
-    inherit
-      doomProfile
-      doomLocalDir
-      doomSource
-      emacsWithPackages
-      lspUsePlists
-      ;
-    profileName = nonEmptyProfileName;
+    inherit doomSource;
+    emacs = lib.getExe emacsWithPackages;
+    makeWrapperArgs =
+      let
+        # TODO: switch back to passing extraBinPackages to emacsWithPackages after 26.11, see #117.
+        extraBinPackagesPath = lib.makeBinPath extraBinPackages;
+      in
+      [
+        "--set"
+        "DOOMPROFILELOADFILE"
+        "${doomProfile}/loader/init"
+        "--set"
+        "DOOMPROFILE"
+        nonEmptyProfileName
+        "--set-default"
+        "DOOMLOCALDIR"
+        doomLocalDir
+        "--set"
+        "DOOMDIR"
+        "${doomProfile}/doomdir"
+        "--suffix"
+        "PATH"
+        ":"
+        "${extraBinPackagesPath}"
+      ]
+      ++ lib.optionals lspUsePlists [
+        "--set"
+        "LSP_USE_PLISTS"
+        "1"
+      ];
+
+    buildCommand = ''
+      makeWrapper $emacs $out/bin/doom-emacs \
+        "''${makeWrapperArgs[@]}" \
+        --add-flags "--init-directory=$doomSource"
+      makeWrapper $doomSource/bin/doomscript $out/bin/doomscript \
+        --set EMACS $emacs \
+        "''${makeWrapperArgs[@]}"
+      makeWrapper $doomSource/bin/doom $out/bin/doom \
+        --set EMACS $emacs \
+        "''${makeWrapperArgs[@]}"
+    '';
 
     nativeBuildInputs = [ makeBinaryWrapper ];
   };
