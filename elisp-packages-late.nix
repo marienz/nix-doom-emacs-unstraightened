@@ -30,6 +30,11 @@ let
     drv.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ patch ];
     });
+  addNativeBuildInput =
+    drv: input:
+    drv.overrideAttrs (old: {
+      nativebuildinputs = (old.nativeBuildInputs or [ ]) ++ [ input ];
+    });
   packages = {
     # Doom uses emacs-straight/auctex, which still contains parts of upstream's
     # build system but does not contain all .in files, resulting in a failed build
@@ -191,21 +196,11 @@ let
       '';
     };
     # Make it byte-compile properly.
-    code-review = esuper.code-review.overrideAttrs (attrs: {
-      nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ git ];
-    });
+    code-review = addNativeBuildInput esuper.code-review git;
     # Make it byte-compile (see auctex)
-    company-auctex = esuper.company-auctex.overrideAttrs (attrs: {
-      nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [
-        writableTmpDirAsHomeHook
-      ];
-    });
+    company-auctex = addNativeBuildInput esuper.company-auctex writableTmpDirAsHomeHook;
     # This also needs a real $HOME. nixpkgs actually provides one but it's an Elpa package...
-    auctex-cont-latexmk = esuper.auctex-cont-latexmk.overrideAttrs (old: {
-      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [
-        writableTmpDirAsHomeHook
-      ];
-    });
+    auctex-cont-latexmk = addNativeBuildInput esuper.auctex-cont-latexmk writableTmpDirAsHomeHook;
 
     janet-ts-mode = esuper.janet-ts-mode.overrideAttrs {
       # TODO: Attempts to use libtree-sitter-janet-simple at build time.
