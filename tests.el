@@ -50,18 +50,6 @@
   (unless (functionp 'cmake-mode)
     (error "cmake-mode not available")))
 
-(defun test-doom ()
-  (let* ((out (getenv "out"))
-         (test (intern-soft (format "test-%s" (getenv "testName"))))
-         (result (condition-case err
-                     (funcall test)
-                   (error
-                    (format "%s failed: %s" test err))
-                   (:success
-                    "Doom functions"))))
-    (write-region result nil out nil nil nil 'mustbenew))
-  (kill-emacs))
-
 (defun test-extraPackages ()
   (require 'vterm))
 
@@ -90,4 +78,16 @@
   (when lsp-nix-plist-value-when-compiled
     (error "lsp-nix compiled with plists")))
 
-(add-hook 'doom-after-init-hook 'test-doom)
+(defun run-test ()
+  (let* ((out (getenv "out"))
+         (test (intern-soft (format "test-%s" (getenv "testName"))))
+         (result (condition-case err
+                     (funcall test)
+                   (error
+                    (format "%s failed: %s" test err))
+                   (:success
+                    "Doom functions"))))
+    (write-region result nil out nil nil nil 'mustbenew))
+  (kill-emacs))
+
+(add-hook 'doom-after-init-hook 'run-test)
