@@ -179,5 +179,27 @@ in
       Expected go-mode to add itself to auto-mode-alist and the Doom profile to persist that.
       This may indicate we generated the Doom profile without activating go-mode first.
     '';
+
+  lspWithPlistsTest = doomTest "lsp-use-plists" {
+    tools.lsp = true;
+    lang.nix = [ "+lsp" ];
+  } { };
+
+  lspWithHashtablesTest =
+    let
+      doomdir = mkDoomDir {
+        tools.lsp = true;
+        lang.nix = [ "+lsp" ];
+      };
+      doom = mkDoomFromDir (
+        mkTestDoomDir (
+          linkFarm "test-lsp-with-hashtables" {
+            "init.el" = "${doomdir}/init.el";
+            "packages.el" = writeText "packages.el" "(setopt lsp-use-plists nil)";
+          }
+        )
+      );
+    in
+    mkDoomTest "lsp-use-hashtables" doom "lsp-use-plists unset";
 }
 // doomdirTests

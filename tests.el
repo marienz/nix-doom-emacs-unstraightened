@@ -76,4 +76,18 @@
   (unless (assoc "\\.go\\'" auto-mode-alist)
     (error ".go not on auto-mode-alist")))
 
+(defun test-lsp-use-plists ()
+  (require 'lsp-nix)
+  (unless lsp-use-plists
+    (error "lsp-use-plists nil"))
+  (unless lsp-nix-plist-value-when-compiled
+    (error "lsp-nix compiled without plists")))
+
+(defun test-lsp-use-hashtables ()
+  (require 'lsp-nix)
+  (when lsp-use-plists
+    (error "lsp-use-plists set"))
+  (when lsp-nix-plist-value-when-compiled
+    (error "lsp-nix compiled with plists")))
+
 (add-hook 'doom-after-init-hook 'test-doom)

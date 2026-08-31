@@ -39,8 +39,6 @@
   tangleArgs ? null,
   # Passed to overrideScope (see https://nixos.org/manual/nixpkgs/stable/#sec-emacs-config).
   emacsPackageOverrides ? (eself: esuper: { }),
-  # True to build lsp-mode and dependant packages with LSP_USE_PLISTS set.
-  lspUsePlists ? true,
 
   callPackage,
   callPackages,
@@ -135,6 +133,7 @@ let
 
   doomPackageSet = lib.importJSON "${doomIntermediates}/packages.json";
   doomBuiltinPackages = lib.importJSON "${doomIntermediates}/builtin-packages.json";
+  lspUsePlists = lib.pathExists "${doomIntermediates}/lsp-use-plists";
 
   # Step 2: override Emacs packages to respect Doom's pins (and add/fix packages).
   doomEmacsPackages = lib.foldl' (p: p.overrideScope) (emacsPackagesFor emacs) [
@@ -445,7 +444,7 @@ let
                 p: p == null || !lib.elem p.pname doomBuiltinPackages
               );
             }
-            // lib.optionalAttrs isLspModeOrDependant {
+            // lib.optionalAttrs (lspUsePlists && isLspModeOrDependant) {
               preBuild = (old.preBuild or "") + ''
                 export LSP_USE_PLISTS=1
               '';
@@ -544,11 +543,6 @@ let
         "PATH"
         ":"
         "${extraBinPackagesPath}"
-      ]
-      ++ lib.optionals lspUsePlists [
-        "--set"
-        "LSP_USE_PLISTS"
-        "1"
       ];
 
     buildCommand = ''
