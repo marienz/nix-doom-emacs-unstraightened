@@ -209,7 +209,6 @@ in
             extraBinPackages
             tangleArgs
             emacsPackageOverrides
-            lspUsePlists
             ;
         };
       in
