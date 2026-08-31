@@ -25,6 +25,11 @@
   writableTmpDirAsHomeHook,
 }:
 let
+  addPatch =
+    drv: patch:
+    drv.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ patch ];
+    });
   packages = {
     # Doom uses emacs-straight/auctex, which still contains parts of upstream's
     # build system but does not contain all .in files, resulting in a failed build
@@ -170,26 +175,10 @@ let
     };
     # Newer nixpkgs uses a melpa-build that requires a library with the same name of the package name.
     # Several wanderlust-related packages do not. emacsmirror fixed this: apply their fix.
-    apel = esuper.apel.overrideAttrs (attrs: {
-      patches = (attrs.patches or [ ]) ++ [
-        ./elisp-patches/apel-library.patch
-      ];
-    });
-    flim = esuper.flim.overrideAttrs (attrs: {
-      patches = (attrs.patches or [ ]) ++ [
-        ./elisp-patches/flim-library.patch
-      ];
-    });
-    semi = esuper.semi.overrideAttrs (attrs: {
-      patches = (attrs.patches or [ ]) ++ [
-        ./elisp-patches/semi-library.patch
-      ];
-    });
-    wanderlust = esuper.wanderlust.overrideAttrs (attrs: {
-      patches = (attrs.patches or [ ]) ++ [
-        ./elisp-patches/wanderlust-library.patch
-      ];
-    });
+    apel = addPatch esuper.apel ./elisp-patches/apel-library.patch;
+    flim = addPatch esuper.flim ./elisp-patches/flim-library.patch;
+    semi = addPatch esuper.semi ./elisp-patches/semi-library.patch;
+    wanderlust = addPatch esuper.wanderlust ./elisp-patches/wanderlust-library.patch;
     # reveal.js is not actually an ELisp package. Doom gets straight.el to install it,
     # then makes org-re-reveal use it as data.
     revealjs = stdenvNoCC.mkDerivation {
@@ -244,36 +233,19 @@ let
       ignoreCompilationError = true;
     };
 
-    evil-numbers = esuper.evil-numbers.overrideAttrs (old: {
-      # Apply pending upstream fix as an alternative to
-      # https://github.com/doomemacs/core/commit/541207196fd1ec71bc81393f57ca91263c23b682
-      # (which does not work when evil-numbers is byte-compiled)
-      patches = (old.patches or [ ]) ++ [
-        (fetchpatch2 {
-          url = "https://github.com/juliapath/evil-numbers/pull/31/commits/2229ad6df398f4c959981b543c467ed6b89320a2.patch";
-          hash = "sha256-PAklkvKyiZ04QikbmtLD1tlfcfjeNDNpbDol9OcITGU=";
-        })
-      ];
+    # Apply pending upstream fix as an alternative to
+    # https://github.com/doomemacs/core/commit/541207196fd1ec71bc81393f57ca91263c23b682
+    # (which does not work when evil-numbers is byte-compiled)
+    evil-numbers = addPatch esuper.evil-numbers (fetchpatch2 {
+      url = "https://github.com/juliapath/evil-numbers/pull/31/commits/2229ad6df398f4c959981b543c467ed6b89320a2.patch";
+      hash = "sha256-PAklkvKyiZ04QikbmtLD1tlfcfjeNDNpbDol9OcITGU=";
     });
 
     # See https://github.com/marienz/nix-doom-emacs-unstraightened/issues/141
-    swift-mode = esuper.swift-mode.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [
-        ./elisp-patches/0001-Work-around-Emacs-unibyte-multibyte-bug.patch
-      ];
-    });
+    swift-mode = addPatch esuper.swift-mode ./elisp-patches/0001-Work-around-Emacs-unibyte-multibyte-bug.patch;
 
-    nael-lsp = esuper.nael-lsp.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [
-        ./elisp-patches/nael-mode-lsp-autoload.patch
-      ];
-    });
-
-    proof-general = esuper.proof-general.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [
-        ./elisp-patches/proof-general-autoload.patch
-      ];
-    });
+    nael-lsp = addPatch esuper.nael-lsp ./elisp-patches/nael-mode-lsp-autoload.patch;
+    proof-general = addPatch esuper.proof-general ./elisp-patches/proof-general-autoload.patch;
 
     # Other files that fail to byte-compile:
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
