@@ -193,6 +193,7 @@ let
     # reveal.js is not actually an ELisp package. Doom gets straight.el to install it,
     # then makes org-re-reveal use it as data.
     revealjs = stdenvNoCC.mkDerivation {
+      __structuredAttrs = true;
       inherit (esuper.revealjs) pname version src;
       buildPhase = ''
         siteDir=$out/share/emacs/site-lisp/revealjs
