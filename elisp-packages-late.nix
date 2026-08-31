@@ -229,8 +229,6 @@ let
     # - rustic-flycheck, no flycheck dependency. Seems undesirable to force.
     # - stylus-mode, missing dependency on sws-mode(?)
     #   See also https://github.com/doomemacs/core/commit/f9feaec5bd75f4d997e0b07bc5c8b9177be20781
-    # - xref-js2: upstream bug(?).
-    #   Error: `add-to-list' can't use lexical var `words'; use `push' or `cl-pushnew'
     # - several others, looks like mostly missing (frequently optional) deps.
     #
     # To check for these: `doom-emacs --script build-helpers/byte-compile-check.el`
