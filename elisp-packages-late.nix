@@ -207,15 +207,6 @@ let
       ];
     });
 
-    # Upstream dropped dependencies, but our pinned revision still needs them.
-    clj-refactor = esuper.clj-refactor.overrideAttrs (old: {
-      packageRequires = old.packageRequires ++ [
-        eself.multiple-cursors
-        eself.inflections
-        eself.hydra
-      ];
-    });
-
     janet-ts-mode = esuper.janet-ts-mode.overrideAttrs {
       # TODO: Attempts to use libtree-sitter-janet-simple at build time.
       # This is not sufficient to fix it:
