@@ -206,14 +206,6 @@ let
         writableTmpDirAsHomeHook
       ];
     });
-    # Make it byte-compile.
-    #
-    # TODO ask upstream about missing evil dependency?
-    # https://github.com/PythonNut/evil-easymotion/commit/fb7182625fcb1b1f7d43f69df620d98aa0f42a86
-    # removed the dependency, I do not understand why.
-    evil-easymotion = esuper.evil-easymotion.overrideAttrs (attrs: {
-      packageRequires = attrs.packageRequires ++ [ eself.evil ];
-    });
 
     # Upstream dropped dependencies, but our pinned revision still needs them.
     clj-refactor = esuper.clj-refactor.overrideAttrs (old: {
