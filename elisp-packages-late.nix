@@ -33,7 +33,7 @@ let
   addNativeBuildInput =
     drv: input:
     drv.overrideAttrs (old: {
-      nativebuildinputs = (old.nativeBuildInputs or [ ]) ++ [ input ];
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ input ];
     });
   packages = {
     # Doom uses emacs-straight/auctex, which still contains parts of upstream's
