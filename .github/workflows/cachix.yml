@@ -40,12 +40,12 @@ jobs:
         emacs:
           - emacs
           - emacs-nox
-          - emacs-gtk3
+          - emacs-gtk
           - emacs-pgtk
           - emacs-without-nativecomp
         exclude:
           - os: macos-latest
-            emacs: emacs-gtk3
+            emacs: emacs-gtk
           - os: macos-latest
             emacs: emacs-pgtk
         include:

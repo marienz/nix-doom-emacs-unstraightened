@@ -54,7 +54,7 @@
               [
                 "emacs"
                 "emacs-nox"
-                "emacs-gtk3"
+                "emacs-gtk"
                 "emacs-pgtk"
               ]
               ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs-macport"
