@@ -33,8 +33,7 @@ it. Just skip it entirely."
   (straight--load-build-cache))
 
 (with-eval-after-load 'doom-straight
-  (setq straight-base-dir
-        (file-name-directory (directory-file-name doom-user-dir))))
+  (setq straight-base-dir (file-name-parent-directory doom-user-dir)))
 
 ;; Doom adds a minor mode that makes flycheck-mode's emacs subprocess initialize
 ;; Doom. Extend this to run the profile loader first: what Doom does here is
