@@ -38,20 +38,19 @@ jobs:
           - ubuntu-latest # x86_64-linux
           - macos-latest  # aarch64-darwin
         emacs:
-          - emacs30
-          - emacs30-nox
-          - emacs30-gtk3
-          - emacs30-pgtk
-          - emacs31
+          - emacs
+          - emacs-nox
+          - emacs-gtk3
+          - emacs-pgtk
           - emacs-without-nativecomp
         exclude:
           - os: macos-latest
-            emacs: emacs30-gtk3
+            emacs: emacs-gtk3
           - os: macos-latest
-            emacs: emacs30-pgtk
+            emacs: emacs-pgtk
         include:
           - os: macos-latest
-            emacs: emacs30-macport
+            emacs: emacs-macport
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository

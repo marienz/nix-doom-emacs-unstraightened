@@ -52,13 +52,12 @@
             # Keep in sync with .github/workflows/cachix.yml
             (lib.genAttrs (
               [
-                "emacs30"
-                "emacs30-nox"
-                "emacs30-gtk3"
-                "emacs30-pgtk"
-                "emacs31"
+                "emacs"
+                "emacs-nox"
+                "emacs-gtk3"
+                "emacs-pgtk"
               ]
-              ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs30-macport"
+              ++ lib.optional pkgs.stdenv.hostPlatform.isDarwin "emacs-macport"
             ) (name: pkgs.${name}))
             // {
               emacs-without-nativecomp = pkgs.emacs.overrideAttrs (old: {
