@@ -32,4 +32,17 @@
   # nixpkgs includes agda-input in agda2-mode, and makes agda-input an error to make sure you notice
   # when trying to use just that. Assume that Doom users use Doom's :lang agda, which includes both.
   agda-input = emptyDirectory;
+
+  # Restore dependencies dropped by
+  # https://github.com/melpa/melpa/commit/ce48c8475144800fc1150607353df958afadf2ed
+  lispy = esuper.lispy.overrideAttrs {
+    packageRequires = [
+      eself.ace-window
+      eself.iedit
+      eself.swiper
+      eself.hydra
+      eself.zoutline
+      eself.indium
+    ];
+  };
 }
