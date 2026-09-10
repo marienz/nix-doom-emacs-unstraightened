@@ -16,7 +16,6 @@
   inputs = {
     # Default to reusing the system's emacs package if it has nixpkgs in the system flake registry.
     nixpkgs.url = "nixpkgs";
-    systems.url = "github:nix-systems/default";
     doomemacs = {
       url = "github:doomemacs/core";
       flake = false;
@@ -44,7 +43,6 @@
   outputs =
     {
       self,
-      systems,
       doomemacs,
       doomemacs-modules,
       nixpkgs,
@@ -55,7 +53,7 @@
     let
       perSystemPackages =
         let
-          eachSystem = nixpkgs.lib.genAttrs (import systems);
+          eachSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
         in
         f: eachSystem (system: f nixpkgs.legacyPackages.${system});
 
