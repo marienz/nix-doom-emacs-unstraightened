@@ -39,16 +39,7 @@
                ;; HACK for x-face-e21.el (normally found through recipe)
                (car (file-expand-wildcards
                      (format "%s/*/%s.el" directory name)))))
-       (reqs (if (fboundp 'lm-package-requires)
-                 ;; Emacs >= 30
-                 (lm-package-requires file)
-               ;; Emacs 29
-               (lm-with-file file
-                 (and-let* ((require-lines (lm-header-multiline
-                                            "package-requires")))
-                   (package--prepare-dependencies
-                    (package-read-from-string
-                     (string-join require-lines " ")))))))
+       (reqs (lm-package-requires file))
        (desc (package-desc-from-define name "9999snapshot1" nil reqs))
        (parsed-reqs (package-desc-reqs desc))
        (filtered-reqs (seq-remove (lambda (p) (apply #'package-built-in-p p))
