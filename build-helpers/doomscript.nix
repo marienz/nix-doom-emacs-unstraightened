@@ -35,6 +35,13 @@ runCommandLocal name
       script
       scriptArgs
       ;
+
+    # Provide git because Doom uses it when printing backtraces:
+    # omitting it makes for needlessly confusing error messages.
+    nativeBuildInputs = [
+      gitMinimal
+    ];
+
     env = {
       EMACS = lib.getExe emacs;
     }
@@ -42,11 +49,8 @@ runCommandLocal name
     // extraEnv;
   }
   # Set DOOMLOCALDIR somewhere harmless to stop Doom from trying to create it somewhere read-only.
-  # Provide git because Doom uses it when printing backtraces:
-  # omitting it makes for needlessly confusing error messages.
   ''
     mkdir $out doomlocaldir
     export DOOMLOCALDIR="$PWD/doomlocaldir"
-    export PATH=${lib.getBin gitMinimal}/bin:$PATH
     $runtimeShell $doomSource/bin/doomscript $script "''${scriptArgs[@]}" -o $out
   ''
