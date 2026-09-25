@@ -42,7 +42,6 @@
        (reqs (lm-package-requires file))
        (desc (package-desc-from-define name "9999snapshot1" nil reqs))
        (parsed-reqs (package-desc-reqs desc))
-       (filtered-reqs (seq-remove (lambda (p) (apply #'package-built-in-p p))
-                                  parsed-reqs))
+       (filtered-reqs (cl-remove #'package-built-in-p parsed-reqs :test #'apply))
        (req-names (mapcar #'car parsed-reqs)))
   (princ (json-encode req-names)))
