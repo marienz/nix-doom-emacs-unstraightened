@@ -47,8 +47,13 @@ nix run github:marienz/nix-doom-emacs-unstraightened#doom-emacs \
 ```
 
 If you do not already have Doom Emacs set up, omit `--override-input doomdir
-~/.config/doom` to use a simple example configuration. (Or if your configuration
-is in a different location or a git repository, pass its path or URL here.)
+~/.config/doom` to use a simple example configuration. Or use the `*.example.el`
+files from https://github.com/doomemacs/core/tree/master/static as a starting
+point for your configuration, renaming `config.example.el` to `config.el` (and
+similar for the other files).
+
+If your configuration is in a different location or a git repository, pass its
+path or URL here.
 
 > [!NOTE]
 > If the path to your doomdir is in a Git repository but not yet checked in, you
