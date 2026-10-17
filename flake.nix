@@ -141,13 +141,20 @@
       packages = perSystemPackages (
         pkgs:
         let
-          default = doomFromPackages pkgs {
-            doomDir = doomdir;
-            doomLocalDir = "~/.local/share/nix-doom-unstraightened";
-          };
+          doomFromFlake =
+            args:
+            doomFromPackages pkgs (
+              {
+                doomDir = doomdir;
+                doomLocalDir = "~/.local/share/nix-doom-unstraightened";
+              }
+              // args
+            );
+          default = doomFromFlake { };
         in
         {
           doom-emacs = default.doomEmacs;
+          doom-emacs-pgtk = (doomFromFlake { emacs = pkgs.emacs-pgtk; }).doomEmacs;
           emacs-with-doom = default.emacsWithDoom;
           doom-emacs-unset-profile = default.doomEmacs.override { profileName = ""; };
           doom-emacs-tangle = default.doomEmacs.override { tangleArgs = "."; };
