@@ -35,6 +35,9 @@
     (user-error "nix-doom-emacs-unstraightened is not compatible with this version of Doom"))
   (setf (caddr doom-module-load-path) (file-name-concat modules-dir "modules"))
 
+  ;; For the user to conditionally enable modules/packages.
+  (provide 'unstraightened)
+
   ;; This also loads the user's init.el.
   (doom-modules-initialize)
   ;; Force-enable our internal module (keep in sync with `build-profile').

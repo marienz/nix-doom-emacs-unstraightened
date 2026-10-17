@@ -41,12 +41,22 @@
 
 (add-to-list 'doom-profile-generate-functions #'generate-package-activation)
 
+(defun generate-unstraightened-feature (_profile)
+  "Provide `unstraightened' at runtime, before loading the user's init.el."
+  (doom-file-write
+   "10-unstraightened-feature.init.el"
+   '((provide 'unstraightened))))
+
+(add-to-list 'doom-profile-generate-functions #'generate-unstraightened-feature)
+
 (defcli! build-profile
     ((unstraightened-module ("-m" dir) "Unstraightened module directory."))
   "Write a Doom profile."
   ;; Doom initializes but does not activate package.el.
   ;; (This is idempotent, so no harm either way.)
   (package-activate-all)
+  ;; For the user to conditionally enable modules/packages.
+  (provide 'unstraightened)
   ;; This also loads our generated profile's init.el (so we include the right
   ;; packages in the profile).
   (doom-modules-initialize)

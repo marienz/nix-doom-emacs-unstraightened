@@ -180,6 +180,14 @@ support use without flakes.
   directory / module). Required when not using the home-manager module, which
   defaults it to the `doomdir` flake input.
 
+> [!TIP]
+> Unstraightened provides the `'unstraightened` Emacs feature before loading
+> your `init.el`. If you use the same DOOMDIR with and without Unstraightened,
+> you can use this to conditionally enable modules or packages. For example,
+> `(:if (featurep 'unstraightened) ghostel term)` in your `doom!` block enables
+> Ghostel when using Unstraightened (which builds the necessary module), falling
+> back to the built-in basic terminal otherwise.
+
 - `doomLocalDir`: value Doom should use as `DOOMLOCALDIR`. Required, because by
   default Doom would use its source directory, which is read-only.
 
