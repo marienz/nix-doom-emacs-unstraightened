@@ -55,11 +55,11 @@
         "nixpkgs-stable": []
       },
       "locked": {
-        "lastModified": 1793109699,
-        "narHash": "sha256-AygevGlCMNdrso4XPg1eS+2hZEoyzUYw6Hi2Nv9w4qc=",
+        "lastModified": 1793199322,
+        "narHash": "sha256-z95rDw3M4M5VMtMcb30oSz5SYJL2ZolJYgdXqkSHjXE=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "db8e29cdf29b159f2034d59e9c620bcff0232727",
+        "rev": "d7386506889f22fda75c219b647af8a69d35426d",
         "type": "github"
       },
       "original": {
@@ -70,11 +70,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1792842277,
-        "narHash": "sha256-lrp+A0ZwQN3V0tSZP6vVFIX/16FFOzr19mSup8XD80w=",
-        "rev": "d3b13ad75cc492690728f9307e443dec9ef9a20e",
+        "lastModified": 1793136825,
+        "narHash": "sha256-8VGQQhZfWvvWCoqOf5lb8AzUVbKJKvnihiXwJKKPH0s=",
+        "rev": "f05535a0efcb2134c478d1e88434fadf486d42b5",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1100901.d3b13ad75cc4/nixexprs.tar.zst"
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1103464.f05535a0efcb/nixexprs.tar.zst"
       },
       "original": {
         "id": "nixpkgs",
