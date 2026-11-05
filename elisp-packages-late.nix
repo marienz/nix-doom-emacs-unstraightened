@@ -197,6 +197,16 @@ let
       ignoreCompilationError = true;
     };
 
+    # HACK: patch dune to accept both emacsmirror and ocaml/dune.
+    # Upstream (MELPA and nixpkgs) use ocaml/dune with an editor/integration/emacs/*.el filespec.
+    # Doom migrated to emacsmirror/dune with the default filespec.
+    # This breaks us because we apply the pin to nixpkgs's build but keep the recipe.
+    # Let melpaBuild generate a recipe with a filespec that works for both sources instead.
+    dune = esuper.dune.overrideAttrs {
+      files = ''("*.el" "editor-integration/emacs/*.el")'';
+      recipe = "";
+    };
+
     # Apply pending upstream fix as an alternative to
     # https://github.com/doomemacs/core/commit/541207196fd1ec71bc81393f57ca91263c23b682
     # (which does not work when evil-numbers is byte-compiled)
