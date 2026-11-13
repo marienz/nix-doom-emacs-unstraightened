@@ -16,7 +16,11 @@
 
 mkdir -p "$out/bin"
 ln -s "$emacs"/bin/* "$out/bin/"
-rm "$out"/bin/emacs-*
+# The nixpkgs emacs package has `emacs` and `emacs-<version>`, one a symlink to
+# the other. We could wrap both, but if upstream adds another emacs-<something>
+# that isn't Emacs we'd silently do the wrong thing. So omit emacs-* here.
+# (With `-f`, some Emacs variants/forks don't have emacs-<verison>...)
+rm -f "$out"/bin/emacs-*
 ln -sf "$doomEmacs/bin/doom-emacs" "$out/bin/emacs"
 ln -sf "$doomEmacs"/bin/{doom,doomscript} "$out/bin/"
 
