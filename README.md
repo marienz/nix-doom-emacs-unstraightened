@@ -97,7 +97,7 @@ inputs = {
 
       # Optional, to download less. Neither the module nor the overlay uses this input.
       nixpkgs.follows = "";
-    }
+    };
   };
 };
 ```
