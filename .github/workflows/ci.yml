@@ -46,7 +46,7 @@ jobs:
     permissions:
       contents: write
     uses: ./.github/workflows/push-flake-update.yml
-    needs: [check, cachix]
+    needs: [check, cachix, lix]
 
 # TODO: try to improve caching.
 #
