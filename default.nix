@@ -53,7 +53,6 @@
   stdenv,
   stdenvNoCC,
   symlinkJoin,
-  toInit,
   writeTextDir,
 }:
 let
@@ -62,6 +61,10 @@ let
   ourModule = ./doom-module;
 
   nonEmptyProfileName = if profileName != "" then profileName else "nix";
+
+  myLib = import ./lib.nix;
+
+  inherit (myLib) toInit;
 
   tangleInit = writeTextDir "init.el" (
     toInit lib {
