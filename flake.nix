@@ -57,6 +57,8 @@
         in
         f: eachSystem (system: f nixpkgs.legacyPackages.${system});
 
+      myLib = import ./lib.nix;
+
       doomFromPackages =
         pkgs: args:
         let
@@ -68,7 +70,7 @@
           # directly instead of having pkgs.callPackage do it.
           inherit (emacs-overlay.overlays.package { } pkgs) emacsPackagesFor;
           mergedArgs = args // {
-            inherit emacsPackagesFor toInit;
+            inherit emacsPackagesFor;
             doomSource = doomemacs;
             doomModules = doomemacs-modules;
           };
@@ -83,46 +85,6 @@
           doomModules = doomemacs-modules;
         };
 
-      # Convert a Nix expression to a `doom!` block suitable for init.el.
-      #
-      # Input: a nested attribute set.
-      # The keys of the first level are categories (like `lang`).
-      # The keys of the second level are module names (like `nix`).
-      # The values are lists of module flags, or `true` for no flags.
-      toInit =
-        lib:
-        let
-          inherit (lib)
-            concatLines
-            concatStringsSep
-            isList
-            mapAttrsToList
-            toPretty
-            ;
-        in
-        attrs:
-        concatLines (
-          [ "(doom!" ]
-          ++ (mapAttrsToList (
-            cat: modules:
-            (concatLines (
-              [ (":" + cat) ]
-              ++
-                (mapAttrsToList (
-                  mod: value:
-                  if value == true then
-                    mod
-                  else if isList value then
-                    "(${mod} ${concatStringsSep " " value})"
-                  else
-                    abort "${toPretty value} not supported"
-                ))
-                  modules
-            ))
-          ) attrs)
-          ++ [ ")" ]
-        );
-
       homeModule = import ./home-manager.nix {
         inherit doomFromPackages;
         doomDirInput = doomdir;
@@ -132,7 +94,7 @@
       checks = perSystemPackages (
         pkgs:
         pkgs.callPackages ./checks.nix {
-          toInit = toInit nixpkgs.lib;
+          toInit = myLib.toInit nixpkgs.lib;
           makeDoomDirs = mkDoomDirs pkgs;
           makeDoomPackages = doomFromPackages pkgs;
         }
