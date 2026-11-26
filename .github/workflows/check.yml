@@ -48,4 +48,4 @@ jobs:
       - name: Cache downloads
         uses: ./.github/actions/cache-downloads
       - name: nix flake check
-        run: nix flake check -L --show-trace
+        run: nix flake check -L --show-trace --timeout 300 --keep-going
