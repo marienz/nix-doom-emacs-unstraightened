@@ -367,6 +367,22 @@ I am open to suggestions for how this should work:
 - If we try to use Home Manager, I would expect to hit the same problems
   and/or collisions on activation, but I have not experimented with this.
 
+### Doom claims it "loaded 0 packages" at startup
+
+Doom's "loaded N packages across M modules in X seconds" startup message will
+always show 0 (or some very low number) of packages loaded.
+
+What Doom actually shows here is the difference in the length of `load-path`
+before and after Doom initializes. Because all our packages are system-provided,
+they are already on load-path before Doom initializes.
+
+Only the load-path addition happens this early: Doom still loads their autoloads
+(so the "in X seconds" part of Doom's message is still more or less comparable
+between "normal" Doom and Unstraightened).
+
+I see no trivial fix for this, and it does not affect anything other than that
+startup message. Ignore this part of the message.
+
 ### Flag-controlled packages may be broken
 
 To catch problems like the ones involving pins, Unstraightened tries to
